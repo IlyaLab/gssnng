@@ -1,7 +1,7 @@
 # gssnng
 Gene Set Scoring on the Nearest Neighbor Graph (gssnng) for Single Cell RNA-seq (scRNA-seq)
 
-Works with AnnDatas processed with scanpy.
+Works with AnnData objects stored as h5ad files.
 
 ## Score all cells for one gene set (up, down, or up & down)
 ```
