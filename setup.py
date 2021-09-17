@@ -4,14 +4,14 @@ def readme():
     with open('README.rst') as f:
         return f.read()
 
-setup(name='nnggss',
+setup(name='gssnng',
       version='0.0.1',
-      description='Nearest Neighbor Graph Gene Set Scoring (nnggss)',
-      url='http://github.com/gibbsdavidl/nnggss',
+      description='Gene Set Scoring on the Nearest Neighbor Graph (gssnng)',
+      url='http://github.com/gibbsdavidl/gssnng',
       author='David Gibbs,Michael Strasser',
       author_email='gibbsdavidl@gmail.com',
       license='MIT',
-      packages=['nnggss'],
+      packages=['gssnng'],
       install_requires=[
           'pandas', 'numpy', 'matplotlib', 'seaborn', 'scipy', 'statsmodels', 'scanpy', 'tqdm'
       ],
