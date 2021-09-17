@@ -3,7 +3,7 @@ Nearest Neighbor Graph Gene Set Scoring (nnggss) for Single Cell RNA-seq (scRNA-
 
 Works with AnnDatas processed with scanpy.
 
-# Score all cells for one gene set (up, down, or up & down)
+## Score all cells for one gene set (up, down, or up & down)
     res0 = score_cells(
         adata=adata,
         gene_set_up=geneset1,
@@ -13,7 +13,7 @@ Works with AnnDatas processed with scanpy.
         noise_trials=0,
         mode='average')
 
-# Score all cells & all gene sets (up only):
+## Score all cells & all gene sets (up only):
    res0 = score_cells_all_sets_up(
         adata=adata,
         gene_set_file=geneset_filename, 
@@ -22,7 +22,7 @@ Works with AnnDatas processed with scanpy.
         mode='average')
 
 
-# example
+## example
 
   import scanpy as sc
   from nnggss.score_all_sets import score_cells_all_sets_up
