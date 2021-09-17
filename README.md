@@ -1,5 +1,5 @@
-# nnggss
-Nearest Neighbor Graph Gene Set Scoring (nnggss) for Single Cell RNA-seq (scRNA-seq)
+# gssnng
+Gene Set Scoring on the Nearest Neighbor Graph (gssnng) for Single Cell RNA-seq (scRNA-seq)
 
 Works with AnnDatas processed with scanpy.
 
@@ -28,7 +28,7 @@ Works with AnnDatas processed with scanpy.
 ## example
 ```
   import scanpy as sc
-  from nnggss.score_all_sets import score_cells_all_sets_up
+  from gssnng.score_all_sets import score_cells_all_sets_up
 
   def test_score_all_sets():
       q = sc.read_h5ad('data/pbmc3k_processed.h5ad')
