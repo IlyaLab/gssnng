@@ -76,8 +76,13 @@ def random_mask_a_nn_matrix(X, nn_to_keep):
     newvals = []
     for i in range(X.shape[0]):
         _, col_ix, vals = sparse.find(X[i])
-        rand_ix = np.random.choice(len(col_ix), size=nn_to_keep, replace=False)
-        newrows.extend([i]*nn_to_keep)
+        col_ix_len = len(col_ix)
+        if nn_to_keep > col_ix_len:
+            samp_n = col_ix_len
+        else:
+            samp_n = nn_to_keep  # sometimes there are not exactly the expected number of values.
+        rand_ix = np.random.choice(col_ix_len, size=samp_n, replace=False)
+        newrows.extend([i]*samp_n)
         newcols.extend(col_ix[rand_ix])
         newvals.extend(vals[rand_ix])
 

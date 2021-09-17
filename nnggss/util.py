@@ -1,13 +1,27 @@
 import matplotlib
 matplotlib.use("Agg")
-
 import numpy
 import pandas
-
 import logging
+logger = logging.getLogger('nnggss')
 
-logger = logging.getLogger('singscore')
+def error_checking(
+        adata,
+        samp_neighbors):
+    """
+    QC on the adata. Need to make sure there's enough neighbors available given the sampling size.
 
+    :param adata: the AnnData object
+    :param samp_neighbors: integer, number of neighbors to sample
+    """
+    n_neighbors = adata.uns['neighbors']['params']['n_neighbors'][0]
+    if n_neighbors < samp_neighbors:
+        print('*******')
+        print('WARNING: Number of neighbors too low for sampling parameter!')
+        print('Please reduce number of neighbor samples or recompute neighbor graph.')
+        return('ERROR')
+    else:
+        return('OK')
 
 def read_gene_sets(filepath):
     txt = open(filepath).read().split('\n')
@@ -46,3 +60,60 @@ def to_dense_transpose_list(gene_counts):
     gene_mat = gene_counts.todense().transpose().sum(axis=1)
     gdx = numpy.argwhere(gene_mat > 0)
     return( (gene_mat,  [x[0] for x in gdx] ) )
+
+
+## From SingScore
+def normalisation(norm_method, score_list, score, library_len, sig_len,
+                  mad = True):
+
+    """
+
+    :param norm_method: method of normalisation, standard or theoretical
+    :param score_list: list of scores will each be normalised
+    :param score: average score (average of list)
+    :param library_len: length of the library (int)
+    :param sig_len: length of the signature used to generate the scores
+
+    :return: a tuple, containing the normalised score (float) and an array of
+    each genes score normalised
+    """
+    try:
+        if norm_method == 'standard':
+            norm = score / library_len
+            if mad:
+                u = numpy.array(score_list) / library_len
+        elif norm_method == 'theoretical':
+            low_bound = (sig_len + 1) / 2
+            upper_bound = ((2*library_len) - sig_len + 1)/2
+            norm = (score - low_bound) / (upper_bound - low_bound)
+            if mad:
+                u = numpy.array(score_list)
+        return norm
+
+    except:
+        logger.exception('Normalisation method must be standard or theoretical.')
+
+
+def normalisation_rank(norm_method, ranks, library_len, sig_len):
+
+    """
+
+    :param norm_method: method of normalisation, standard or theoretical
+    :param ranks: a dataframe of ranks
+    :param library_len: length of library (int)
+    :param sig_len: length of the signature used to generate the dataframe
+
+    :return: a dataframe with normalised ranks for each gene in each sample
+    """
+    try:
+        if norm_method == 'standard':
+            ranks = ranks/library_len
+        elif norm_method == 'theoretical':
+            low_bound = (sig_len + 1) / 2
+            upper_bound = ((2 * library_len) - sig_len + 1) / 2
+            ranks = (ranks- low_bound)/(upper_bound-low_bound)
+
+        return ranks
+
+    except:
+        logger.exception('Normalisation method must be standard or theoretical.')

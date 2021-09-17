@@ -37,3 +37,6 @@ def test_get_smoothing_matrix():
     adata.obsp['connectivities'] = sparse.csr_matrix(adjacency)
     S = get_smoothing_matrix(adata, mode='connectivity', add_diag=True)
     np.testing.assert_allclose(S.A.sum(1), [1, 1, 1, 1])
+
+test_get_smoothing_matrix()
+print('test done')

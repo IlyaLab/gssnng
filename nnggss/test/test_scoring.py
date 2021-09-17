@@ -21,4 +21,9 @@ def test_mssingscore():
     # but its fine for testing
     expected = {0: 0.375, 1: 0.25, 2: 0.125, 3: -0.25, 4: -0.25}
     for i in range(len(DF.columns)):
-         assert _ms_sing(gset, DF[i], norm_method='standard')['total_score'] == expected[i]
+        print(_ms_sing(gset, DF[i], norm_method='standard', rankup=True)['total_score'])
+        assert _ms_sing(gset, DF[i], norm_method='standard', rankup=True)['total_score'] == expected[i]
+
+test_mssingscore()
+print('test done')
+
