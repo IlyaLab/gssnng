@@ -10,7 +10,7 @@ import statsmodels.robust.scale
 from anndata import AnnData
 from gssnng.smoothing import nn_smoothing
 from gssnng.util import read_gene_sets, error_checking
-from gssnng.score_funs import scorefun
+from gssnng.score_funs import _ms_sing
 
 
 def score_cells(
@@ -62,43 +62,6 @@ def score_cells(
     return(all_scores)
 
 
-def _ms_sing(geneset: list, x: pd.Series, norm_method: str, rankup: bool) -> dict:
-    """
-    bare bones version of scsing scoring. Their function (see scsingscore.py)
-    does a ton of stuff, here's the essentials
-
-    :param genest: Geneset to score against
-    :param x: pd.Series with the gene expression of a single sample. One gene per row
-    :param norm_method: how to normalize the scores
-    :param rankup: direction of ranking, up: True, down: False
-    """
-
-    sig_len_up = len(geneset)
-    assert isinstance(x, pd.Series)
-    up_sort = x.rank(method='min', ascending=rankup)  #
-    su = []
-
-    # for every gene in the list gene get the value at that
-    # index/rowname (the gene) and the sample that is equal to i
-    if True:
-        for j in geneset:
-            if j in up_sort.index:
-                su.append(up_sort[j])
-            else:
-                sig_len_up = sig_len_up - 1
-    else:
-        # dict acces would be faster, but dict generation takes too loading
-        # damn
-        d = up_sort.to_dict()
-        for g in geneset:
-            if g in d:
-                su.append(d[g])
-            else:
-                sig_len_up = sig_len_up - 1
-
-    total_score, mad_up = scorefun(x, su, sig_len_up, norm_method, rankup)
-    return dict(total_score=total_score, mad_up=mad_up)
-
 
 def _score_all_cells_at_once(gene_set_up=None, gene_set_down=None, smoothed_adata=None, noise_trials=0, mode='average'):
     """
@@ -125,13 +88,13 @@ def _score_all_cells_at_once(gene_set_up=None, gene_set_down=None, smoothed_adat
 
         # Handle the cases of up vs down gene sets #
         if (gene_set_up != None) and (gene_set_down == None):
-            s = _ms_sing(gene_set_up, df_noise['gene_counts'], norm_method='standard', rankup=True)
+            s = _ms_sing(gene_set_up, df_noise['gene_counts'], norm_method='standard', rankup=True, dorank=True)
         elif (gene_set_up == None) and (gene_set_down != None):
-            s = _ms_sing(gene_set_down, df_noise['gene_counts'], norm_method='standard', rankup=False)
+            s = _ms_sing(gene_set_down, df_noise['gene_counts'], norm_method='standard', rankup=False, dorank=True)
             s['mad_down'] = s.pop('mad_up')
         else: # both gene sets
-            s_up = _ms_sing(gene_set_up, df_noise['gene_counts'], norm_method='standard', rankup=True)
-            s_down = _ms_sing(gene_set_down, df_noise['gene_counts'], norm_method='standard', rankup=False)
+            s_up = _ms_sing(gene_set_up, df_noise['gene_counts'], norm_method='standard', rankup=True, dorank=True)
+            s_down = _ms_sing(gene_set_down, df_noise['gene_counts'], norm_method='standard', rankup=False, dorank=True)
             s = dict(total_score=(s_up['total_score']+s_down['total_score']),
                      mad_up=s_up['mad_up'],
                      mad_down=s_down['mad_up'],

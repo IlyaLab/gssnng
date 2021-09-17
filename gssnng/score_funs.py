@@ -26,3 +26,44 @@ def scorefun(x, su, sig_len_up, norm_method, score_up, ):
     norm_up = norm_up - 0.5
     mad_up = statsmodels.robust.scale.mad(su)
     return((norm_up, mad_up))
+
+
+def _ms_sing(geneset: list, x: pd.Series, norm_method: str, rankup: bool, dorank: bool) -> dict:
+    """
+    bare bones version of scsing scoring. Their function (see scsingscore.py)
+    does a ton of stuff, here's the essentials
+
+    :param genest: Geneset to score against
+    :param x: pd.Series with the gene expression of a single sample. One gene per row
+    :param norm_method: how to normalize the scores
+    :param rankup: direction of ranking, up: True, down: False
+    """
+
+    sig_len_up = len(geneset)
+    assert isinstance(x, pd.Series)
+    if dorank:
+        up_sort = x.rank(method='min', ascending=rankup)  #
+    else:
+        up_sort = x
+    su = []
+
+    # for every gene in the list gene get the value at that
+    # index/rowname (the gene) and the sample that is equal to i
+    if True:
+        for j in geneset:
+            if j in up_sort.index:
+                su.append(up_sort[j])
+            else:
+                sig_len_up = sig_len_up - 1
+    else:
+        # dict acces would be faster, but dict generation takes too loading
+        # damn
+        d = up_sort.to_dict()
+        for g in geneset:
+            if g in d:
+                su.append(d[g])
+            else:
+                sig_len_up = sig_len_up - 1
+
+    total_score, mad_up = scorefun(x, su, sig_len_up, norm_method, rankup)
+    return dict(total_score=total_score, mad_up=mad_up)

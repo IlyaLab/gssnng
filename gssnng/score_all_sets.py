@@ -10,7 +10,7 @@ import statsmodels.robust.scale
 from anndata import AnnData
 from gssnng.smoothing import nn_smoothing
 from gssnng.util import read_gene_sets, error_checking
-from gssnng.score_funs import scorefun
+from gssnng.score_funs import _ms_sing
 
 
 def score_cells_all_sets_up(
@@ -68,42 +68,6 @@ def score_cells_all_sets_up(
 
 
 
-def _ms_sing_norank(geneset: list, up_sort: pd.Series, norm_method: str, rankup: bool) -> dict:
-    """
-    bare bones version of scsing scoring. Their function (see scsingscore.py)
-    does a ton of stuff, here's the essentials
-
-    :param genest: Geneset to score against
-    :param x: pd.Series with the gene expression of a single sample. One gene per row
-    :param norm_method: how to normalize the scores
-    :param rankup: direction of ranking, up: True, down: False
-    """
-
-    sig_len_up = len(geneset)
-    assert isinstance(up_sort, pd.Series)
-    su = []
-
-    # for every gene in the list gene get the value at that
-    # index/rowname (the gene) and the sample that is equal to i
-    if True:
-        for j in geneset:
-            if j in up_sort.index:
-                su.append(up_sort[j])
-            else:
-                sig_len_up = sig_len_up - 1
-    else:
-        # dict acces would be faster, but dict generation takes too loading
-        # damn
-        d = up_sort.to_dict()
-        for g in geneset:
-            if g in d:
-                su.append(d[g])
-            else:
-                sig_len_up = sig_len_up - 1
-
-    total_score, mad_up = scorefun(x, su, sig_len_up, norm_method, rankup)
-    return dict(total_score=total_score, mad_up=mad_up)
-
 
 def get_ranked_cells(smoothed_adata, cell_ix, noise_trials, mode):
     """
@@ -146,7 +110,7 @@ def _score_all_cells_all_sets(gene_set_dict=None, smoothed_adata=None, noise_tri
         df_noise = get_ranked_cells(smoothed_adata, cell_ix, noise_trials, mode)
         for gs_i in gene_set_dict.keys():
             gene_list = gene_set_dict[gs_i]
-            s = _ms_sing_norank(gene_list, df_noise['gene_counts'], norm_method='standard', rankup=True)
+            s = _ms_sing(gene_list, df_noise['gene_counts'], norm_method='standard', rankup=True, dorank=False)
             s['CB'] = smoothed_adata.obs.index[cell_ix]
             results[gs_i] = s
         results_list.append( results )
