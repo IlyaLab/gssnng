@@ -9,7 +9,7 @@ Works with AnnDatas processed with scanpy.
         adata=adata,
         gene_set_up=geneset1,
         gene_set_down=None,
-        key_added=key1,
+        key_added=key1,      # the scores are written to adata.obs[key_added] #
         samp_neighbors=8,
         noise_trials=0,
         mode='average')
@@ -17,7 +17,8 @@ Works with AnnDatas processed with scanpy.
 
 ## Score all cells & all gene sets (up only):
 ```
-    res0 = score_cells_all_sets_up(
+    # the scores are written to adata.obs columns #
+    score_cells_all_sets_up(
         adata=adata,
         gene_set_file=geneset_filename, 
         samp_neighbors=8,
