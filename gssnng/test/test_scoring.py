@@ -2,7 +2,7 @@
 import numpy as np
 import pandas as pd
 
-from nnggss.scoring import _ms_sing
+from gssnng.scoring import _ms_sing
 
 DF = pd.DataFrame({
         'g1': [2, 1, 1, 0, 0],

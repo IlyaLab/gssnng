@@ -1,6 +1,6 @@
 from anndata import AnnData
 import numpy as np
-from nnggss.smoothing import get_smoothing_matrix
+from gssnng.smoothing import get_smoothing_matrix
 from scipy import sparse
 
 def test_get_smoothing_matrix():

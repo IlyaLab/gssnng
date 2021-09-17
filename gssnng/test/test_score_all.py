@@ -2,8 +2,8 @@
 
 import scanpy as sc
 
-from nnggss.scoring import score_cells
-from nnggss.util import read_gene_sets
+from gssnng.scoring import score_cells
+from gssnng.util import read_gene_sets
 
 
 def test_score_all_fun(adata, genesets):

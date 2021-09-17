@@ -4,12 +4,12 @@ MS-DOS version
 import numpy as np
 from scipy import sparse
 import pandas as pd
-import nnggss.util as si
+import gssnng.util as si
 import tqdm
 import statsmodels.robust.scale
 from anndata import AnnData
-from nnggss.smoothing import nn_smoothing
-from nnggss.util import read_gene_sets, error_checking
+from gssnng.smoothing import nn_smoothing
+from gssnng.util import read_gene_sets, error_checking
 
 
 def score_cells(

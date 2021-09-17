@@ -3,7 +3,7 @@ matplotlib.use("Agg")
 import numpy
 import pandas
 import logging
-logger = logging.getLogger('nnggss')
+logger = logging.getLogger('gssnng')
 
 def error_checking(
         adata,

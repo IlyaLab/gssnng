@@ -1,6 +1,6 @@
 import logging
 
-logger = logging.getLogger('nnggss')
+logger = logging.getLogger('gssnng')
 logger.setLevel(logging.INFO)
 logger.propagate = False
 handler = logging.StreamHandler()
