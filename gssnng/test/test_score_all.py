@@ -2,7 +2,7 @@
 
 import scanpy as sc
 
-from gssnng.scoring import score_cells
+from gssnng.score_one_set import score_cells
 from gssnng.util import read_gene_sets
 
 

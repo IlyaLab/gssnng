@@ -10,6 +10,7 @@ import statsmodels.robust.scale
 from anndata import AnnData
 from gssnng.smoothing import nn_smoothing
 from gssnng.util import read_gene_sets, error_checking
+from gssnng.score_funs import scorefun
 
 
 def score_cells_all_sets_up(
@@ -100,16 +101,7 @@ def _ms_sing_norank(geneset: list, up_sort: pd.Series, norm_method: str, rankup:
             else:
                 sig_len_up = sig_len_up - 1
 
-    # normalise the score for the number of genes in the signature
-    score_up = np.mean(su)
-    norm_up = si.normalisation(norm_method=norm_method,
-                               library_len=len(up_sort.index),
-                               score_list=su,
-                               score=score_up,
-                               sig_len=sig_len_up)
-    norm_up = norm_up - 0.5
-    mad_up = statsmodels.robust.scale.mad(su)
-    total_score = norm_up
+    total_score, mad_up = scorefun(x, su, sig_len_up, norm_method, rankup)
     return dict(total_score=total_score, mad_up=mad_up)
 
 

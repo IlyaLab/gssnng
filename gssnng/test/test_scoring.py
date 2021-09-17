@@ -2,7 +2,7 @@
 import numpy as np
 import pandas as pd
 
-from gssnng.scoring import _ms_sing
+from gssnng.score_one_set import _ms_sing
 
 DF = pd.DataFrame({
         'g1': [2, 1, 1, 0, 0],
