@@ -7,7 +7,7 @@ Scoring functions:
 ```
     singscore = mean(ranks) / n where n is length of gene set
     robust_std = median of robust standardized ranks:  med (x-med / mad).
-    average = average ranks:  (mean / sd)
+    average = average ranks:  sum(ranks) / n
     meanz = average z score:  mean( (x - mean)/stddv )
     summed_up: just sum up the ranks or counts.
 ```
