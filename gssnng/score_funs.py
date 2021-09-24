@@ -5,14 +5,82 @@ import gssnng.util as si
 import statsmodels.robust.scale
 
 
-def scorefun(x, su, sig_len_up, norm_method, score_up, ):
+def summed_up(su):
     """
-    given a ranked list, produce a score
-    TODO add more functions like median etc
+    Just sum up the counts
 
-    :param x: the pandas data frame of ranks
-    :param su: the ranked list
-    :param sig_len_up: the number of genes matched in the set
+    :param x: the pandas data frame of ranks, all genes
+    :param su: the ranked list of genes *IN* the gene set
+    :param sig_len_up: the number of expressed genes matched in the set
+    :param norm_method: 'standard or theoretical' # from singscore
+    :param score_up: is the rank up or down?  True or False
+    """
+    # normalise the score for the number of genes in the signature
+    mad_su = statsmodels.robust.scale.mad(su)
+    score = np.sum(su)
+    return((score, mad_su))
+
+
+def average(su):
+    """
+    Average Z score
+
+    :param x: the pandas data frame of ranks, all genes
+    :param su: the ranked list of genes *IN* the gene set
+    :param sig_len_up: the number of expressed genes matched in the set
+    :param norm_method: 'standard or theoretical' # from singscore
+    :param score_up: is the rank up or down?  True or False
+    """
+    # normalise the score for the number of genes in the signature
+    cnts_mean = np.mean(su)
+    std_su = np.std(su)
+    score = cnts_mean / len(su)
+    return((score, std_su))
+
+
+def mean_z(su):
+    """
+    Average Z score
+
+    :param x: the pandas data frame of ranks, all genes
+    :param su: the ranked list of genes *IN* the gene set
+    :param sig_len_up: the number of expressed genes matched in the set
+    :param norm_method: 'standard or theoretical' # from singscore
+    :param score_up: is the rank up or down?  True or False
+    """
+    # normalise the score for the number of genes in the signature
+    cnts_mean = np.mean(su)
+    std_su = np.std(su)
+    centered_cnts = [ ((x - cnts_mean) / std_su) for x in su ]
+    score = np.mean(centered_cnts)
+    return((score, std_su))
+
+
+def robust_std(su):
+    """
+    Median of median standardized counts
+
+    :param x: the pandas data frame of ranks, all genes
+    :param su: the ranked list of genes *IN* the gene set
+    :param sig_len_up: the number of expressed genes matched in the set
+    :param norm_method: 'standard or theoretical' # from singscore
+    :param score_up: is the rank up or down?  True or False
+    """
+    # normalise the score for the number of genes in the signature
+    cnts_med = np.median(su)
+    mad_su = statsmodels.robust.scale.mad(su)
+    centered_cnts = [ ((x - cnts_med) / mad_su) for x in su ]
+    score = np.median(centered_cnts)
+    return((score, mad_su))
+
+
+def singscore(x, su, sig_len_up, norm_method):
+    """
+    The singscore method
+
+    :param x: the pandas data frame of ranks, all genes
+    :param su: the ranked list of genes *IN* the gene set
+    :param sig_len_up: the number of expressed genes matched in the set
     :param norm_method: 'standard or theoretical' # from singscore
     :param score_up: is the rank up or down?  True or False
     """
@@ -26,6 +94,37 @@ def scorefun(x, su, sig_len_up, norm_method, score_up, ):
     norm_up = norm_up - 0.5
     mad_up = statsmodels.robust.scale.mad(su)
     return((norm_up, mad_up))
+
+
+
+def scorefun(x, su, sig_len_up, norm_method, score_up, method='summed_up'):
+    """
+    given a ranked list, produce a score
+
+    :param x: the pandas data frame of ranks, all genes
+    :param su: the ranked list of genes *IN* the gene set
+    :param sig_len_up: the number of expressed genes matched in the set
+    :param norm_method: 'standard or theoretical' # from singscore
+    :param score_up: is the rank up or down?  True or False
+
+    :return a tuple (a,b)  score is 'a', extra info is in 'b'
+    """
+    if method == 'singscore':
+        res0 = singscore(x, su, sig_len_up, norm_method)
+
+    if method == 'robust_std':
+        res0 = robust_std(su)
+
+    if method == 'summed_up':
+        res0 = summed_up(su)
+
+    if method == 'average':
+        res0 = average(su)
+
+    if method == 'meanz':
+        res0 = mean_z(su)
+
+    return(res0)
 
 
 def _ms_sing(geneset: list, x: pd.Series, norm_method: str, rankup: bool, dorank: bool) -> dict:
