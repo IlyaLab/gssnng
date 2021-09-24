@@ -4,12 +4,14 @@ Gene Set Scoring on the Nearest Neighbor Graph (gssnng) for Single Cell RNA-seq 
 Works with AnnData objects stored as h5ad files.
 
 Scoring functions:
+```
     singscore = mean(ranks) / n where n is length of gene set
     robust_std = median of robust standardized ranks:  med (x-med / mad).
     average = average ranks:  (mean / sd)
     meanz = average z score:  mean( (x - mean)/stddv )
     summed_up: just sum up the ranks or counts.
-    
+```
+
 Works with ranked or unranked counts.  Uses whatever's in AnnData.X.
 
 
