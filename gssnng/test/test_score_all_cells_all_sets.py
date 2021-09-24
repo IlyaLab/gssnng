@@ -1,13 +1,16 @@
 
 
 import scanpy as sc
-from gssnng.score_all_sets import score_cells_all_sets_up
+from gssnng.score_all_sets import score_cells_all_sets
 
 
 def test_score_all_sets_fun(adata, genesets):
-    res0 = score_cells_all_sets_up(
+    res0 = score_cells_all_sets(
         adata=adata,
         gene_set_file=genesets,
+        score_method='summed_up',
+        set_direction='up',
+        key_added='GeneSetNames', # only option right now
         samp_neighbors=8,
         noise_trials=0,
         mode='average')

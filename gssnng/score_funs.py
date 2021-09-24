@@ -97,7 +97,7 @@ def singscore(x, su, sig_len_up, norm_method):
 
 
 
-def scorefun(x, su, sig_len_up, norm_method, score_up, method='summed_up'):
+def scorefun(x, su, sig_len_up, norm_method, score_up, method='singscore'):
     """
     given a ranked list, produce a score
 
@@ -127,7 +127,13 @@ def scorefun(x, su, sig_len_up, norm_method, score_up, method='summed_up'):
     return(res0)
 
 
-def _ms_sing(geneset: list, x: pd.Series, norm_method: str, rankup: bool, dorank: bool) -> dict:
+def _ms_sing(geneset: list,
+             x: pd.Series,
+             score_method: str,
+             norm_method: str,
+             rankup: bool,
+             dorank: bool,
+             ) -> dict:
     """
     bare bones version of scsing scoring. Their function (see scsingscore.py)
     does a ton of stuff, here's the essentials
@@ -164,5 +170,5 @@ def _ms_sing(geneset: list, x: pd.Series, norm_method: str, rankup: bool, dorank
             else:
                 sig_len_up = sig_len_up - 1
 
-    total_score, mad_up = scorefun(x, su, sig_len_up, norm_method, rankup)
-    return dict(total_score=total_score, mad_up=mad_up)
+    total_score, variance = scorefun(x, su, sig_len_up, norm_method, rankup, score_method)
+    return dict(score=total_score, var=variance)

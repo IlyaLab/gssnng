@@ -14,6 +14,7 @@ def test_score_all_fun(adata, genesets):
         adata=adata,
         gene_set_up=geneset1,
         gene_set_down=None,
+        score_method='summed_up',
         key_added=key1,
         samp_neighbors=8,
         noise_trials=0,
