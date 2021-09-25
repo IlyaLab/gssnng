@@ -21,44 +21,9 @@ def summed_up(su):
     return((score, mad_su))
 
 
-def average(su):
+def median_score(su):
     """
     Average Z score
-
-    :param x: the pandas data frame of ranks, all genes
-    :param su: the ranked list of genes *IN* the gene set
-    :param sig_len_up: the number of expressed genes matched in the set
-    :param norm_method: 'standard or theoretical' # from singscore
-    :param score_up: is the rank up or down?  True or False
-    """
-    # normalise the score for the number of genes in the signature
-    cnts_mean = np.mean(su)
-    std_su = np.std(su)
-    score = cnts_mean / len(su)
-    return((score, std_su))
-
-
-def mean_z(su):
-    """
-    Average Z score
-
-    :param x: the pandas data frame of ranks, all genes
-    :param su: the ranked list of genes *IN* the gene set
-    :param sig_len_up: the number of expressed genes matched in the set
-    :param norm_method: 'standard or theoretical' # from singscore
-    :param score_up: is the rank up or down?  True or False
-    """
-    # normalise the score for the number of genes in the signature
-    cnts_mean = np.mean(su)
-    std_su = np.std(su)
-    centered_cnts = [ ((x - cnts_mean) / std_su) for x in su ]
-    score = np.mean(centered_cnts)
-    return((score, std_su))
-
-
-def robust_std(su):
-    """
-    Median of median standardized counts
 
     :param x: the pandas data frame of ranks, all genes
     :param su: the ranked list of genes *IN* the gene set
@@ -69,6 +34,56 @@ def robust_std(su):
     # normalise the score for the number of genes in the signature
     cnts_med = np.median(su)
     mad_su = statsmodels.robust.scale.mad(su)
+    return((cnts_med, mad_su))
+
+
+def average_score(su):
+    """
+    Average Z score
+
+    :param x: the pandas data frame of ranks, all genes
+    :param su: the ranked list of genes *IN* the gene set
+    :param sig_len_up: the number of expressed genes matched in the set
+    :param norm_method: 'standard or theoretical' # from singscore
+    :param score_up: is the rank up or down?  True or False
+    """
+    # normalise the score for the number of genes in the signature
+    cnts_mean = np.mean(su)
+    std_su = np.std(su)
+    return((cnts_mean, std_su))
+
+
+def mean_z(df, su):
+    """
+    Average Z score
+
+    :param x: the pandas data frame of ranks, all genes
+    :param su: the ranked list of genes *IN* the gene set
+    :param sig_len_up: the number of expressed genes matched in the set
+    :param norm_method: 'standard or theoretical' # from singscore
+    :param score_up: is the rank up or down?  True or False
+    """
+    # normalise the score for the number of genes in the signature
+    cnts_mean = np.mean(df)
+    std_su = np.std(df)
+    centered_cnts = [ ((x - cnts_mean) / std_su) for x in su ]
+    score = np.mean(centered_cnts)
+    return((score, std_su))
+
+
+def robust_std(df, su):
+    """
+    Median of median standardized counts
+
+    :param x: the pandas data frame of ranks, all genes
+    :param su: the ranked list of genes *IN* the gene set
+    :param sig_len_up: the number of expressed genes matched in the set
+    :param norm_method: 'standard or theoretical' # from singscore
+    :param score_up: is the rank up or down?  True or False
+    """
+    # normalise the score for the number of genes in the signature
+    cnts_med = np.median(df)
+    mad_su = statsmodels.robust.scale.mad(df)
     centered_cnts = [ ((x - cnts_med) / mad_su) for x in su ]
     score = np.median(centered_cnts)
     return((score, mad_su))
@@ -113,16 +128,19 @@ def scorefun(x, su, sig_len_up, norm_method, score_up, method='singscore'):
         res0 = singscore(x, su, sig_len_up, norm_method)
 
     if method == 'robust_std':
-        res0 = robust_std(su)
+        res0 = robust_std(x, su)
 
     if method == 'summed_up':
         res0 = summed_up(su)
 
-    if method == 'average':
-        res0 = average(su)
+    if method == 'median_score':
+        res0 = median_score(x, su)
 
-    if method == 'meanz':
-        res0 = mean_z(su)
+    if method == 'average_score':
+        res0 = average_score(x, su)
+
+    if method == 'mean_z':
+        res0 = mean_z(x, su)
 
     return(res0)
 

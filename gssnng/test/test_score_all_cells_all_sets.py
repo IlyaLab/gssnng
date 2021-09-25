@@ -8,7 +8,7 @@ def test_score_all_sets_fun(adata, genesets):
     res0 = score_cells_all_sets(
         adata=adata,
         gene_set_file=genesets,
-        score_method='summed_up',
+        score_method='mean_z',
         set_direction='up',
         key_added='GeneSetNames', # only option right now
         samp_neighbors=8,
@@ -25,6 +25,7 @@ def test_score_all_sets():
     print('*************')
     print('post function')
     print(q2.obs[0:5])
+    print(q2.obs.iloc[0])
 
 
 test_score_all_sets()
