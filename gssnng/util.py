@@ -14,7 +14,7 @@ def error_checking(
     :param adata: the AnnData object
     :param samp_neighbors: integer, number of neighbors to sample
     """
-    n_neighbors = adata.uns['neighbors']['params']['n_neighbors'][0]
+    n_neighbors = adata.uns['neighbors']['params']['n_neighbors'] #[0] #in older AnnData versions need this??
     if n_neighbors < samp_neighbors:
         print('*******')
         print('WARNING: Number of neighbors too low for sampling parameter!')
