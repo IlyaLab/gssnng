@@ -1,26 +1,24 @@
 # gssnng
 Gene Set Scoring on the Nearest Neighbor Graph (gssnng) for Single Cell RNA-seq (scRNA-seq)
 
-Works with AnnData objects stored as h5ad files.
+Works with AnnData objects stored as h5ad files. Takes values from adata.X.
 
 Scoring functions:
 ```
-    singscore:  mean(ranks) / n where n is length of gene set
+    singscore:  mean(ranks) / n, where n is length of gene set
     
-    robust_std:  median of robust standardized ranks:  med (x-med / mad).
+    robust_std:   med (x-med / mad), median of robust standardized ranks.
     
-    average_score:  average ranks:  sum(ranks) / n
+    mean_z:  mean( (x - mean)/stddv ), average z score.
     
-    mean_z:  average z score:  mean( (x - mean)/stddv )
+    rank_biased_overlap: weighted average of agreement across depths, repeated intersection of set with ranked order.
+    
+    average_score:  sum(ranks) / n, average ranks.     
     
     median_score:  median score: med()
     
     summed_up: just sum up the ranks or counts.
-    
-    rank_biased_overlap: weighted average of agreement across depths, repeated intersection of set with ranked order.
 ```
-
-Works with ranked or unranked counts.  Uses whatever's in AnnData.X.
 
 # Instructions
 
