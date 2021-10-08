@@ -39,6 +39,7 @@ Scoring functions:
         samp_neighbors=8,          ## Number of neighbors to sample
         noise_trials=0,            ## Noise injection rounds
         mode='average')            ## Method to combine noisy examples
+        # rbo_depth=100)         ## If using the rank biased overlap method, specify the depth we traverse into the expression ranking 
 ```
 
 ## More options
@@ -58,27 +59,35 @@ Scoring functions:
 
 ## code example ## data included in gssnng/test/data ##
 ```
-  import scanpy as sc
-  from gssnng.score_all_sets import score_cells_all_sets
+import scanpy as sc
+from gssnng.score_all_sets import score_cells_all_sets
 
-  def test_score_all_sets():
-      q = sc.read_h5ad('data/pbmc3k_processed.h5ad')
-      q2 = q[q.obs['louvain'] == 'NK cells']
-      genesets = 'data/h.all.v7.2.symbols.gmt'
-      res0 = score_cells_all_sets(
+
+def test_score_all_sets_fun(adata, genesets):
+    res0 = score_cells_all_sets(
         adata=adata,
         gene_set_file=genesets,
         score_method='robust_std',
         set_direction='up',
         key_added='GeneSetNames', # only option right now
-        samp_neighbors=8,
+        samp_neighbors=27,
         noise_trials=0,
-        mode='average')
-      print('*************')
-      print('post function')
-      print(q2.obs[0:5])
+        mode='average',
+        rbo_depth=33)
+    return(res0)
 
-  test_score_all_sets()
+
+def test_score_all_sets():
+    q = sc.read_h5ad('data/pbmc3k_processed.h5ad')
+    gs = 'data/celltypes_bone_and_blood_msigdb.gmt'
+    print("computing knn...")
+    sc.pp.neighbors(q, n_neighbors=32)  ### recompute the number of desired neighbors ###
+    print('scoring...')
+    score_list = test_score_all_sets_fun(q, gs)
+    print('******DONE*******')
+
+test_score_all_sets()
+print('test score_all_sets done')
 ```
 
 ## References
