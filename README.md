@@ -5,16 +5,45 @@ Works with AnnData objects stored as h5ad files.
 
 Scoring functions:
 ```
-    singscore = mean(ranks) / n where n is length of gene set
-    robust_std = median of robust standardized ranks:  med (x-med / mad).
-    average_score = average ranks:  sum(ranks) / n
-    mean_z = average z score:  mean( (x - mean)/stddv )
-    median_score = median score: med()
+    singscore:  mean(ranks) / n where n is length of gene set
+    
+    robust_std:  median of robust standardized ranks:  med (x-med / mad).
+    
+    average_score:  average ranks:  sum(ranks) / n
+    
+    mean_z:  average z score:  mean( (x - mean)/stddv )
+    
+    median_score:  median score: med()
+    
     summed_up: just sum up the ranks or counts.
+    
+    rank_biased_overlap: weighted average of agreement across depths, repeated intersection of set with ranked order.
 ```
 
 Works with ranked or unranked counts.  Uses whatever's in AnnData.X.
 
+# Instructions
+
+1. Read in a AnnData object using scanpy (an h5ad file).
+
+2. Get gene sets formatted as a .gmt file.
+
+3. Score cells, each gene set will show up as a column in adata.obs.
+
+```
+    # the scores are written to adata.obs columns #
+    score_cells_all_sets(
+        adata=adata,               ## The AnnData
+        gene_set_file=genesets,    ## The file name containing genes sets in .gmt format.
+        score_method='summed_up',  ## The scoring method name 
+        set_direction='up',        ## Gene sets direction,
+        key_added='GeneSetNames',  ## Only option right now, takes names from gene_set_file
+        samp_neighbors=8,          ## Number of neighbors to sample
+        noise_trials=0,            ## Noise injection rounds
+        mode='average')            ## Method to combine noisy examples
+```
+
+## More options
 
 ## Score all cells for one gene set (up, down, or up & down)
 ```
@@ -29,21 +58,7 @@ Works with ranked or unranked counts.  Uses whatever's in AnnData.X.
         mode='average')             ## Method to combine noisy examples
 ```
 
-## Score all cells & all gene sets (up only):
-```
-    # the scores are written to adata.obs columns #
-    score_cells_all_sets(
-        adata=adata,               ## The AnnData
-        gene_set_file=genesets,    ## The file name containing genes sets in .gmt format.
-        score_method='summed_up',  ## The scoring method name 
-        set_direction='up',        ## Gene sets direction,
-        key_added='GeneSetNames',  ## Only option right now, takes names from gene_set_file
-        samp_neighbors=8,          ## Number of neighbors to sample
-        noise_trials=0,            ## Noise injection rounds
-        mode='average')            ## Method to combine noisy examples
-```
-
-## example ## data included in gssnng/test/data ##
+## code example ## data included in gssnng/test/data ##
 ```
   import scanpy as sc
   from gssnng.score_all_sets import score_cells_all_sets
