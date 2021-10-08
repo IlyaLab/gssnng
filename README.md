@@ -80,3 +80,9 @@ Scoring functions:
 
   test_score_all_sets()
 ```
+
+## References
+
+rank biased overlap:  https://arxiv.org/pdf/1408.3587.pdf
+
+
