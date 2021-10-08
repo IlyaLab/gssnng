@@ -39,6 +39,7 @@ Scoring functions:
         samp_neighbors=8,          ## Number of neighbors to sample
         noise_trials=0,            ## Noise injection rounds
         mode='average')            ## Method to combine noisy examples
+        # rbo_depth=100)         ## If using the rank biased overlap method, specify the depth we traverse into the expression ranking 
 ```
 
 ## More options
