@@ -22,7 +22,7 @@ Scoring functions:
 
 # Instructions
 
-1. Read in a AnnData object using scanpy (an h5ad file).
+1. Read in an AnnData object using scanpy (an h5ad file).
 
 2. Get gene sets formatted as a .gmt file.
 
