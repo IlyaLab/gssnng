@@ -21,7 +21,8 @@ def score_cells_all_sets(
         key_added='GeneSetNames',
         samp_neighbors=5,
         noise_trials=0,
-        mode='average'
+        mode='average',
+        rbo_depth=200
 ):
 
     """
@@ -39,6 +40,7 @@ def score_cells_all_sets(
     :param samp_neighbors: number of neighbors to sample
     :param noise_trials: number of noisy samples to create, integer
     :param mode: average or theoretical normalization of scores
+    :param rbo_depth: how deep to traverse into the expression profile
 
     :returns: sparse matrix of scores, one per gene set and per cell in adata
     """
@@ -60,7 +62,8 @@ def score_cells_all_sets(
     """
     all_scores = _score_all_cells_all_sets(gene_set_dict=gs, smoothed_adata=smoothed_adata,
                                            noise_trials=noise_trials, mode=mode,
-                                           set_direction=set_direction, score_method=score_method)
+                                           set_direction=set_direction, score_method=score_method,
+                                           norm_method='standard', rbo_depth=rbo_depth)
 
     for gs_name in gs.keys():
         gs_scores = [x[gs_name]['score'] for x in all_scores]
@@ -102,14 +105,19 @@ def get_ranked_cells(smoothed_adata, cell_ix, noise_trials, mode):
     return(up_sort)
 
 
-def _score_all_cells_all_sets(gene_set_dict=None, smoothed_adata=None,
-                              noise_trials=0, mode='average',
-                              set_direction='up',
-                              score_method='singscore',
-                              norm_method='standard'):
+def _score_all_cells_all_sets(gene_set_dict,
+                              smoothed_adata,
+                              noise_trials,
+                              mode,
+                              set_direction,
+                              score_method,
+                              norm_method,
+                              rbo_depth):
     """
     Want to rank each cell once, but score all sets, and return a sparse matrix of scores.
     """
+
+    dorank_default = True
 
     if set_direction.lower() == 'up':
         rankup = True
@@ -124,7 +132,7 @@ def _score_all_cells_all_sets(gene_set_dict=None, smoothed_adata=None,
             gene_list = gene_set_dict[gs_i]
             s = _ms_sing(gene_list, df_noise['gene_counts'],
                          score_method, norm_method=norm_method,
-                         rankup=rankup, dorank=True)
+                         rankup=rankup, dorank=dorank_default, rbo_depth=rbo_depth)
             s['CB'] = smoothed_adata.obs.index[cell_ix]
             results[gs_i] = s
         results_list.append( results )

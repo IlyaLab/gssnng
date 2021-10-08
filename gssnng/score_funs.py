@@ -89,6 +89,27 @@ def robust_std(df, su):
     return((score, mad_su))
 
 
+def rank_biased_overlap(x, su, gs, limit=100):
+    """
+    Rank biased overlap method
+
+    :param x: the pandas data frame of ranks, all genes
+    :param su: the ranked list of genes *IN* the gene set
+    :param gs: the gene set
+    """
+
+    rbo_score = 0.0
+    for i,gi in enumerate(gs):
+        subrank = x[0:(i+1)]
+        subset = set(subrank.index)
+        rbo_score += len(subset.intersection(gs))
+        if i > limit:
+            break
+
+    mad_up = statsmodels.robust.scale.mad(su)
+    return((rbo_score, mad_up))
+
+
 def singscore(x, su, sig_len_up, norm_method):
     """
     The singscore method
@@ -112,10 +133,11 @@ def singscore(x, su, sig_len_up, norm_method):
 
 
 
-def scorefun(x, su, sig_len_up, norm_method, score_up, method='singscore'):
+def scorefun(gs, x, su, sig_len_up, norm_method, score_up, method, rbo_depth):
     """
     given a ranked list, produce a score
 
+    :param gs: the gene set
     :param x: the pandas data frame of ranks, all genes
     :param su: the ranked list of genes *IN* the gene set
     :param sig_len_up: the number of expressed genes matched in the set
@@ -142,6 +164,9 @@ def scorefun(x, su, sig_len_up, norm_method, score_up, method='singscore'):
     if method == 'mean_z':
         res0 = mean_z(x, su)
 
+    if method == 'rank_biased_overlap':
+        res0 = rank_biased_overlap(x, su, gs, rbo_depth)
+
     return(res0)
 
 
@@ -151,6 +176,7 @@ def _ms_sing(geneset: list,
              norm_method: str,
              rankup: bool,
              dorank: bool,
+             rbo_depth: int,
              ) -> dict:
     """
     bare bones version of scsing scoring. Their function (see scsingscore.py)
@@ -188,5 +214,5 @@ def _ms_sing(geneset: list,
             else:
                 sig_len_up = sig_len_up - 1
 
-    total_score, variance = scorefun(x, su, sig_len_up, norm_method, rankup, score_method)
+    total_score, variance = scorefun(geneset, x, su, sig_len_up, norm_method, rankup, score_method, rbo_depth)
     return dict(score=total_score, var=variance)
