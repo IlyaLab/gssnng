@@ -89,7 +89,7 @@ def robust_std(df, su):
     return((score, mad_su))
 
 
-def rank_biased_overlap(x, su, gs, limit=100):
+def rank_biased_overlap(x, su, gs, rankup, limit=100):
     """
     Rank biased overlap method
 
@@ -99,8 +99,13 @@ def rank_biased_overlap(x, su, gs, limit=100):
     """
 
     rbo_score = 0.0
+
+    sortorder = not rankup  # if it's rank up, we want ascending false
+
+    y = x.sort_values(ascending=sortorder)
+
     for i,gi in enumerate(gs):
-        subrank = x[0:(i+1)]
+        subrank = y[0:(i+1)]
         subset = set(subrank.index)
         rbo_score += len(subset.intersection(gs))
         if i > limit:
@@ -165,7 +170,7 @@ def scorefun(gs, x, su, sig_len_up, norm_method, score_up, method, rbo_depth):
         res0 = mean_z(x, su)
 
     if method == 'rank_biased_overlap':
-        res0 = rank_biased_overlap(x, su, gs, rbo_depth)
+        res0 = rank_biased_overlap(x, su, gs, score_up, rbo_depth)
 
     return(res0)
 
