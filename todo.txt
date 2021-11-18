@@ -1,7 +1,11 @@
 
-TODO
+~~WORK TO DO~~
 
-Look into adding:
+Functions
+
+    Variance of gene set. Rather than expression levels.
+
+Speedups - Look into adding:
 
     Dask: https://dask.org/
 
