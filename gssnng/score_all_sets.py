@@ -3,6 +3,7 @@ MS-DOS version
 """
 import numpy as np
 from scipy import sparse
+#import dask
 import pandas as pd
 import gssnng.util as si
 import tqdm
@@ -11,6 +12,7 @@ from anndata import AnnData
 from gssnng.smoothing import nn_smoothing
 from gssnng.util import read_gene_sets, error_checking
 from gssnng.score_funs import _ms_sing
+from gssnng.genesets import genesets
 
 
 def score_cells_all_sets(
@@ -47,36 +49,32 @@ def score_cells_all_sets(
     if error_checking(adata, samp_neighbors) == 'ERROR':
         return()
 
-    gs = read_gene_sets(gene_set_file)
+    gs_obj = genesets(gene_set_file)
 
     # NOTE: this is cells x genes
     smoothed_matrix = nn_smoothing(adata.X, adata, 'connectivity', samp_neighbors)
     # for easier handling with gene names
     smoothed_adata = AnnData(smoothed_matrix, obs=adata.obs, var=adata.var)
-    """
-    since we're doing all cells at the same time now,
-    the following gets probelmatic (the df kills the sparsity)
-    Ideas:
-    - loop over cells, do the scoring
-    - batch the cells, i.e. create a df with 100 cells (puling them into mem) and score those in one go
-    """
-    all_scores = _score_all_cells_all_sets(gene_set_dict=gs, smoothed_adata=smoothed_adata,
+
+    all_scores = _score_all_cells_all_sets(gene_set_obj=gs_obj, smoothed_adata=smoothed_adata,
                                            noise_trials=noise_trials, mode=mode,
                                            set_direction=set_direction, score_method=score_method,
                                            norm_method='standard', rbo_depth=rbo_depth)
 
-    for gs_name in gs.keys():
-        gs_scores = [x[gs_name]['score'] for x in all_scores]
+    for gs in gs_obj.set_list:
+        gs_name = gs.name
+        gs_scores = [x[gs_name]['score'] for x in all_scores]  # for each cell, pull out gs_score gs_name
         adata.obs[gs_name] = gs_scores
+
     return()
 
 
 
 
 
-def get_ranked_cells(smoothed_adata, cell_ix, noise_trials, mode):
+def get_cell_data(smoothed_adata, cell_ix, noise_trials, mode, dorank, rankup):
     """
-    rank the expression data for each cell and return a list of data frames
+    the processed expression data for each cell
 
     :param smoothed_adata:
     :param noise_trials:
@@ -86,26 +84,29 @@ def get_ranked_cells(smoothed_adata, cell_ix, noise_trials, mode):
     gene_mat = smoothed_adata.X[cell_ix]
     # then we subset it to only the genes with counts
     _, gdx, _ = sparse.find(gene_mat)
-    # TODO we could do a dict instead of the df, that would be faster in _mssing too
+
     if gene_mat.ndim == 2:
         df = pd.DataFrame(gene_mat[:, gdx].A.flatten(), index=smoothed_adata.var.index[gdx])  ## ????
     else:
         df = pd.DataFrame(gene_mat[gdx],
                           index=smoothed_adata.var.index[gdx])  ## not sure why it's coming off as an array
     df.columns = ['gene_counts']
-    # TODO not clear that adding noise really helps.
+
     if mode == 'average' and noise_trials > 0:
         # add some noise to gene counts.. create a n numbers of examples
         raise ValueError('not implemented')
         df_noise = si.add_noise(df, noise_trials, 0.01, 0.99)  ## slow part .. fixed
     else:
         df_noise = df
-    # ranking
-    up_sort = df_noise.rank(method='min', ascending=True)  #
-    return(up_sort)
+
+    if dorank:
+        df_noise['uprank'] = df_noise.gene_counts.rank(method='min', ascending=rankup)  # up or down
+        df_noise['dnrank'] = np.max(df['uprank']) - df['uprank']
+
+    return(df_noise)
 
 
-def _score_all_cells_all_sets(gene_set_dict,
+def _score_all_cells_all_sets(gene_set_obj,
                               smoothed_adata,
                               noise_trials,
                               mode,
@@ -125,16 +126,17 @@ def _score_all_cells_all_sets(gene_set_dict,
         rankup = False
 
     results_list = []  # one per cell
-    for cell_ix in tqdm.trange(smoothed_adata.shape[0]):
-        results = dict()  # one score per cell in a list
-        df_noise = get_ranked_cells(smoothed_adata, cell_ix, noise_trials, mode)
-        for gs_i in gene_set_dict.keys():
-            gene_list = gene_set_dict[gs_i]
-            s = _ms_sing(gene_list, df_noise['gene_counts'],
+    for cell_ix in tqdm.trange(smoothed_adata.shape[0]):  # for each cell ID
+        results = dict()                                  #   we will have one score per cell
+        df_cell = get_cell_data(smoothed_adata, cell_ix, noise_trials, mode, dorank_default, rankup)  # process the cell's data
+        for gs_i in gene_set_obj.set_list:                #   for each gene set
+            s = _ms_sing(gs_i, df_cell,                   #      score the cell
                          score_method, norm_method=norm_method,
                          rankup=rankup, dorank=dorank_default, rbo_depth=rbo_depth)
             s['CB'] = smoothed_adata.obs.index[cell_ix]
-            results[gs_i] = s
+            s['name'] = gs_i.name
+            s['mode'] = gs_i.mode
+            results[gs_i.name] = s
         results_list.append( results )
 
     return(results_list)

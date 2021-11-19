@@ -3,7 +3,7 @@ from scipy import sparse
 import pandas as pd
 import gssnng.util as si
 import statsmodels.robust.scale
-
+from gssnng.genesets import geneset
 
 def summed_up(su):
     """
@@ -175,7 +175,7 @@ def scorefun(gs, x, su, sig_len_up, norm_method, score_up, method, rbo_depth):
     return(res0)
 
 
-def _ms_sing(geneset: list,
+def _ms_sing(geneset: geneset,
              x: pd.Series,
              score_method: str,
              norm_method: str,
@@ -193,31 +193,23 @@ def _ms_sing(geneset: list,
     :param rankup: direction of ranking, up: True, down: False
     """
 
-    sig_len_up = len(geneset)
-    assert isinstance(x, pd.Series)
-    if dorank:
-        up_sort = x.rank(method='min', ascending=rankup)  #
-    else:
-        up_sort = x
+    geneset_genes = geneset.genes_up
+
+    sig_len_up = len(geneset_genes)
+
+    exprdat = x.uprank
+
+    assert isinstance(x, pd.DataFrame)
+
     su = []
 
     # for every gene in the list gene get the value at that
     # index/rowname (the gene) and the sample that is equal to i
-    if True:
-        for j in geneset:
-            if j in up_sort.index:
-                su.append(up_sort[j])
-            else:
-                sig_len_up = sig_len_up - 1
-    else:
-        # dict acces would be faster, but dict generation takes too loading
-        # damn
-        d = up_sort.to_dict()
-        for g in geneset:
-            if g in d:
-                su.append(d[g])
-            else:
-                sig_len_up = sig_len_up - 1
+    for j in geneset_genes:
+        if j in exprdat.index:
+            su.append(exprdat[j])
+        else:
+            sig_len_up = sig_len_up - 1
 
-    total_score, variance = scorefun(geneset, x, su, sig_len_up, norm_method, rankup, score_method, rbo_depth)
+    total_score, variance = scorefun(geneset_genes, exprdat, su, sig_len_up, norm_method, rankup, score_method, rbo_depth)
     return dict(score=total_score, var=variance)
