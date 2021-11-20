@@ -11,7 +11,7 @@ import statsmodels.robust.scale
 from anndata import AnnData
 from gssnng.smoothing import nn_smoothing
 from gssnng.util import read_gene_sets, error_checking
-from gssnng.score_funs import _ms_sing
+from gssnng.score_funs import scorefun
 from gssnng.genesets import genesets
 
 
@@ -19,13 +19,10 @@ def score_cells_all_sets(
         adata=None,
         gene_set_file=None,
         score_method='singscore',
-        set_direction='up',
-        key_added='GeneSetNames',
+        method_params=dict(),
         samp_neighbors=5,
-        noise_trials=0,
-        mode='average',
-        rbo_depth=200
-):
+        noise_trials=0
+    ):
 
     """
     gene set scoring (all gene sets in file) with nearest neighbor smoothing of the expression matrix
@@ -37,12 +34,9 @@ def score_cells_all_sets(
 
     :param adata: anndata.AnnData containing the cells to be scored
     :param gene_set_file: the gene set file with list of gene sets, gmt, one per line
-    :param direction: gene sets will be scored in the 'up' direction
-    :param key_added: name given to the new entry of adata.obs['key_added'] -- taken from file
     :param samp_neighbors: number of neighbors to sample
     :param noise_trials: number of noisy samples to create, integer
-    :param mode: average or theoretical normalization of scores
-    :param rbo_depth: how deep to traverse into the expression profile
+    :param method_params: specific params for each method.
 
     :returns: sparse matrix of scores, one per gene set and per cell in adata
     """
@@ -57,22 +51,18 @@ def score_cells_all_sets(
     smoothed_adata = AnnData(smoothed_matrix, obs=adata.obs, var=adata.var)
 
     all_scores = _score_all_cells_all_sets(gene_set_obj=gs_obj, smoothed_adata=smoothed_adata,
-                                           noise_trials=noise_trials, mode=mode,
-                                           set_direction=set_direction, score_method=score_method,
-                                           norm_method='standard', rbo_depth=rbo_depth)
+                                           noise_trials=noise_trials, method_params=method_params,
+                                           score_method=score_method)
 
     for gs in gs_obj.set_list:
         gs_name = gs.name
         gs_scores = [x[gs_name]['score'] for x in all_scores]  # for each cell, pull out gs_score gs_name
         adata.obs[gs_name] = gs_scores
 
-    return()
+    return(adata)
 
 
-
-
-
-def get_cell_data(smoothed_adata, cell_ix, noise_trials, mode, dorank, rankup):
+def get_cell_data(smoothed_adata, cell_ix, noise_trials, method_params):
     """
     the processed expression data for each cell
 
@@ -90,18 +80,18 @@ def get_cell_data(smoothed_adata, cell_ix, noise_trials, mode, dorank, rankup):
     else:
         df = pd.DataFrame(gene_mat[gdx],
                           index=smoothed_adata.var.index[gdx])  ## not sure why it's coming off as an array
-    df.columns = ['gene_counts']
+    df.columns = ['counts']
 
-    if mode == 'average' and noise_trials > 0:
+    if ('normalization' in method_params) and (method_params['normalization'] == 'average') and (noise_trials > 0):
         # add some noise to gene counts.. create a n numbers of examples
         raise ValueError('not implemented')
-        df_noise = si.add_noise(df, noise_trials, 0.01, 0.99)  ## slow part .. fixed
+        #df_noise = si.add_noise(df, noise_trials, 0.01, 0.99)  ## slow part .. fixed
     else:
         df_noise = df
 
-    if dorank:
-        df_noise['uprank'] = df_noise.gene_counts.rank(method='min', ascending=rankup)  # up or down
-        df_noise['dnrank'] = np.max(df['uprank']) - df['uprank']
+    # for right now always ranking genes up #
+    df_noise['uprank'] = df_noise.iloc[:,0].rank(method='min', ascending=True)  # up or down
+    df_noise['dnrank'] = np.max(df['uprank']) - df['uprank']
 
     return(df_noise)
 
@@ -109,34 +99,26 @@ def get_cell_data(smoothed_adata, cell_ix, noise_trials, mode, dorank, rankup):
 def _score_all_cells_all_sets(gene_set_obj,
                               smoothed_adata,
                               noise_trials,
-                              mode,
-                              set_direction,
-                              score_method,
-                              norm_method,
-                              rbo_depth):
+                              method_params,
+                              score_method
+                              ):
     """
     Want to rank each cell once, but score all sets, and return a sparse matrix of scores.
+
+    :param adata: anndata.AnnData containing the cells to be scored
+    :param gene_set_file: the gene set file with list of gene sets, gmt, one per line
+    :param samp_neighbors: number of neighbors to sample
+    :param noise_trials: number of noisy samples to create, integer
+    :param method_params: specific params for each method.
     """
-
-    dorank_default = True
-
-    if set_direction.lower() == 'up':
-        rankup = True
-    else:
-        rankup = False
 
     results_list = []  # one per cell
     for cell_ix in tqdm.trange(smoothed_adata.shape[0]):  # for each cell ID
         results = dict()                                  #   we will have one score per cell
-        df_cell = get_cell_data(smoothed_adata, cell_ix, noise_trials, mode, dorank_default, rankup)  # process the cell's data
+        df_cell = get_cell_data(smoothed_adata, cell_ix, noise_trials, method_params)  # process the cell's data
         for gs_i in gene_set_obj.set_list:                #   for each gene set
-            s = _ms_sing(gs_i, df_cell,                   #      score the cell
-                         score_method, norm_method=norm_method,
-                         rankup=rankup, dorank=dorank_default, rbo_depth=rbo_depth)
-            s['CB'] = smoothed_adata.obs.index[cell_ix]
-            s['name'] = gs_i.name
-            s['mode'] = gs_i.mode
-            results[gs_i.name] = s
+            res0 = scorefun(gs_i, df_cell, score_method, method_params, smoothed_adata.obs.index[cell_ix])
+            results[gs_i.name] = res0
         results_list.append( results )
 
     return(results_list)

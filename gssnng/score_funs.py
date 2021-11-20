@@ -138,7 +138,33 @@ def singscore(x, su, sig_len_up, norm_method):
 
 
 
-def scorefun(gs, x, su, sig_len_up, norm_method, score_up, method, rbo_depth):
+def method_selector(gs, exprdat, su, method, method_params):
+
+    if method == 'singscore':
+        res0 = singscore(exprdat, su, sig_len_up, method_params['normalization'])
+
+    if method == 'robust_std':
+        res0 = robust_std(exprdat, su)
+
+    if method == 'summed_up':
+        res0 = summed_up(su)
+
+    if method == 'median_score':
+        res0 = median_score(exprdat, su)
+
+    if method == 'average_score':
+        res0 = average_score(exprdat, su)
+
+    if method == 'mean_z':
+        res0 = mean_z(exprdat, su)
+
+    if method == 'rank_biased_overlap':
+        res0 = rank_biased_overlap(exprdat, su, gs, gs.mode, method_params['rbo_depth'])
+
+    return(res0)
+
+
+def scorefun(gs, x, method, method_params, barcode):
     """
     given a ranked list, produce a score
 
@@ -148,68 +174,23 @@ def scorefun(gs, x, su, sig_len_up, norm_method, score_up, method, rbo_depth):
     :param sig_len_up: the number of expressed genes matched in the set
     :param norm_method: 'standard or theoretical' # from singscore
     :param score_up: is the rank up or down?  True or False
+    :param cell_ix: cell barcode
 
-    :return a tuple (a,b)  score is 'a', extra info is in 'b'
-    """
-    if method == 'singscore':
-        res0 = singscore(x, su, sig_len_up, norm_method)
-
-    if method == 'robust_std':
-        res0 = robust_std(x, su)
-
-    if method == 'summed_up':
-        res0 = summed_up(su)
-
-    if method == 'median_score':
-        res0 = median_score(x, su)
-
-    if method == 'average_score':
-        res0 = average_score(x, su)
-
-    if method == 'mean_z':
-        res0 = mean_z(x, su)
-
-    if method == 'rank_biased_overlap':
-        res0 = rank_biased_overlap(x, su, gs, score_up, rbo_depth)
-
-    return(res0)
-
-
-def _ms_sing(geneset: geneset,
-             x: pd.Series,
-             score_method: str,
-             norm_method: str,
-             rankup: bool,
-             dorank: bool,
-             rbo_depth: int,
-             ) -> dict:
-    """
-    bare bones version of scsing scoring. Their function (see scsingscore.py)
-    does a ton of stuff, here's the essentials
-
-    :param genest: Geneset to score against
-    :param x: pd.Series with the gene expression of a single sample. One gene per row
-    :param norm_method: how to normalize the scores
-    :param rankup: direction of ranking, up: True, down: False
+    :return a tuple (a,b,c,d,e)  score is 'a', extra info is in 'b'
     """
 
-    geneset_genes = geneset.genes_up
-
+    geneset_genes = gs.genes_up
     sig_len_up = len(geneset_genes)
-
-    exprdat = x.uprank
-
-    assert isinstance(x, pd.DataFrame)
-
+    exprdat = x.counts
     su = []
-
-    # for every gene in the list gene get the value at that
-    # index/rowname (the gene) and the sample that is equal to i
     for j in geneset_genes:
-        if j in exprdat.index:
+        if j in x.index:
             su.append(exprdat[j])
         else:
             sig_len_up = sig_len_up - 1
 
-    total_score, variance = scorefun(geneset_genes, exprdat, su, sig_len_up, norm_method, rankup, score_method, rbo_depth)
-    return dict(score=total_score, var=variance)
+    res0 = method_selector(geneset_genes, exprdat, su, method, method_params)
+    res1 = dict(barcode = barcode, name=gs.name, mode=gs.mode, score=res0[0], var=res0[1])
+
+    return(res1)
+
