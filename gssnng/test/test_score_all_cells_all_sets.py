@@ -1,7 +1,7 @@
 
 
 import scanpy as sc
-from gssnng.score_all_sets import score_cells_all_sets
+from gssnng.score_sets import score_cells_all_sets
 
 
 def test_score_all_sets_fun(adata, genesets):
@@ -11,7 +11,9 @@ def test_score_all_sets_fun(adata, genesets):
         score_method='robust_std',
         method_params=dict(),
         samp_neighbors=27,
-        noise_trials=0)
+        noise_trials=0,
+        keys_added=['all']
+    )
     return(res0)
 
 

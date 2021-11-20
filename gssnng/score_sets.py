@@ -1,28 +1,25 @@
-"""
-MS-DOS version
-"""
+import anndata
 import numpy as np
 from scipy import sparse
 #import dask
 import pandas as pd
-import gssnng.util as si
 import tqdm
-import statsmodels.robust.scale
 from anndata import AnnData
 from gssnng.smoothing import nn_smoothing
-from gssnng.util import read_gene_sets, error_checking
+from gssnng.util import error_checking
 from gssnng.score_funs import scorefun
 from gssnng.genesets import genesets
 
 
 def score_cells_all_sets(
-        adata=None,
-        gene_set_file=None,
-        score_method='singscore',
-        method_params=dict(),
-        samp_neighbors=5,
-        noise_trials=0
-    ):
+        adata: anndata.AnnData,
+        gene_set_file: str,
+        score_method: str,
+        method_params: dict,
+        samp_neighbors: int,
+        noise_trials: int,
+        keys_added: list
+    ) -> anndata.AnnData:
 
     """
     gene set scoring (all gene sets in file) with nearest neighbor smoothing of the expression matrix
@@ -38,20 +35,22 @@ def score_cells_all_sets(
     :param noise_trials: number of noisy samples to create, integer
     :param method_params: specific params for each method.
 
-    :returns: sparse matrix of scores, one per gene set and per cell in adata
+    :returns: adata with gene set scores in .obs
     """
     if error_checking(adata, samp_neighbors) == 'ERROR':
         return()
 
-    gs_obj = genesets(gene_set_file)
+    gs_obj = genesets(gene_set_file)  # for scoring one set, make unit list, and proceed.
 
     # NOTE: this is cells x genes
     smoothed_matrix = nn_smoothing(adata.X, adata, 'connectivity', samp_neighbors)
     # for easier handling with gene names
     smoothed_adata = AnnData(smoothed_matrix, obs=adata.obs, var=adata.var)
 
-    all_scores = _score_all_cells_all_sets(gene_set_obj=gs_obj, smoothed_adata=smoothed_adata,
-                                           noise_trials=noise_trials, method_params=method_params,
+    all_scores = _score_all_cells_all_sets(gene_set_obj=gs_obj,
+                                           smoothed_adata=smoothed_adata,
+                                           noise_trials=noise_trials,
+                                           method_params=method_params,
                                            score_method=score_method)
 
     for gs in gs_obj.set_list:
@@ -62,13 +61,21 @@ def score_cells_all_sets(
     return(adata)
 
 
-def get_cell_data(smoothed_adata, cell_ix, noise_trials, method_params):
+def get_cell_data(
+        smoothed_adata: anndata.AnnData,
+        cell_ix: int,
+        noise_trials: int,
+        method_params: dict
+) -> pd.DataFrame:
     """
     the processed expression data for each cell
 
-    :param smoothed_adata:
-    :param noise_trials:
-    :return: a list of data frames, one per cell
+    :param smoothed_adata: anndata.AnnData containing the cells to be scored
+    :param cell_ix: index of the cell in adata
+    :param noise_trials: number of noisy samples to create, integer
+    :param method_params: specific params for each method.
+
+    :return: a data frame
     """
     # for each cell, rank the expression
     gene_mat = smoothed_adata.X[cell_ix]
@@ -96,20 +103,23 @@ def get_cell_data(smoothed_adata, cell_ix, noise_trials, method_params):
     return(df_noise)
 
 
-def _score_all_cells_all_sets(gene_set_obj,
-                              smoothed_adata,
-                              noise_trials,
-                              method_params,
-                              score_method
-                              ):
+def _score_all_cells_all_sets(
+        smoothed_adata: anndata.AnnData,
+        gene_set_obj: genesets,
+        score_method: str,
+        method_params: dict,
+        noise_trials: int
+        ) -> list:
     """
-    Want to rank each cell once, but score all sets, and return a sparse matrix of scores.
+    Process cells and score each with a list of gene sets and a method
 
-    :param adata: anndata.AnnData containing the cells to be scored
-    :param gene_set_file: the gene set file with list of gene sets, gmt, one per line
-    :param samp_neighbors: number of neighbors to sample
-    :param noise_trials: number of noisy samples to create, integer
+    :param smoothed_adata: anndata.AnnData containing the cells to be scored
+    :param gene_set_obj: list of geneset objects
+    :param score_method: what method we'll be calling
     :param method_params: specific params for each method.
+    :param noise_trials: number of noisy samples to create, integer
+
+    :return: list of list of gene set score dictionaries
     """
 
     results_list = []  # one per cell

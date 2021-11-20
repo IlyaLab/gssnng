@@ -139,6 +139,16 @@ def singscore(x, su, sig_len_up, norm_method):
 
 
 def method_selector(gs, exprdat, su, method, method_params):
+    """
+    :param gs: the gene set
+    :param exprdat: the pandas data frame of ranks, all genes
+    :param su: the list values we'll compute on
+    :param method: the method we'll call
+    :param method_params: dictionary of method parameters
+    :param barcode: cell barcode
+
+    :return: dictionary of results
+    """
 
     if method == 'singscore':
         res0 = singscore(exprdat, su, sig_len_up, method_params['normalization'])
@@ -164,17 +174,19 @@ def method_selector(gs, exprdat, su, method, method_params):
     return(res0)
 
 
-def scorefun(gs, x, method, method_params, barcode):
+def scorefun(gs,
+             x,
+             method,
+             method_params,
+             barcode):
     """
     given a ranked list, produce a score
 
     :param gs: the gene set
     :param x: the pandas data frame of ranks, all genes
-    :param su: the ranked list of genes *IN* the gene set
-    :param sig_len_up: the number of expressed genes matched in the set
-    :param norm_method: 'standard or theoretical' # from singscore
-    :param score_up: is the rank up or down?  True or False
-    :param cell_ix: cell barcode
+    :param method: the method we'll call
+    :param method_params: dictionary of method parameters
+    :param barcode: cell barcode
 
     :return a tuple (a,b,c,d,e)  score is 'a', extra info is in 'b'
     """
