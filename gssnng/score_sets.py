@@ -1,7 +1,6 @@
 import anndata
 import numpy as np
 from scipy import sparse
-#import dask
 import pandas as pd
 import tqdm
 from anndata import AnnData
@@ -9,6 +8,7 @@ from gssnng.smoothing import nn_smoothing
 from gssnng.util import error_checking
 from gssnng.score_funs import scorefun
 from gssnng.genesets import genesets
+from dask.distributed import Client
 
 
 def score_cells_all_sets(
@@ -37,6 +37,7 @@ def score_cells_all_sets(
 
     :returns: adata with gene set scores in .obs
     """
+
     if error_checking(adata, samp_neighbors) == 'ERROR':
         return()
 
@@ -47,11 +48,9 @@ def score_cells_all_sets(
     # for easier handling with gene names
     smoothed_adata = AnnData(smoothed_matrix, obs=adata.obs, var=adata.var)
 
-    all_scores = _score_all_cells_all_sets(gene_set_obj=gs_obj,
-                                           smoothed_adata=smoothed_adata,
-                                           noise_trials=noise_trials,
-                                           method_params=method_params,
-                                           score_method=score_method)
+    all_scores = _score_all_cells_all_sets(smoothed_adata=smoothed_adata, gene_set_obj=gs_obj,
+                                           score_method=score_method, method_params=method_params,
+                                           noise_trials=noise_trials)
 
     for gs in gs_obj.set_list:
         gs_name = gs.name
@@ -121,7 +120,6 @@ def _score_all_cells_all_sets(
 
     :return: list of list of gene set score dictionaries
     """
-
     results_list = []  # one per cell
     for cell_ix in tqdm.trange(smoothed_adata.shape[0]):  # for each cell ID
         results = dict()                                  #   we will have one score per cell
@@ -130,5 +128,4 @@ def _score_all_cells_all_sets(
             res0 = scorefun(gs_i, df_cell, score_method, method_params, smoothed_adata.obs.index[cell_ix])
             results[gs_i.name] = res0
         results_list.append( results )
-
     return(results_list)

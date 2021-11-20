@@ -1,9 +1,6 @@
 import numpy as np
-from scipy import sparse
-import pandas as pd
 import gssnng.util as si
 import statsmodels.robust.scale
-from gssnng.genesets import geneset
 
 def summed_up(su):
     """
