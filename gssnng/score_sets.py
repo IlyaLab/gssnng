@@ -8,7 +8,6 @@ from gssnng.smoothing import nn_smoothing
 from gssnng.util import error_checking
 from gssnng.score_funs import scorefun
 from gssnng.genesets import genesets
-from dask.distributed import Client
 
 
 def score_cells_all_sets(
@@ -60,7 +59,7 @@ def score_cells_all_sets(
     return(adata)
 
 
-def get_cell_data(
+def _get_cell_data(
         smoothed_adata: anndata.AnnData,
         cell_ix: int,
         noise_trials: int,
@@ -123,7 +122,7 @@ def _score_all_cells_all_sets(
     results_list = []  # one per cell
     for cell_ix in tqdm.trange(smoothed_adata.shape[0]):  # for each cell ID
         results = dict()                                  #   we will have one score per cell
-        df_cell = get_cell_data(smoothed_adata, cell_ix, noise_trials, method_params)  # process the cell's data
+        df_cell = _get_cell_data(smoothed_adata, cell_ix, noise_trials, method_params)  # process the cell's data
         for gs_i in gene_set_obj.set_list:                #   for each gene set
             res0 = scorefun(gs_i, df_cell, score_method, method_params, smoothed_adata.obs.index[cell_ix])
             results[gs_i.name] = res0
