@@ -11,4 +11,4 @@ handler.setFormatter(formatter)
 if not logger.handlers:
     logger.addHandler(handler)
 
-from . import score_sets
+from . import score_cells

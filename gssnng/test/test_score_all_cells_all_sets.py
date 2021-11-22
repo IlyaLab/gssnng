@@ -1,7 +1,7 @@
 
 
 import scanpy as sc
-from gssnng.score_sets import score_cells_all_sets
+from gssnng.score_cells import score_cells_all_sets
 
 
 def test_score_all_sets_fun(adata, genesets):
