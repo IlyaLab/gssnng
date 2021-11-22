@@ -1,5 +1,8 @@
 # gssnng
 
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/Gibbsdavidl/gssnng/blob/main/notebooks/gssnng_quick_start.ipynb)
+
+
 Gene Set Scoring on the Nearest Neighbor Graph (gssnng) for Single Cell RNA-seq (scRNA-seq)
 
 Works with AnnData objects stored as h5ad files. Takes values from adata.X.
