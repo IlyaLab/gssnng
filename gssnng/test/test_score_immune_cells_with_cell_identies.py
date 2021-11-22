@@ -1,20 +1,12 @@
 
 
 import scanpy as sc
-from gssnng.score_cells import score_cells_all_sets
+from gssnng.score_cells import with_gene_sets
 
 
 def test_score_all_sets_fun(adata, genesets):
-    res0 = score_cells_all_sets(
-        adata=adata,
-        gene_set_file=genesets,
-        score_method='rank_biased_overlap',
-        set_direction='up',
-        key_added='GeneSetNames', # only option right now
-        samp_neighbors=27,
-        noise_trials=0,
-        mode='average',
-        rbo_depth=33)
+    res0 = with_gene_sets(adata=adata, gene_set_file=genesets, score_method='rank_biased_overlap', method_params=,
+                          samp_neighbors=27, noise_trials=0, keys_added=)
     return(res0)
 
 
