@@ -10,7 +10,7 @@ from gssnng.score_funs import scorefun
 from gssnng.genesets import genesets
 
 
-def score_cells_all_sets(
+def with_gene_sets(
         adata: anndata.AnnData,
         gene_set_file: str,
         score_method: str,
