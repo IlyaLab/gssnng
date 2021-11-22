@@ -12,3 +12,4 @@ if not logger.handlers:
     logger.addHandler(handler)
 
 from . import score_cells
+from .score_cells import with_gene_sets
