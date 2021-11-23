@@ -17,7 +17,7 @@ def with_gene_sets(
         method_params: dict,
         samp_neighbors: int,
         noise_trials: int,
-        keys_added: list
+        ranked: bool
     ) -> anndata.AnnData:
 
     """
@@ -30,9 +30,11 @@ def with_gene_sets(
 
     :param adata: anndata.AnnData containing the cells to be scored
     :param gene_set_file: the gene set file with list of gene sets, gmt, one per line
+    :param score_method: which scoring method to use
+    :param method_params: specific params for each method.
     :param samp_neighbors: number of neighbors to sample
     :param noise_trials: number of noisy samples to create, integer
-    :param method_params: specific params for each method.
+    :param ranked: whether the gene expression counts should be rank ordered
 
     :returns: adata with gene set scores in .obs
     """
@@ -49,7 +51,7 @@ def with_gene_sets(
 
     all_scores = _score_all_cells_all_sets(smoothed_adata=smoothed_adata, gene_set_obj=gs_obj,
                                            score_method=score_method, method_params=method_params,
-                                           noise_trials=noise_trials)
+                                           noise_trials=noise_trials, ranked=ranked)
 
     for gs in gs_obj.set_list:
         gs_name = gs.name
@@ -63,7 +65,8 @@ def _get_cell_data(
         smoothed_adata: anndata.AnnData,
         cell_ix: int,
         noise_trials: int,
-        method_params: dict
+        method_params: dict,
+        ranked: bool
 ) -> pd.DataFrame:
     """
     the processed expression data for each cell
@@ -94,9 +97,10 @@ def _get_cell_data(
     else:
         df_noise = df
 
-    # for right now always ranking genes up #
-    df_noise['uprank'] = df_noise.iloc[:,0].rank(method='min', ascending=True)  # up or down
-    df_noise['dnrank'] = np.max(df['uprank']) - df['uprank']
+    if ranked:
+        # for right now always ranking genes up #
+        df_noise['uprank'] = df_noise.iloc[:,0].rank(method='min', ascending=True)  # up or down
+        df_noise['dnrank'] = np.max(df['uprank']) - df['uprank']
 
     return(df_noise)
 
@@ -106,7 +110,8 @@ def _score_all_cells_all_sets(
         gene_set_obj: genesets,
         score_method: str,
         method_params: dict,
-        noise_trials: int
+        noise_trials: int,
+        ranked: bool
         ) -> list:
     """
     Process cells and score each with a list of gene sets and a method
@@ -122,9 +127,9 @@ def _score_all_cells_all_sets(
     results_list = []  # one per cell
     for cell_ix in tqdm.trange(smoothed_adata.shape[0]):  # for each cell ID
         results = dict()                                  #   we will have one score per cell
-        df_cell = _get_cell_data(smoothed_adata, cell_ix, noise_trials, method_params)  # process the cell's data
+        df_cell = _get_cell_data(smoothed_adata, cell_ix, noise_trials, method_params, ranked)  # process the cell's data
         for gs_i in gene_set_obj.set_list:                #   for each gene set
-            res0 = scorefun(gs_i, df_cell, score_method, method_params, smoothed_adata.obs.index[cell_ix])
+            res0 = scorefun(gs_i, df_cell, score_method, method_params, smoothed_adata.obs.index[cell_ix], ranked)
             results[gs_i.name] = res0
         results_list.append( results )
     return(results_list)
