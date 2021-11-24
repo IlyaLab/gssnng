@@ -50,7 +50,7 @@ def average_score(su):
     return((cnts_mean, std_su))
 
 
-def mean_z(exprdat, su):
+def mean_z(allexprvals, genesetvals):
     """
     Average Z score
 
@@ -61,9 +61,9 @@ def mean_z(exprdat, su):
     :param score_up: is the rank up or down?  True or False
     """
     # normalise the score for the number of genes in the signature
-    vals_mean = np.mean(exprdat)
-    vals_std = np.std(exprdat)
-    centered = [ (np.abs(x - vals_mean) / vals_std) for x in su ]
+    vals_mean = np.mean(allexprvals)
+    vals_std = np.std(allexprvals)
+    centered = [ (np.abs(x - vals_mean) / vals_std) for x in genesetvals ]
     score = np.mean(centered)
     return((score, vals_std))
 
@@ -132,18 +132,28 @@ def singscore(x, su, sig_len, norm_method):
     return((norm_up, mad_up))
 
 
-def expr_format(x, exprdat, geneset_genes):
+def expr_format_2(x, exprcol, geneset_genes): #### this made things run twice as long!! ####
+    xset = set(x.index)
+    gene_overlap = xset.intersection(geneset_genes)
+    xsub = x.loc[gene_overlap]
+    sig_len_up = len(gene_overlap)
+    return( (xsub[exprcol], sig_len_up) )
+
+
+def expr_format(x, exprcol, geneset_genes):
+    #### OPTIMIZE OPPORTUNITY HERE ####
     sig_len_up = len(geneset_genes)
     su = []
     for j in geneset_genes:
         if j in x.index:
-            su.append(exprdat[j])
+            su.append(x[exprcol][j])
         else:
             sig_len_up = sig_len_up - 1
     return( (su, sig_len_up) )
 
 
-def method_selector(gs, x, exprdat, geneset_genes, method, method_params):
+
+def method_selector(gs, x, exprcol, geneset_genes, method, method_params):
     """
     :param gs: the gene set
     :param x: the gene expr data frame
@@ -156,7 +166,8 @@ def method_selector(gs, x, exprdat, geneset_genes, method, method_params):
     :return: dictionary of results
     """
 
-    (su, sig_len) = expr_format(x, exprdat, geneset_genes)
+    (su, sig_len) = expr_format(x, exprcol, geneset_genes)
+    exprdat = x[exprcol]
 
     if method == 'singscore':
         res0 = singscore(exprdat, su, sig_len, method_params['normalization'])
@@ -204,30 +215,30 @@ def scorefun(gs,
     """
 
     if (gs.mode == 'UP') and (ranked == False):
-        res0 = method_selector(gs, x, x.counts, gs.genes_up, method, method_params)
+        res0 = method_selector(gs, x, 'counts', gs.genes_up, method, method_params)
         res1 = dict(barcode = barcode, name=gs.name, mode=gs.mode, score=res0[0], var=res0[1])
 
     elif (gs.mode == 'DN') and (ranked == False):
-        res0 = method_selector(gs, x, x.counts, gs.genes_dn, method, method_params)
+        res0 = method_selector(gs, x, 'counts', gs.genes_dn, method, method_params)
         res1 = dict(barcode = barcode, name=gs.name, mode=gs.mode, score=res0[0], var=res0[1])
 
     elif (gs.mode == 'BOTH') and (ranked == False):
-        res0_up = method_selector(gs, x, x.counts, gs.genes_up , method, method_params)
-        res0_dn = method_selector(gs, x, x.counts, gs.genes_dn, method, method_params)
+        res0_up = method_selector(gs, x, 'counts', gs.genes_up, method, method_params)
+        res0_dn = method_selector(gs, x, 'counts', gs.genes_dn, method, method_params)
         res1 = dict(barcode = barcode, name=gs.name, mode=gs.mode,
                     score=(res0_up[0]+res0_dn[0]), var=(res0_up[1]+res0_dn[1]))
 
     elif (gs.mode == 'UP') and (ranked == True):
-        res0 = method_selector(gs, x, x.uprank, gs.genes_up, method, method_params)
+        res0 = method_selector(gs, x, 'uprank', gs.genes_up, method, method_params)
         res1 = dict(barcode = barcode, name=gs.name, mode=gs.mode, score=res0[0], var=res0[1])
 
     elif (gs.mode == 'DN') and (ranked == True):
-        res0 = method_selector(gs, x, x.dnrank, gs.genes_dn, method, method_params)
+        res0 = method_selector(gs, x, 'dnrank', gs.genes_dn, method, method_params)
         res1 = dict(barcode = barcode, name=gs.name, mode=gs.mode, score=res0[0], var=res0[1])
 
     elif (gs.mode == 'BOTH') and (ranked == True):
-        res0_up = method_selector(gs, x, x.uprank, gs.genes_up , method, method_params)
-        res0_dn = method_selector(gs, x, x.dnrank, gs.genes_dn, method, method_params)
+        res0_up = method_selector(gs, x, 'uprank', gs.genes_up , method, method_params)
+        res0_dn = method_selector(gs, x, 'dnrank', gs.genes_dn, method, method_params)
         res1 = dict(barcode = barcode, name=gs.name, mode=gs.mode,
                     score=(res0_up[0]+res0_dn[0]), var=(res0_up[1]+res0_dn[1]))
 

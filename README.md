@@ -7,7 +7,7 @@ Gene Set Scoring on the Nearest Neighbor Graph (gssnng) for Single Cell RNA-seq 
 
 Works with AnnData objects stored as h5ad files. Takes values from adata.X.
 
-Scoring functions:
+Scoring functions, works with ranked or unranked data ("your mileage may vary"):
 ```
     singscore:  mean(ranks) / n, where n is length of gene set
     
