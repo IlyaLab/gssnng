@@ -21,7 +21,8 @@ def with_gene_sets(
         method_params: dict,
         samp_neighbors: int,
         noise_trials: int,
-        ranked: bool
+        ranked: bool,
+        threads: int
     ) -> anndata.AnnData:
 
     """
@@ -41,6 +42,7 @@ def with_gene_sets(
     :param samp_neighbors: number of neighbors to sample
     :param noise_trials: number of noisy samples to create, integer
     :param ranked: whether the gene expression counts should be rank ordered
+    :param threads: number of parallel processes to work through groupby groups
 
     :returns: adata with gene set scores in .obs
     """
@@ -50,8 +52,9 @@ def with_gene_sets(
 
     gs_obj = genesets(gene_set_file)  # for scoring one set, make unit list, and proceed.
 
-    all_scores = _build_data_list(adata, gs_obj, groupby, recompute_neighbors,
-                                  score_method, method_params, samp_neighbors, noise_trials, ranked)
+    all_scores = _proc_data(adata, gs_obj, groupby, recompute_neighbors,
+                                  score_method, method_params, samp_neighbors,
+                                  noise_trials, ranked, threads)
 
     for gs in gs_obj.set_list:
         gs_name = gs.name
@@ -69,7 +72,7 @@ def _smooth_out(adata, samp_neighbors):
     return(smoothed_adata)
 
 
-def _build_data_list(
+def _proc_data(
         adata: anndata.AnnData,
         gs_obj: genesets,
         groupby: Union[str,dict],
@@ -78,7 +81,8 @@ def _build_data_list(
         method_params: dict,
         samp_neighbors: int,
         noise_trials: int,
-        ranked: bool
+        ranked: bool,
+        threads: int
                      ):
     """
     In many cases, the neighbors should be defined.  If you have mixed clinical endpoints,
@@ -95,6 +99,7 @@ def _build_data_list(
     :param samp_neighbors: number of neighbors to sample
     :param noise_trials: number of noisy samples to create, integer
     :param ranked: whether the gene expression counts should be rank ordered
+    :param threads: number of parallel processes to work through groupby groups
 
     :returns: scores in a dict for each cell in a list.
     """
@@ -124,7 +129,7 @@ def _build_data_list(
             data_list.append( params )
             ### send off for scores
 
-    with Pool(processes=4) as pool:
+    with Pool(processes=threads) as pool:
         res0 = pool.map(_score_all_cells_all_sets, data_list)
     return(res0)
 
