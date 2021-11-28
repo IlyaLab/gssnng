@@ -1,4 +1,6 @@
 import numpy as np
+import pandas as pd
+
 import gssnng.util as si
 import statsmodels.robust.scale
 
@@ -217,33 +219,40 @@ def scorefun(gs,
     try:
         if (gs.mode == 'UP') and (ranked == False):
             res0 = method_selector(gs, x, 'counts', gs.genes_up, method, method_params)
-            res1 = dict(barcode = barcode, name=gs.name, mode=gs.mode, score=res0[0], var=res0[1])
+            #res1 = dict(barcode = barcode, name=gs.name, mode=gs.mode, score=res0[0], var=res0[1])
+            res1 = pd.DataFrame(index=[barcode], data={gs.name:res0[0]})
 
         elif (gs.mode == 'DN') and (ranked == False):
             res0 = method_selector(gs, x, 'counts', gs.genes_dn, method, method_params)
-            res1 = dict(barcode = barcode, name=gs.name, mode=gs.mode, score=res0[0], var=res0[1])
+            #res1 = dict(barcode = barcode, name=gs.name, mode=gs.mode, score=res0[0], var=res0[1])
+            res1 = pd.DataFrame(index=[barcode], data={gs.name: res0[0]})
 
         elif (gs.mode == 'BOTH') and (ranked == False):
             res0_up = method_selector(gs, x, 'counts', gs.genes_up, method, method_params)
             res0_dn = method_selector(gs, x, 'counts', gs.genes_dn, method, method_params)
-            res1 = dict(barcode = barcode, name=gs.name, mode=gs.mode,
-                        score=(res0_up[0]+res0_dn[0]), var=(res0_up[1]+res0_dn[1]))
+            #res1 = dict(barcode = barcode, name=gs.name, mode=gs.mode,
+            #            score=(res0_up[0]+res0_dn[0]), var=(res0_up[1]+res0_dn[1]))
+            res1 = pd.DataFrame(index=[barcode], data={gs.name: (res0_up[0]+res0_dn[0])})
 
         elif (gs.mode == 'UP') and (ranked == True):
             res0 = method_selector(gs, x, 'uprank', gs.genes_up, method, method_params)
-            res1 = dict(barcode = barcode, name=gs.name, mode=gs.mode, score=res0[0], var=res0[1])
+            #res1 = dict(barcode = barcode, name=gs.name, mode=gs.mode, score=res0[0], var=res0[1])
+            res1 = pd.DataFrame(index=[barcode], data={gs.name: res0[0]})
 
         elif (gs.mode == 'DN') and (ranked == True):
             res0 = method_selector(gs, x, 'dnrank', gs.genes_dn, method, method_params)
-            res1 = dict(barcode = barcode, name=gs.name, mode=gs.mode, score=res0[0], var=res0[1])
+            #res1 = dict(barcode = barcode, name=gs.name, mode=gs.mode, score=res0[0], var=res0[1])
+            res1 = pd.DataFrame(index=[barcode], data={gs.name: res0[0]})
 
         elif (gs.mode == 'BOTH') and (ranked == True):
             res0_up = method_selector(gs, x, 'uprank', gs.genes_up , method, method_params)
             res0_dn = method_selector(gs, x, 'dnrank', gs.genes_dn, method, method_params)
-            res1 = dict(barcode = barcode, name=gs.name, mode=gs.mode,
-                        score=(res0_up[0]+res0_dn[0]), var=(res0_up[1]+res0_dn[1]))
+            #res1 = dict(barcode = barcode, name=gs.name, mode=gs.mode,
+            #            score=(res0_up[0]+res0_dn[0]), var=(res0_up[1]+res0_dn[1]))
+            res1 = pd.DataFrame(index=[barcode], data={gs.name: (res0_up[0] + res0_dn[0])})
     except ():
-        res1 = dict(barcode = barcode, name=gs.name, mode=gs.mode, score=np.nan, var=np.nan)
+        #res1 = dict(barcode = barcode, name=gs.name, mode=gs.mode, score=np.nan, var=np.nan)
+        res1 = pd.DataFrame(index=[barcode], data={gs.name:np.nan})
 
     return(res1)
 

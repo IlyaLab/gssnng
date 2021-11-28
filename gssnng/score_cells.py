@@ -50,16 +50,15 @@ def with_gene_sets(
     if error_checking(adata, samp_neighbors) == 'ERROR':
         return()
 
-    gs_obj = genesets(gene_set_file)  # for scoring one set, make unit list, and proceed.
+    # our gene set data object list
+    gs_obj = genesets(gene_set_file)
 
+    # score each cell with the list of gene sets
     all_scores = _proc_data(adata, gs_obj, groupby, recompute_neighbors,
                                   score_method, method_params, samp_neighbors,
                                   noise_trials, ranked, threads)
-
-    for gs in gs_obj.set_list:
-        gs_name = gs.name
-        gs_scores = [x[gs_name]['score'] for x in all_scores]  # for each cell, pull out gs_score gs_name
-        adata.obs[gs_name] = gs_scores
+    ## join in new results
+    adata.obs = adata.obs.join(all_scores, how='left')
 
     return(adata)
 
@@ -129,9 +128,17 @@ def _proc_data(
             data_list.append( params )
             ### send off for scores
 
+    elif type(groupby) == type(['a','b']):  # if it's a type list
+        return("ERROR")
+
+    elif type(groupby) == {'a':1, 'b':2}:  # if it's a type dict
+        return("ERROR: dict not implemented")
+
     with Pool(processes=threads) as pool:
         res0 = pool.map(_score_all_cells_all_sets, data_list)
-    return(res0)
+
+    res1 = pd.concat(res0, axis=0)
+    return(res1)
 
 
 def _get_cell_data(
@@ -189,21 +196,21 @@ def _score_all_cells_all_sets(
     :return: list of list of gene set score dictionaries
     """
     smoothed_adata = params['smoothed_adata']
-    gene_set_obj = params['gene_set_obj']
-    score_method = params['score_method']
+    gene_set_obj  = params['gene_set_obj']
+    score_method  = params['score_method']
     method_params = params['method_params']
-    noise_trials = params['noise_trials']
-    ranked = params['ranked']
-    group_name = params['group_name']
+    noise_trials  = params['noise_trials']
+    ranked        = params['ranked']
+    group_name    = params['group_name']
 
     print("running " + group_name)
 
-    results_list = []  # one entry per cell
+    results_df = pd.DataFrame()  # one entry per cell
     for cell_ix in tqdm.trange(smoothed_adata.shape[0]):  # for each cell ID
-        results = dict()                                  #   we will have one score per cell
+        results = pd.DataFrame()                                 #   we will have one score per cell
         df_cell = _get_cell_data(smoothed_adata, cell_ix, noise_trials, method_params, ranked)  # process the cell's data
         for gs_i in gene_set_obj.set_list:                #   for each gene set
             res0 = scorefun(gs_i, df_cell, score_method, method_params, smoothed_adata.obs.index[cell_ix], ranked)
-            results[gs_i.name] = res0
-        results_list.append( results )
-    return(results_list)
+            results = pd.concat([results, res0], axis=1)
+        results_df = pd.concat( [results_df, results], axis=0)
+    return(results_df)
