@@ -14,7 +14,7 @@ if __name__ == '__main__':
                               samp_neighbors=27,
                               noise_trials=0,
                               ranked=True,
-                              cores=1)
+                              cores=8)
         return(res0)
 
 

@@ -3,7 +3,7 @@ import numpy as np
 from scipy import sparse
 import pandas as pd
 import scanpy as sc
-import tqdm
+#import tqdm
 from anndata import AnnData
 from gssnng.smoothing import nn_smoothing
 from gssnng.util import error_checking
@@ -200,7 +200,7 @@ def _score_all_cells_all_sets(
     print("running " + group_name)
 
     results_df = pd.DataFrame()  # one entry per cell
-    for cell_ix in tqdm.trange(smoothed_adata.shape[0]):  # for each cell ID
+    for cell_ix in range(smoothed_adata.shape[0]): # tqdm.trange(smoothed_adata.shape[0]):  # for each cell ID
         results = pd.DataFrame()                                 #   we will have one score per cell
         df_cell = _get_cell_data(smoothed_adata, cell_ix, noise_trials, method_params, ranked)  # process the cell's data
         for gs_i in gene_set_obj.set_list:                #   for each gene set
