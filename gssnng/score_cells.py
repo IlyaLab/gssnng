@@ -22,7 +22,7 @@ def with_gene_sets(
         samp_neighbors: int,
         noise_trials: int,
         ranked: bool,
-        threads: int
+        cores: int
     ) -> anndata.AnnData:
 
     """
@@ -42,7 +42,7 @@ def with_gene_sets(
     :param samp_neighbors: number of neighbors to sample
     :param noise_trials: number of noisy samples to create, integer
     :param ranked: whether the gene expression counts should be rank ordered
-    :param threads: number of parallel processes to work through groupby groups
+    :param cores: number of parallel processes to work through groupby groups
 
     :returns: adata with gene set scores in .obs
     """
@@ -56,7 +56,7 @@ def with_gene_sets(
     # score each cell with the list of gene sets
     all_scores = _proc_data(adata, gs_obj, groupby, recompute_neighbors,
                                   score_method, method_params, samp_neighbors,
-                                  noise_trials, ranked, threads)
+                                  noise_trials, ranked, cores)
     ## join in new results
     adata.obs = adata.obs.join(all_scores, how='left')
 
@@ -81,7 +81,7 @@ def _proc_data(
         samp_neighbors: int,
         noise_trials: int,
         ranked: bool,
-        threads: int
+        cores: int
                      ):
     """
     In many cases, the neighbors should be defined.  If you have mixed clinical endpoints,
@@ -92,13 +92,13 @@ def _proc_data(
     :param adata: anndata.AnnData containing the cells to be scored
     :param gs_obs: the gene sets class object
     :param groupby: either a column label in adata.obs, and all categories taken, or a dict specifies one group.
-    :param recompute_neighbors: should the neighbors be recomputed within each group?
+    :param recompute_neighbors: should the neighbors be recomputed within each group?  SLOW SLOW SLOW
     :param score_method: which scoring method to use
     :param method_params: specific params for each method.
     :param samp_neighbors: number of neighbors to sample
     :param noise_trials: number of noisy samples to create, integer
     :param ranked: whether the gene expression counts should be rank ordered
-    :param threads: number of parallel processes to work through groupby groups
+    :param cores: number of parallel processes to work through groupby groups
 
     :returns: scores in a dict for each cell in a list.
     """
@@ -108,9 +108,7 @@ def _proc_data(
         if recompute_neighbors > 0:
             sc.pp.neighbors(adata, n_neighbors=recompute_neighbors)
         smoothed_adata =  _smooth_out(adata, samp_neighbors)  # list of 1 item
-        params = {'smoothed_adata': smoothed_adata, 'gene_set_obj': gs_obj,
-                  'score_method': score_method, 'method_params': method_params,
-                  'noise_trials': noise_trials, 'ranked': ranked}
+        params = (smoothed_adata, gs_obj, score_method, method_params, noise_trials, ranked, 'single_group')
         data_list.append(params)
 
     elif type(groupby) == type("string"):
@@ -122,9 +120,7 @@ def _proc_data(
                 sc.pp.neighbors(qi, n_neighbors=recompute_neighbors)
             ### smooth and make an adata, and add to the list
             qi_smoothed = _smooth_out(qi, samp_neighbors)
-            params = { 'smoothed_adata':qi_smoothed, 'gene_set_obj':gs_obj,
-                        'score_method':score_method, 'method_params':method_params,
-                        'noise_trials':noise_trials, 'ranked':ranked, 'group_name':ci }
+            params = (qi_smoothed, gs_obj, score_method, method_params, noise_trials, ranked, ci)
             data_list.append( params )
             ### send off for scores
 
@@ -134,8 +130,8 @@ def _proc_data(
     elif type(groupby) == {'a':1, 'b':2}:  # if it's a type dict
         return("ERROR: dict not implemented")
 
-    with Pool(processes=threads) as pool:
-        res0 = pool.map(_score_all_cells_all_sets, data_list)
+    with Pool(processes=cores) as pool:
+        res0 = pool.starmap_async(_score_all_cells_all_sets, data_list).get()
 
     res1 = pd.concat(res0, axis=0)
     return(res1)
@@ -184,9 +180,14 @@ def _get_cell_data(
 
     return(df_noise)
 
-
 def _score_all_cells_all_sets(
-        params
+        smoothed_adata: AnnData,
+        gene_set_obj: genesets,
+        score_method: str,
+        method_params: dict,
+        noise_trials: int,
+        ranked: bool,
+        group_name: str
         ) -> list:
     """
     Process cells and score each with a list of gene sets and a method
@@ -195,13 +196,6 @@ def _score_all_cells_all_sets(
 
     :return: list of list of gene set score dictionaries
     """
-    smoothed_adata = params['smoothed_adata']
-    gene_set_obj  = params['gene_set_obj']
-    score_method  = params['score_method']
-    method_params = params['method_params']
-    noise_trials  = params['noise_trials']
-    ranked        = params['ranked']
-    group_name    = params['group_name']
 
     print("running " + group_name)
 
