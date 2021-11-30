@@ -60,6 +60,7 @@ def with_gene_sets(
     ## join in new results
     adata.obs = adata.obs.join(all_scores, how='left')
 
+    print("**done**")
     return(adata)
 
 
@@ -200,10 +201,10 @@ def _score_all_cells_all_sets(
     print("running " + group_name)
 
     results_df = pd.DataFrame()  # one entry per cell
-    for cell_ix in range(smoothed_adata.shape[0]): # tqdm.trange(smoothed_adata.shape[0]):  # for each cell ID
-        results = pd.DataFrame()                                 #   we will have one score per cell
-        df_cell = _get_cell_data(smoothed_adata, cell_ix, noise_trials, method_params, ranked)  # process the cell's data
-        for gs_i in gene_set_obj.set_list:                #   for each gene set
+    for cell_ix in range(smoothed_adata.shape[0]):  # tqdm.trange(smoothed_adata.shape[0]):  # for each cell ID
+        results = pd.DataFrame()
+        df_cell = _get_cell_data(smoothed_adata, cell_ix, noise_trials, method_params, ranked)
+        for gs_i in gene_set_obj.set_list:  #   for each gene set
             res0 = scorefun(gs_i, df_cell, score_method, method_params, smoothed_adata.obs.index[cell_ix], ranked)
             results = pd.concat([results, res0], axis=1)
         results_df = pd.concat( [results_df, results], axis=0)
