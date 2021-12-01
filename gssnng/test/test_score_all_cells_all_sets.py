@@ -13,7 +13,7 @@ if __name__ == '__main__':
                               method_params=dict(),
                               samp_neighbors=27,
                               noise_trials=0,
-                              ranked=True,
+                              ranked=False,
                               cores=8)
         return(res0)
 

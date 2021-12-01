@@ -197,15 +197,16 @@ def _score_all_cells_all_sets(
 
     :return: list of list of gene set score dictionaries
     """
-
     print("running " + group_name)
 
-    results_df = pd.DataFrame()  # one entry per cell
+    results_list = []
+    barcodes = []
     for cell_ix in range(smoothed_adata.shape[0]):  # tqdm.trange(smoothed_adata.shape[0]):  # for each cell ID
-        results = pd.DataFrame()
+        results = dict()
         df_cell = _get_cell_data(smoothed_adata, cell_ix, noise_trials, method_params, ranked)
+        barcodes.append(smoothed_adata.obs.index[cell_ix])
         for gs_i in gene_set_obj.set_list:  #   for each gene set
-            res0 = scorefun(gs_i, df_cell, score_method, method_params, smoothed_adata.obs.index[cell_ix], ranked)
-            results = pd.concat([results, res0], axis=1)
-        results_df = pd.concat( [results_df, results], axis=0)
+            results[gs_i.name] = scorefun(gs_i, df_cell, score_method, method_params, ranked)
+        results_list.append(results)
+    results_df = pd.DataFrame(results_list, index=barcodes)
     return(results_df)

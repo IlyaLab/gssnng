@@ -15,9 +15,8 @@ def summed_up(su):
     :param score_up: is the rank up or down?  True or False
     """
     # normalise the score for the number of genes in the signature
-    mad_su = statsmodels.robust.scale.mad(su)
     score = np.sum(su)
-    return((score, mad_su))
+    return(score)
 
 
 def median_score(su):
@@ -32,8 +31,7 @@ def median_score(su):
     """
     # normalise the score for the number of genes in the signature
     cnts_med = np.median(su)
-    mad_su = statsmodels.robust.scale.mad(su)
-    return((cnts_med, mad_su))
+    return(cnts_med)
 
 
 def average_score(su):
@@ -48,8 +46,7 @@ def average_score(su):
     """
     # normalise the score for the number of genes in the signature
     cnts_mean = np.mean(su)
-    std_su = np.std(su)
-    return((cnts_mean, std_su))
+    return(cnts_mean)
 
 
 def mean_z(allexprvals, genesetvals):
@@ -67,7 +64,7 @@ def mean_z(allexprvals, genesetvals):
     vals_std = np.std(allexprvals)
     centered = [ (np.abs(x - vals_mean) / vals_std) for x in genesetvals ]
     score = np.mean(centered)
-    return((score, vals_std))
+    return(score)
 
 
 def robust_std(exprdat, su):
@@ -85,7 +82,7 @@ def robust_std(exprdat, su):
     mad_su = statsmodels.robust.scale.mad(exprdat)
     centered_cnts = [ (np.abs(x - cnts_med) / mad_su) for x in su ]
     score = np.median(centered_cnts)
-    return((score, mad_su))
+    return(score)
 
 
 def rank_biased_overlap(x, su, gs, limit=100):
@@ -96,20 +93,15 @@ def rank_biased_overlap(x, su, gs, limit=100):
     :param su: the ranked list of genes *IN* the gene set
     :param gs: the gene set
     """
-
     rbo_score = 0.0
-
     y = su # should be the ranked values
-
     for i,gi in enumerate(gs):
         subrank = y[0:(i+1)]
         subset = set(subrank.index)
         rbo_score += len(subset.intersection(gs))
         if i > limit:
             break
-
-    mad_up = statsmodels.robust.scale.mad(su)
-    return((rbo_score, mad_up))
+    return( rbo_score )
 
 
 def singscore(x, su, sig_len, norm_method):
@@ -130,8 +122,7 @@ def singscore(x, su, sig_len, norm_method):
                                score=score_up,
                                sig_len=sig_len)
     norm_up = norm_up - 0.5
-    mad_up = statsmodels.robust.scale.mad(su)
-    return((norm_up, mad_up))
+    return(norm_up)
 
 
 def expr_format_2(x, exprcol, geneset_genes): #### this made things run twice as long!! ####
@@ -202,7 +193,6 @@ def scorefun(gs,
              x,
              method,
              method_params,
-             barcode,
              ranked):
     """
     given a ranked list, produce a score
@@ -211,48 +201,37 @@ def scorefun(gs,
     :param x: the pandas data frame of ranks, all genes
     :param method: the method we'll call
     :param method_params: dictionary of method parameters
-    :param barcode: cell barcode
+    :param ranked: ranked data? True | False
 
-    :return a tuple (a,b,c,d,e)  score is 'a', extra info is in 'b'
+    :return a score
     """
 
     try:
         if (gs.mode == 'UP') and (ranked == False):
             res0 = method_selector(gs, x, 'counts', gs.genes_up, method, method_params)
-            #res1 = dict(barcode = barcode, name=gs.name, mode=gs.mode, score=res0[0], var=res0[1])
-            res1 = pd.DataFrame(index=[barcode], data={gs.name:res0[0]})
 
         elif (gs.mode == 'DN') and (ranked == False):
             res0 = method_selector(gs, x, 'counts', gs.genes_dn, method, method_params)
-            #res1 = dict(barcode = barcode, name=gs.name, mode=gs.mode, score=res0[0], var=res0[1])
-            res1 = pd.DataFrame(index=[barcode], data={gs.name: res0[0]})
 
         elif (gs.mode == 'BOTH') and (ranked == False):
             res0_up = method_selector(gs, x, 'counts', gs.genes_up, method, method_params)
             res0_dn = method_selector(gs, x, 'counts', gs.genes_dn, method, method_params)
-            #res1 = dict(barcode = barcode, name=gs.name, mode=gs.mode,
-            #            score=(res0_up[0]+res0_dn[0]), var=(res0_up[1]+res0_dn[1]))
-            res1 = pd.DataFrame(index=[barcode], data={gs.name: (res0_up[0]+res0_dn[0])})
+            res0 = (res0_up + res0_dn)
 
         elif (gs.mode == 'UP') and (ranked == True):
             res0 = method_selector(gs, x, 'uprank', gs.genes_up, method, method_params)
-            #res1 = dict(barcode = barcode, name=gs.name, mode=gs.mode, score=res0[0], var=res0[1])
-            res1 = pd.DataFrame(index=[barcode], data={gs.name: res0[0]})
 
         elif (gs.mode == 'DN') and (ranked == True):
             res0 = method_selector(gs, x, 'dnrank', gs.genes_dn, method, method_params)
-            #res1 = dict(barcode = barcode, name=gs.name, mode=gs.mode, score=res0[0], var=res0[1])
-            res1 = pd.DataFrame(index=[barcode], data={gs.name: res0[0]})
 
         elif (gs.mode == 'BOTH') and (ranked == True):
             res0_up = method_selector(gs, x, 'uprank', gs.genes_up , method, method_params)
             res0_dn = method_selector(gs, x, 'dnrank', gs.genes_dn, method, method_params)
-            #res1 = dict(barcode = barcode, name=gs.name, mode=gs.mode,
-            #            score=(res0_up[0]+res0_dn[0]), var=(res0_up[1]+res0_dn[1]))
-            res1 = pd.DataFrame(index=[barcode], data={gs.name: (res0_up[0] + res0_dn[0])})
+            res0 = (res0_up + res0_dn)
+
     except ():
         #res1 = dict(barcode = barcode, name=gs.name, mode=gs.mode, score=np.nan, var=np.nan)
-        res1 = pd.DataFrame(index=[barcode], data={gs.name:np.nan})
+        res0 = np.nan
 
-    return(res1)
+    return(res0)
 
