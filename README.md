@@ -26,8 +26,11 @@ Scoring functions, works with ranked or unranked data (**"your mileage may vary"
 
 ## Installation
 
+```
 git clone https://github.com/Gibbsdavidl/gssnng
+
 pip install -e gssnng
+```
 
 ## Instructions (see notebooks for examples)
 
