@@ -20,7 +20,7 @@ if __name__ == '__main__':
 
     def test_score_all_sets():
         q = sc.read_h5ad('data/pbmc3k_processed.h5ad')
-        gs = 'data/gene_set_test.gmt' #'data/cibersort_lm22.gmt'  #
+        gs = 'data/cibersort_lm22.gmt' # 'data/gene_set_test.gmt' #'data/cibersort_lm22.gmt'  #
         print("computing knn...")
         sc.pp.neighbors(q, n_neighbors=32)
         print('scoring...')
@@ -32,6 +32,7 @@ if __name__ == '__main__':
         print('end time: ' + str(t1))
         print('TOTAL TIME: ' + str(t1-t0))
         print(q.obs.head())
+        print(q.obs.groupby(['louvain'])['T.cells.CD8'].mean().reset_index())
         #q.write_h5ad('data/pbmc3k_lm22_scores.h5ad')
 
     test_score_all_sets()

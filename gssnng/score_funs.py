@@ -118,13 +118,13 @@ def singscore(x, su, sig_len, norm_method, gs):
     # normalise the score for the number of genes in the signature
     if gs.mode == '?':
         # center & absolute value ranks
-        maxN = np.ceil(len(x)/2.0)
+        maxN = np.ceil(len(x.index)/2.0)
         su = [ np.abs(xi - maxN) for xi in su]
 
-    mean_ranks = np.mean(su)
+    mean_rank = np.mean(su)
     norm_up = si.normalisation(norm_method=norm_method,
                                gs_mode=gs.mode,
-                               score=mean_ranks,
+                               score=mean_rank,
                                library_len=len(x.index),
                                sig_len=sig_len)
 
