@@ -24,6 +24,11 @@ Scoring functions, works with ranked or unranked data (**"your mileage may vary"
     summed_up: just sum up the ranks or counts.
 ```
 
+## Installation
+
+git clone https://github.com/Gibbsdavidl/gssnng
+pip install -e gssnng
+
 ## Instructions (see notebooks for examples)
 
 1. Read in an AnnData object using scanpy (an h5ad file).
