@@ -9,7 +9,7 @@ Works with AnnData objects stored as h5ad files. Takes values from adata.X.
 
 Scoring functions, works with ranked or unranked data (**"your mileage may vary"**):
 ```
-    singscore:  mean(ranks) / n, where n is length of gene set
+    singscore:  sum(centered ranks) / n, where n is length of gene set, followed by normalization ... gives normalised mean percentile rank
     
     robust_std:   med (x-med / mad), median of robust standardized values (ranks).
     
