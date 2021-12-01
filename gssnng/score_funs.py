@@ -85,7 +85,7 @@ def robust_std(exprdat, su):
     return(score)
 
 
-def rank_biased_overlap(x, su, gs, limit=100):
+def rank_biased_overlap(x, su, gs, limit):
     """
     Rank biased overlap method
 
@@ -181,7 +181,7 @@ def method_selector(gs, x, exprcol, geneset_genes, method, method_params):
         res0 = mean_z(exprdat, su)
 
     elif method == 'rank_biased_overlap':
-        res0 = rank_biased_overlap(exprdat, su, gs, gs.mode, method_params['rbo_depth'])
+        res0 = rank_biased_overlap(exprdat, su, gs, method_params['rbo_depth'])
 
     else:
         return(np.nan)
