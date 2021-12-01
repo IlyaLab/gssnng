@@ -56,19 +56,27 @@ class genesets:
         self.set_list = self.clean_sets()
         return(None)
 
+    def trim_name(self, gs):
+        name = gs.name[0: (len(gs.name) - 2)]
+        if name[(len(name)-1)] == '.':
+            name = name[:name.rfind(".")]
+        if name[(len(name)-1)] == '_':
+            name = name[:name.rfind("_")]
+        return(name)
 
     def clean_sets(self):
         ### look for up and dn signifiers
         ### and join up-dn pairs.
+        ### undefined sets will remain "?", could be up or down
         cleaned_sets = []
         for gs1 in self.set_list:
             di = gs1.check_direction()
             if gs1.mode != 'MATCHED' and di in ['UP', 'DN']: ### may need to be matched
                 # then we need to check for a pair
                 match_flag = 0
-                trimmed_name = gs1.name[0: (len(gs1.name)-2)]
+                trimmed_name = self.trim_name(gs1)
                 for gs2 in self.set_list:
-                    trimmed_name2 = gs2.name[0: (len(gs2.name) - 2)]
+                    trimmed_name2 = self.trim_name(gs2)
                     if ( (trimmed_name == trimmed_name2) and (gs1.name != gs2.name) and
                             (gs1.mode != "MATCHED") and (gs2.mode != "MATCHED") ):
                         gs1.mode = "MATCHED"
@@ -86,9 +94,9 @@ class genesets:
                         cleaned_sets.append(geneset(name=gs1.name, info=gs1.info, gs_up=gs1.genes_up, gs_dn=[], mode='UP'))
                     else:
                         cleaned_sets.append(geneset(name=gs1.name, info=gs1.info, gs_up=[], gs_dn=gs1.genes_up, mode='DN'))
-            # then it's default and added as UP
+            # then it's default and added as ?
             elif gs1.mode != "MATCHED":
-                cleaned_sets.append(geneset(name=gs1.name, info=gs1.info, gs_up=gs1.genes_up, gs_dn=[], mode='UP'))
+                cleaned_sets.append(geneset(name=gs1.name, info=gs1.info, gs_up=gs1.genes_up, gs_dn=[], mode='?'))
         return(cleaned_sets)
 
 

@@ -11,7 +11,7 @@
 ### MSIGDB is labeled as UP and DN ###
 
 
-from gssnng.genesets import genesets
+from gssnng.gene_sets import genesets
 
 gmt_file = 'data/gene_set_test.gmt'
 

@@ -8,7 +8,7 @@ from anndata import AnnData
 from gssnng.smoothing import nn_smoothing
 from gssnng.util import error_checking
 from gssnng.score_funs import scorefun
-from gssnng.genesets import genesets
+from gssnng.gene_sets import genesets
 from typing import Union
 from multiprocessing import Pool
 
@@ -47,11 +47,11 @@ def with_gene_sets(
     :returns: adata with gene set scores in .obs
     """
 
-    if error_checking(adata, samp_neighbors) == 'ERROR':
-        return()
-
     # our gene set data object list
     gs_obj = genesets(gene_set_file)
+
+    if error_checking(adata, samp_neighbors, gs_obj, score_method, ranked) == 'ERROR':
+        return("ERROR")
 
     # score each cell with the list of gene sets
     all_scores = _proc_data(adata, gs_obj, groupby, recompute_neighbors,
@@ -76,7 +76,7 @@ def _proc_data(
         adata: anndata.AnnData,
         gs_obj: genesets,
         groupby: Union[str,dict],
-        recompute_neighbors: bool,
+        recompute_neighbors: int,
         score_method: str,
         method_params: dict,
         samp_neighbors: int,
@@ -91,7 +91,7 @@ def _proc_data(
     By building out the list of groups, it can also be run in parallel.
 
     :param adata: anndata.AnnData containing the cells to be scored
-    :param gs_obs: the gene sets class object
+    :param gs_obj: the gene sets class object
     :param groupby: either a column label in adata.obs, and all categories taken, or a dict specifies one group.
     :param recompute_neighbors: should the neighbors be recomputed within each group?  SLOW SLOW SLOW
     :param score_method: which scoring method to use
@@ -181,6 +181,7 @@ def _get_cell_data(
 
     return(df_noise)
 
+
 def _score_all_cells_all_sets(
         smoothed_adata: AnnData,
         gene_set_obj: genesets,
@@ -189,11 +190,17 @@ def _score_all_cells_all_sets(
         noise_trials: int,
         ranked: bool,
         group_name: str
-        ) -> list:
+        ) -> pd.DataFrame:
     """
     Process cells and score each with a list of gene sets and a method
 
-    :param params: list of parameters from _build_data_list
+    :param smoothed_adata: anndata.AnnData containing the cells to be scored
+    :param gene_set_obj: the gene sets class object
+    :param score_method: which scoring method to use
+    :param method_params: specific params for each method.
+    :param noise_trials: number of noisy samples to create, integer
+    :param ranked: whether the gene expression counts should be rank ordered
+    :param group_name: group of cells currently being processed
 
     :return: list of list of gene set score dictionaries
     """

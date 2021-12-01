@@ -9,11 +9,11 @@ if __name__ == '__main__':
                               gene_set_file=genesets,
                               groupby='louvain',
                               recompute_neighbors=0,
-                              score_method='mean_z',
-                              method_params=dict(),
+                              score_method='singscore',
+                              method_params={'normalization':'theoretical'},
                               samp_neighbors=27,
                               noise_trials=0,
-                              ranked=False,
+                              ranked=True,
                               cores=8)
         return(res0)
 

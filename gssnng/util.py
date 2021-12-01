@@ -1,4 +1,6 @@
 import matplotlib
+import numpy as np
+
 matplotlib.use("Agg")
 import numpy
 import pandas
@@ -7,13 +9,20 @@ logger = logging.getLogger('gssnng')
 
 def error_checking(
         adata,
-        samp_neighbors):
+        samp_neighbors,
+        gs_obj,
+        score_method,
+        ranked
+):
     """
     QC on the adata. Need to make sure there's enough neighbors available given the sampling size.
 
     :param adata: the AnnData object
     :param samp_neighbors: integer, number of neighbors to sample
     """
+    if ranked == False and score_method == 'singscore':
+        return('ERROR: singscore requires ranked data, set ranked parameter to True')
+
     n_neighbors = adata.uns['neighbors']['params']['n_neighbors'] #[0] #in older AnnData versions need this??
     if n_neighbors < samp_neighbors:
         print('*******')
@@ -63,8 +72,11 @@ def to_dense_transpose_list(gene_counts):
 
 
 ## From SingScore
-def normalisation(norm_method, score_list, score, library_len, sig_len,
-                  mad = True):
+def normalisation(norm_method,
+                  gs_mode,
+                  score,
+                  library_len,
+                  sig_len):
 
     """
 
@@ -80,14 +92,16 @@ def normalisation(norm_method, score_list, score, library_len, sig_len,
     try:
         if norm_method == 'standard':
             norm = score / library_len
-            if mad:
-                u = numpy.array(score_list) / library_len
         elif norm_method == 'theoretical':
-            low_bound = (sig_len + 1) / 2
-            upper_bound = ((2*library_len) - sig_len + 1)/2
-            norm = (score - low_bound) / (upper_bound - low_bound)
-            if mad:
-                u = numpy.array(score_list)
+            if gs_mode != '?':
+                low_bound = (sig_len + 1) / 2
+                upper_bound = ((2*library_len) - sig_len + 1)/2
+                norm = (score - low_bound) / (upper_bound - low_bound)
+            else:
+                low_bound = (np.ceil(sig_len/2) + 1) / 2
+                upper_bound = (library_len - np.ceil(sig_len/2) + 1) / 2
+                norm = (score - low_bound) / (upper_bound - low_bound)
+
         return norm
 
     except:

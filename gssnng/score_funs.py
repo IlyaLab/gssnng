@@ -104,7 +104,7 @@ def rank_biased_overlap(x, su, gs, limit=100):
     return( rbo_score )
 
 
-def singscore(x, su, sig_len, norm_method):
+def singscore(x, su, sig_len, norm_method, gs):
     """
     The singscore method
 
@@ -113,28 +113,28 @@ def singscore(x, su, sig_len, norm_method):
     :param sig_len_up: the number of expressed genes matched in the set
     :param norm_method: 'standard or theoretical' # from singscore
     :param score_up: is the rank up or down?  True or False
+    :param gs: gene set object
     """
     # normalise the score for the number of genes in the signature
-    score_up = np.mean(su)
+    if gs.mode == '?':
+        # center & absolute value ranks
+        maxN = np.ceil(len(x)/2.0)
+        su = [ np.abs(xi - maxN) for xi in su]
+
+    mean_ranks = np.mean(su)
     norm_up = si.normalisation(norm_method=norm_method,
+                               gs_mode=gs.mode,
+                               score=mean_ranks,
                                library_len=len(x.index),
-                               score_list=su,
-                               score=score_up,
                                sig_len=sig_len)
-    norm_up = norm_up - 0.5
+
+    if gs.mode != '?':
+        norm_up = norm_up - 0.5
+
     return(norm_up)
 
 
-def expr_format_2(x, exprcol, geneset_genes): #### this made things run twice as long!! ####
-    xset = set(x.index)
-    gene_overlap = xset.intersection(geneset_genes)
-    xsub = x.loc[gene_overlap]
-    sig_len_up = len(gene_overlap)
-    return( (xsub[exprcol], sig_len_up) )
-
-
 def expr_format(x, exprcol, geneset_genes):
-    #### OPTIMIZE OPPORTUNITY HERE ####
     sig_len_up = len(geneset_genes)
     su = []
     for j in geneset_genes:
@@ -150,7 +150,7 @@ def method_selector(gs, x, exprcol, geneset_genes, method, method_params):
     """
     :param gs: the gene set
     :param x: the gene expr data frame
-    :param exprdat: the values we'll compute on
+    :param exprcol: the column containing values we'll compute on
     :param geneset_genes: genes in the gene set
     :param method: the method we'll call
     :param method_params: dictionary of method parameters
@@ -163,7 +163,7 @@ def method_selector(gs, x, exprcol, geneset_genes, method, method_params):
     exprdat = x[exprcol]
 
     if method == 'singscore':
-        res0 = singscore(exprdat, su, sig_len, method_params['normalization'])
+        res0 = singscore(exprdat, su, sig_len, method_params['normalization'], gs)
 
     elif method == 'robust_std':
         res0 = robust_std(exprdat, su)
@@ -184,7 +184,7 @@ def method_selector(gs, x, exprcol, geneset_genes, method, method_params):
         res0 = rank_biased_overlap(exprdat, su, gs, gs.mode, method_params['rbo_depth'])
 
     else:
-        return("ERROR")
+        return(np.nan)
 
     return(res0)
 
@@ -218,6 +218,9 @@ def scorefun(gs,
             res0_dn = method_selector(gs, x, 'counts', gs.genes_dn, method, method_params)
             res0 = (res0_up + res0_dn)
 
+        elif (gs.mode == '?') and (ranked == False):
+            res0 = method_selector(gs, x, 'counts', gs.genes_up, method, method_params)
+
         elif (gs.mode == 'UP') and (ranked == True):
             res0 = method_selector(gs, x, 'uprank', gs.genes_up, method, method_params)
 
@@ -228,6 +231,9 @@ def scorefun(gs,
             res0_up = method_selector(gs, x, 'uprank', gs.genes_up , method, method_params)
             res0_dn = method_selector(gs, x, 'dnrank', gs.genes_dn, method, method_params)
             res0 = (res0_up + res0_dn)
+
+        elif (gs.mode == '?') and (ranked == True):
+            res0 = method_selector(gs, x, 'uprank', gs.genes_up, method, method_params)
 
     except ():
         #res1 = dict(barcode = barcode, name=gs.name, mode=gs.mode, score=np.nan, var=np.nan)
