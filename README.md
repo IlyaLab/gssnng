@@ -36,7 +36,7 @@ pip install -e gssnng
 
 1. Read in an AnnData object using scanpy (an h5ad file).
 
-2. Get gene sets formatted as a .gmt file. (default is _UP, can take _DN, and split gene sets _UP+_DN)
+2. Get gene sets formatted as a .gmt file. (default is undirected, can take _UP,  _DN, and split gene sets _UP+_DN)
 
 3. Score cells, each gene set will show up as a column in adata.obs.
 
