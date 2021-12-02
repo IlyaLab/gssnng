@@ -97,13 +97,13 @@ The singscore manuscript describes the theoretical method of standarization whic
 
 Here, n is the depth that is decended down the ranks, where at each step, the overlap with the gene set is measured and added to the score.
 
-The following methods do not have additional parameters.
+*The following methods do not have additional parameters.*
 
-**robust_std**
-**mean_z:**
-**average_score:** 
-**median_score:**
-**summed_up:**
+    **robust_std**
+    **mean_z:**
+    **average_score:** 
+    **median_score:**
+    **summed_up:**
 
 ## References
 
