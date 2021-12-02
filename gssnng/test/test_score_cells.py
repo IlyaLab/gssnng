@@ -9,10 +9,9 @@ if __name__ == '__main__':
                               gene_set_file=genesets,
                               groupby='louvain',
                               recompute_neighbors=0,
-                              score_method='rank_biased_overlap',   #'singscore',
-                              method_params={'rbo_depth':50},   #{'normalization':'theoretical'},
+                              score_method='singscore',  #'rank_biased_overlap',   #,
+                              method_params={'normalization':'theoretical'},  #{'rbo_depth':50},   #{'normalization':'theoretical'},
                               samp_neighbors=27,
-                              noise_trials=0,
                               ranked=True,
                               cores=8)
         return(res0)
