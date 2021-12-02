@@ -85,6 +85,26 @@ We are following the MSigDB nomenclature, where gene sets default to undirected,
 gene set has suffix "_DN" (example: CD8_signature_DN or CD8.signature.dn), then lowest expressed genes have largest ranks. In the 
 use of singscore or Z scores, the undirected case is based on absolute values, so either direction, in the extreme, will result in a large score.
 
+## Method options
+
+Some methods have some additional options. They are passed as a dictionary, method_params={param_name, param_value}.
+
+**singscore:**  {'normalization', 'theoretical'}, {'normalization', 'standard'}
+
+The singscore manuscript describes the theoretical method of standarization which involves determining the theoretical max and minimum ranks for the given gene set.
+
+**rank_biased_overlap:**  {'rbo_depth', n}  (n: int)
+
+Here, n is the depth that is decended down the ranks, where at each step, the overlap with the gene set is measured and added to the score.
+
+The following methods do not have additional parameters.
+
+**robust_std**
+**mean_z:**
+**average_score:** 
+**median_score:**
+**summed_up:**
+
 ## References
 
 rank biased overlap:  https://arxiv.org/pdf/1408.3587.pdf
