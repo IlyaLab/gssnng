@@ -1,19 +1,19 @@
 # gssnng
 
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/Gibbsdavidl/gssnng/blob/main/notebooks/gssnng_quick_start.ipynb)
+Try it out!  ===>>>  [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/Gibbsdavidl/gssnng/blob/main/notebooks/gssnng_quick_start.ipynb)
 
 
 Gene Set Scoring on the Nearest Neighbor Graph (gssnng) for Single Cell RNA-seq (scRNA-seq)
 
-Works with AnnData objects stored as h5ad files. Takes values from adata.X.
+Works with AnnData objects stored as h5ad files. Expression values are taken from adata.X.
 
 Scoring functions, works with ranked or unranked data (**"your mileage may vary"**):
 ```
-    singscore:  sum(centered ranks) / n, where n is length of gene set, followed by normalization ... gives normalised mean percentile rank
+    singscore:  normalised mean (median centered) rank
     
-    robust_std:   med (x-med / mad), median of robust standardized values (ranks).
+    robust_std: med(x-med / mad), median of robust standardized values (ranks).
     
-    mean_z:  mean( (x - mean)/stddv ), average z score. (recommend unranked)
+    mean_z:     mean( (x - mean)/stddv ), average z score. (recommend unranked)
     
     rank_biased_overlap: weighted average of agreement across depths, repeated intersection of set with ranked order.
     
@@ -64,10 +64,10 @@ sc.pl.umap(q, color=['louvain','T.cells.CD8'], wspace=0.35)
 
 ## Gene sets
 
-We are following the mSigDB format, where gene sets default to up regulated, which can be marked with suffix _UP
-(example: CD8_signature_UP).  In this case, if data is ranked, higher expressed genes have larger ranks. If the 
-gene set has suffix _DN (example: CD8_signature_DN), then lowest expressed genes have largest ranks. In the 
-of a Z score, the Zs are based on absolute values, so either direction will result in a large Z.
+We are following the mSigDB nomenclature, where gene sets default to undirected, but can be marked with the suffix "_UP"
+(example: CD8_signature_UP or CD8.signature.up).  In this case, when data is ranked, genes with higher expression have larger ranks. If the 
+gene set has suffix "_DN" (example: CD8_signature_DN or CD8.signature.dn), then lowest expressed genes have largest ranks. In the 
+of singscore or a Z score, the undirected case is based on absolute values, so either direction, in the extreme, will result in a large Z.
 
 ## References
 
