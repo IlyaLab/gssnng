@@ -181,10 +181,10 @@ def method_selector(gs, x, exprcol, geneset_genes, method, method_params):
         res0 = summed_up(su)
 
     elif method == 'median_score':
-        res0 = median_score(exprdat, su)
+        res0 = median_score(su)
 
     elif method == 'average_score':
-        res0 = average_score(exprdat, su)
+        res0 = average_score(su)
 
     elif method == 'mean_z':
         res0 = mean_z(exprdat, su)
