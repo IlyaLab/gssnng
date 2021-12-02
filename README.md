@@ -66,7 +66,7 @@ sc.pl.umap(q, color=['louvain','T.cells.CD8.up'], wspace=0.35)
 
 ## Gene sets
 
-We are following the mSigDB nomenclature, where gene sets default to undirected, but can be marked with the suffix "_UP"
+We are following the MSigDB nomenclature, where gene sets default to undirected, but can be marked with the suffix "_UP"
 (example: CD8_signature_UP or CD8.signature.up).  In this case, when data is ranked, genes with higher expression have larger ranks. If the 
 gene set has suffix "_DN" (example: CD8_signature_DN or CD8.signature.dn), then lowest expressed genes have largest ranks. In the 
 of singscore or a Z score, the undirected case is based on absolute values, so either direction, in the extreme, will result in a large Z.
@@ -78,5 +78,7 @@ rank biased overlap:  https://arxiv.org/pdf/1408.3587.pdf
 singscore:  https://pubmed.ncbi.nlm.nih.gov/30400809/
 
 anndata: https://anndata.readthedocs.io/en/latest/
+
+MSigDB: https://www.gsea-msigdb.org/gsea/msigdb/
 
 
