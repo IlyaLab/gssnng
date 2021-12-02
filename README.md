@@ -38,7 +38,18 @@ git clone https://github.com/Gibbsdavidl/gssnng
 pip install -e gssnng
 ```
 
-## Instructions (see notebooks for examples)
+## Example script
+
+Copy the script out from the cloned repo and run, check the paths if you get an error.
+
+```
+ cp gssnng/gssnng/test/example_script.py  .
+ 
+ python3.8 test_gssnng.py
+```
+
+
+## Instructions (see notebooks for examples on all methods)
 
 1. Read in an AnnData object using scanpy (an h5ad file).
 
