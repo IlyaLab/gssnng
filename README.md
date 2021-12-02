@@ -9,19 +9,19 @@ Works with AnnData objects stored as h5ad files. Expression values are taken fro
 
 Scoring functions, works with ranked or unranked data (**"your mileage may vary"**):
 ```
-    singscore:  normalised mean (median centered) rank
+    singscore:   Normalised mean (median centered) ranks (requires ranked data)
+        
+    rank_biased_overlap:  Weighted average of agreement between sorted ranks and gene set.
+
+    robust_std:  Med(x-med / mad), median of robust standardized values (recommend unranked).
     
-    robust_std: med(x-med / mad), median of robust standardized values (ranks).
+    mean_z:      Mean( (x - mean)/stddv ), average z score. (recommend unranked).
     
-    mean_z:     mean( (x - mean)/stddv ), average z score. (recommend unranked)
+    average_score:        Mean ranks or counts     
     
-    rank_biased_overlap: weighted average of agreement across depths, repeated intersection of set with ranked order.
+    median_score:         Median of counts or ranks
     
-    average_score:  sum(ranks) / n, average ranks.     
-    
-    median_score:  median score: med()
-    
-    summed_up: just sum up the ranks or counts.
+    summed_up:            Sum up the ranks or counts.
 ```
 
 ## Installation
