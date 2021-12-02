@@ -3,7 +3,10 @@
 **Try it out!  ===>>>**  [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/Gibbsdavidl/gssnng/blob/main/notebooks/gssnng_quick_start.ipynb)
 
 
-Gene Set Scoring on the Nearest Neighbor Graph (gssnng) for Single Cell RNA-seq (scRNA-seq)
+Gene Set Scoring on the Nearest Neighbor Graph (gssnng) for Single Cell RNA-seq (scRNA-seq).
+
+The method works by sampling nearest neighbors for each cell, creating a mini-pseudobulk expression profile, 
+and performing single sample gene set scoring. This gives each cell a score and preserves gradients across clusters. 
 
 Works with AnnData objects stored as h5ad files. Expression values are taken from adata.X.
 
