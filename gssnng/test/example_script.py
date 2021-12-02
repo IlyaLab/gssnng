@@ -25,6 +25,9 @@ score_cells.with_gene_sets(
     )
 
 t1 = time.time()
+
+print(q.obs.groupby(['louvain'])['T.cells.CD8.up'].mean().reset_index())
+
 print('end time: ' + str(t1))
 print('TOTAL TIME: ' + str(t1-t0))
 print("done")
