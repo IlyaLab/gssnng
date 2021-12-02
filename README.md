@@ -8,10 +8,13 @@ Gene Set Scoring on the Nearest Neighbor Graph (gssnng) for Single Cell RNA-seq 
 Works with AnnData objects stored as h5ad files. Expression values are taken from adata.X.
 
 Scoring functions, works with ranked or unranked data (**"your mileage may vary"**):
+
+Some method references (singscore, RBO) are below.
+
 ```
     singscore:            Normalised mean (median centered) ranks (requires ranked data)
         
-    rank_biased_overlap:  Weighted average of agreement between sorted ranks and gene set.
+    rank_biased_overlap:  RBO, Weighted average of agreement between sorted ranks and gene set.
 
     robust_std:     Med(x-med / mad), median of robust standardized values (recommend unranked).
     
