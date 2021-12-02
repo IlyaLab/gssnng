@@ -85,7 +85,7 @@ def robust_std(exprdat, su):
     return(score)
 
 
-def rank_biased_overlap(x, su, gs, limit):
+def rank_biased_overlap(x, exprcol, gs, geneset_genes, limit):
     """
     Rank biased overlap method
 
@@ -94,13 +94,22 @@ def rank_biased_overlap(x, su, gs, limit):
     :param gs: the gene set
     """
     rbo_score = 0.0
-    y = su # should be the ranked values
-    for i,gi in enumerate(gs):
-        subrank = y[0:(i+1)]
-        subset = set(subrank.index)
-        rbo_score += len(subset.intersection(gs))
-        if i > limit:
-            break
+
+    # if undirected, then sort based on centered values
+    if gs.mode == '?':
+        # center & absolute value ranks
+        maxN = np.ceil(len(x.index)/2.0)
+        x['undir'] = [ np.abs(xi - maxN) for xi in x[exprcol]]
+        exprcol = 'undir'
+
+    # get sorted dataframe
+    x_sorted = x.sort_values(by=exprcol, ascending=False)
+    y = x_sorted[exprcol]
+
+    for i in range(limit):
+        subset = set(y.index[0:(i+1)])
+        rbo_score += len(subset.intersection(geneset_genes))
+
     return( rbo_score )
 
 
@@ -181,7 +190,7 @@ def method_selector(gs, x, exprcol, geneset_genes, method, method_params):
         res0 = mean_z(exprdat, su)
 
     elif method == 'rank_biased_overlap':
-        res0 = rank_biased_overlap(exprdat, su, gs, method_params['rbo_depth'])
+        res0 = rank_biased_overlap(x, exprcol, gs, geneset_genes, method_params['rbo_depth'])
 
     else:
         return(np.nan)

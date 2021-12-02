@@ -9,8 +9,8 @@ if __name__ == '__main__':
                               gene_set_file=genesets,
                               groupby='louvain',
                               recompute_neighbors=0,
-                              score_method='singscore',
-                              method_params={'normalization':'theoretical'},
+                              score_method='rank_biased_overlap',   #'singscore',
+                              method_params={'rbo_depth':50},   #{'normalization':'theoretical'},
                               samp_neighbors=27,
                               noise_trials=0,
                               ranked=True,
@@ -32,7 +32,7 @@ if __name__ == '__main__':
         print('end time: ' + str(t1))
         print('TOTAL TIME: ' + str(t1-t0))
         print(q.obs.head())
-        print(q.obs.groupby(['louvain'])['T.cells.CD8'].mean().reset_index())
+        print(q.obs.groupby(['louvain'])['T.cells.CD8.up'].mean().reset_index())
         #q.write_h5ad('data/pbmc3k_lm22_scores.h5ad')
 
     test_score_all_sets()
