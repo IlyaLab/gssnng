@@ -54,7 +54,6 @@ scores_cells.with_gene_sets(adata=q,                            # AnnData object
                             score_method='singscore',           # Method of scoring
                             method_params={'normalization':'theoretical'},  # Special parameters for some methods 
                             samp_neighbors=27,                  # Number of sampled neighbors for pseudobulk
-                            noise_trials=0,                     # ***not used currently***
                             ranked=False,                       # Use ranked data, True or False
                             cores=8)                            # Groups are scored in parallel.
     
