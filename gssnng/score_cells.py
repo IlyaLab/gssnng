@@ -20,7 +20,6 @@ def with_gene_sets(
         score_method: str,
         method_params: dict,
         samp_neighbors: int,
-        noise_trials: int,
         ranked: bool,
         cores: int
     ) -> anndata.AnnData:
@@ -40,12 +39,13 @@ def with_gene_sets(
     :param score_method: which scoring method to use
     :param method_params: specific params for each method.
     :param samp_neighbors: number of neighbors to sample
-    :param noise_trials: number of noisy samples to create, integer
     :param ranked: whether the gene expression counts should be rank ordered
     :param cores: number of parallel processes to work through groupby groups
 
     :returns: adata with gene set scores in .obs
     """
+
+    noise_trials = 0 ### not used currently
 
     # our gene set data object list
     gs_obj = genesets(gene_set_file)
