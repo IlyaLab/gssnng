@@ -26,6 +26,7 @@ score_cells.with_gene_sets(
 
 t1 = time.time()
 
+print("MEAN SCORES for the T.cells.CD8.up signature")
 print(q.obs.groupby(['louvain'])['T.cells.CD8.up'].mean().reset_index())
 
 print('end time: ' + str(t1))
