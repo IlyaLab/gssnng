@@ -15,7 +15,8 @@ from multiprocessing import Pool
 def with_gene_sets(
         adata: anndata.AnnData,
         gene_set_file: str,
-        groupby: Union[str,dict],
+        groupby: Union[str,list,dict],
+        smooth_mode: str,
         recompute_neighbors: int,
         score_method: str,
         method_params: dict,
@@ -35,6 +36,8 @@ def with_gene_sets(
     :param adata: anndata.AnnData containing the cells to be scored
     :param gene_set_file: the gene set file with list of gene sets, gmt, one per line
     :param groupby: either a column label in adata.obs, and all categories taken, or a dict specifies one group.
+    :param smooth_mode: `adjacency` or `connectivity`, which representation of the neighborhood graph to use.
+        `adjacency` weights all neighbors equally, `connectivity` weights close neighbors more
     :param recompute_neighbors: should neighbors be recomputed within each group, 0 for no, >0 for yes and specifies N
     :param score_method: which scoring method to use
     :param method_params: specific params for each method.
@@ -54,7 +57,7 @@ def with_gene_sets(
         return("ERROR")
 
     # score each cell with the list of gene sets
-    all_scores = _proc_data(adata, gs_obj, groupby, recompute_neighbors,
+    all_scores = _proc_data(adata, gs_obj, groupby, smooth_mode, recompute_neighbors,
                                   score_method, method_params, samp_neighbors,
                                   noise_trials, ranked, cores)
     ## join in new results
@@ -64,18 +67,37 @@ def with_gene_sets(
     return(adata)
 
 
-def _smooth_out(adata, samp_neighbors):
+def _smooth_out(adata, samp_neighbors, smooth_mode):
     # NOTE: this is cells x genes
-    smoothed_matrix = nn_smoothing(adata.X, adata, 'connectivity', samp_neighbors)
+    if not ((smooth_mode == 'connectivity') or (smooth_mode == 'adjacency')):
+        print("ERROR:  please use smooth mode: `adjacency` or `connectivity`")
+        exit()
+    smoothed_matrix = nn_smoothing(adata.X, adata, smooth_mode, samp_neighbors)
     # for easier handling with gene names
     smoothed_adata = AnnData(smoothed_matrix, obs=adata.obs, var=adata.var)
     return(smoothed_adata)
 
 
+def _build_data_list(adata, groupby, cats, recompute_neighbors, samp_neighbors, smooth_mode, gs_obj,score_method, method_params, noise_trials, ranked):
+    data_list = []  # list of dicts
+    for ci in cats:
+        ### then for each group
+        qi = adata[adata.obs['groupby'] == ci]
+        if recompute_neighbors > 0:
+            sc.pp.neighbors(qi, n_neighbors=recompute_neighbors)
+        ### smooth and make an adata, and add to the list
+        qi_smoothed = _smooth_out(qi, samp_neighbors, smooth_mode)
+        params = (qi_smoothed, gs_obj, score_method, method_params, noise_trials, ranked, ci)
+        data_list.append( params )
+    ### send off for scores
+    return(data_list)
+
+
 def _proc_data(
         adata: anndata.AnnData,
         gs_obj: genesets,
-        groupby: Union[str,dict],
+        groupby: Union[str,list,dict],
+        smooth_mode: str,
         recompute_neighbors: int,
         score_method: str,
         method_params: dict,
@@ -106,34 +128,44 @@ def _proc_data(
     data_list = []  # list of dicts
 
     if groupby is None:  # take all cells
-        if recompute_neighbors > 0:
-            sc.pp.neighbors(adata, n_neighbors=recompute_neighbors)
-        smoothed_adata =  _smooth_out(adata, samp_neighbors)  # list of 1 item
-        params = (smoothed_adata, gs_obj, score_method, method_params, noise_trials, ranked, 'single_group')
-        data_list.append(params)
+        cats = ['cat1']
+        adata.obs['groupby'] = 'cat1'
+        data_list = _build_data_list(adata, groupby, cats, recompute_neighbors,
+                                     samp_neighbors, smooth_mode, gs_obj,
+                                     score_method, method_params, noise_trials, ranked)
 
+    # here we group by one category
     elif type(groupby) == type("string"):
-        cats = set(adata.obs[groupby])
-        for ci in cats:
-            ### then for each group
-            qi = adata[adata.obs[groupby] == ci]
-            if recompute_neighbors > 0:
-                sc.pp.neighbors(qi, n_neighbors=recompute_neighbors)
-            ### smooth and make an adata, and add to the list
-            qi_smoothed = _smooth_out(qi, samp_neighbors)
-            params = (qi_smoothed, gs_obj, score_method, method_params, noise_trials, ranked, ci)
-            data_list.append( params )
-            ### send off for scores
+        adata.obs['groupby'] = adata.obs[groupby]
+        cats = set(adata.obs[groupby]) # categories
+        data_list = _build_data_list(adata, groupby, cats, recompute_neighbors,
+                                     samp_neighbors, smooth_mode, gs_obj,
+                                     score_method, method_params, noise_trials, ranked)
 
+    # here we groupby an intersection of categories, up to 4
     elif type(groupby) == type(['a','b']):  # if it's a type list
-        return("ERROR")
+        if len(groupby) == 2:
+            zipped_cols = zip(adata.obs[groupby[0]], adata.obs[groupby[1]])
+        elif len(groupby) == 3:
+            zipped_cols = zip(adata.obs[groupby[0]], adata.obs[groupby[1]], adata.obs[groupby[2]])
+        elif len(groupby) == 4:
+            zipped_cols = zip(adata.obs[groupby[0]], adata.obs[groupby[1]], adata.obs[groupby[2]], adata.obs[groupby[3]])
+        else:
+            return("ERROR")
+        adata.obs['groupby'] = zipped_cols
+        cats = set(zipped_cols) # categories
+        data_list = _build_data_list(adata, groupby, cats, recompute_neighbors,
+                                     samp_neighbors, smooth_mode, gs_obj,
+                                     score_method, method_params, noise_trials, ranked)
 
     elif type(groupby) == {'a':1, 'b':2}:  # if it's a type dict
+        # then we want to only score
         return("ERROR: dict not implemented")
 
+    # then we can start scoring cells #
     with Pool(processes=cores) as pool:
         res0 = pool.starmap_async(_score_all_cells_all_sets, data_list).get()
-
+    # we column-bind the vectors into a pandas table
     res1 = pd.concat(res0, axis=0)
     return(res1)
 

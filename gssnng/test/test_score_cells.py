@@ -8,6 +8,7 @@ if __name__ == '__main__':
         res0 = with_gene_sets(adata=adata,
                               gene_set_file=genesets,
                               groupby='louvain',
+                              smooth_mode='connectivity',
                               recompute_neighbors=0,
                               score_method='singscore',  #'rank_biased_overlap',   #,
                               method_params={'normalization':'theoretical'},  #{'rbo_depth':50},   #{'normalization':'theoretical'},

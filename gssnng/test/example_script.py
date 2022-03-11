@@ -1,34 +1,37 @@
-from gssnng import score_cells
-import scanpy as sc
-import time
+if __name__ == '__main__':
 
-print("reading data")
-q = sc.read_h5ad('gssnng/gssnng/test/data/pbmc3k_processed.h5ad')
+        from gssnng import score_cells
+        import scanpy as sc
+        import time
 
-print("computing neighborhood")
-sc.pp.neighbors(q, n_neighbors=32)
+        print("reading data")
+        q = sc.read_h5ad('data/pbmc3k_processed.h5ad')
 
-t0 = time.time()
-print('start time: ' + str(t0))
+        print("computing neighborhood")
+        sc.pp.neighbors(q, n_neighbors=32)
 
-print("scoring cells")
-score_cells.with_gene_sets(
-        adata=q,
-        gene_set_file="gssnng/gssnng/test/data/cibersort_lm22.gmt",
-        groupby='louvain',
-        recompute_neighbors=0,
-        score_method="singscore",
-        method_params={'normalization':'theoretical'},
-        samp_neighbors=27,
-        ranked=True,
-        cores=6
-    )
+        t0 = time.time()
+        print('start time: ' + str(t0))
 
-t1 = time.time()
+        print("scoring cells")
+        score_cells.with_gene_sets(
+                adata=q,
+                gene_set_file="data/cibersort_lm22.gmt",
+                groupby='louvain',
+                smooth_mode='connectivity',
+                recompute_neighbors=0,
+                score_method="singscore",
+                method_params={'normalization':'theoretical'},
+                samp_neighbors=27,
+                ranked=True,
+                cores=8
+            )
 
-print("MEAN SCORES for the T.cells.CD8.up signature")
-print(q.obs.groupby(['louvain'])['T.cells.CD8.up'].mean().reset_index())
+        t1 = time.time()
 
-print('end time: ' + str(t1))
-print('TOTAL TIME: ' + str(t1-t0))
-print("done")
+        print("MEAN SCORES for the T.cells.CD8.up signature")
+        print(q.obs.groupby(['louvain'])['T.cells.CD8.up'].mean().reset_index())
+
+        print('end time: ' + str(t1))
+        print('TOTAL TIME: ' + str(t1-t0))
+        print("done")

@@ -69,6 +69,7 @@ sc.pp.neighbors(q, n_neighbors=32)
 scores_cells.with_gene_sets(adata=q,                            # AnnData object
                             gene_set_file='cibersort_lm22.gmt', # File path of gene sets
                             groupby='louvain',                  # Will sample neighbors within this group
+                            smooth_mode='connectivity',         # Smooths matrix using distance weights from NN graph.
                             recompute_neighbors=0,              # Rebuild nearest neighbor graph with groups, 0 turns off function
                             score_method='singscore',           # Method of scoring
                             method_params={'normalization':'theoretical'},  # Special parameters for some methods 
@@ -79,6 +80,17 @@ scores_cells.with_gene_sets(adata=q,                            # AnnData object
 
 sc.pl.umap(q, color=['louvain','T.cells.CD8.up'], wspace=0.35)
 ```
+
+## Groupby
+
+The specific neighborhood for each cell can be controlled by using the groupby parameter. In the example
+above, by setting groupby='louvain', then only cells within a louvain cluster will be available for sampling.
+Groupby specifies a column name that's found in the AnnData.obs table, and it can also take a list of column names.
+In that case, cells will be grouped as the intersection of categories. For example, using groupby=['louvain','phenotype']
+will take cells that are first in a given louvain cluster and then also in a given phenotype group. By also setting
+the recompute_neighbors, the nearest neighbor graph is recomputed for this subset of cells. Controlling the 
+neighborhood leads to more controlled smoothing of the count matrix and is more suitable for downstream comparisons.
+
 
 ## Gene sets
 

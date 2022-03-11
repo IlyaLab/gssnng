@@ -1,6 +1,8 @@
 
 ~~WORK TO DO~~
 
+Notes:
+
 Functions
 
     Variance of gene set. Rather than expression levels.
