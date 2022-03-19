@@ -143,6 +143,57 @@ def singscore(x, su, sig_len, norm_method, gs):
     return(norm_up)
 
 
+def ssgsea(x, su, sig_len, omega, gs):
+    """
+    The ssGSEA method
+
+    :param x: the pandas data frame of ranks, all genes
+    :param su: the ranked list of genes *IN* the gene set
+    :param sig_len_up: the number of expressed genes matched in the set
+    :param norm_method: 'standard or theoretical' # from singscore
+    :param score_up: is the rank up or down?  True or False
+    :param gene_set: gene set object
+
+    """
+    gene_set = set(gs)
+
+    #first sort by absolute expression value, starting with the highest expressed genes first
+    xsorted = x.sort_values(axis=0, ascending=False, inplace=False)
+    keys_sorted = xsorted.index.tolist()
+
+    #values representing the ECDF of genes in the geneset
+    P_GW_numerator = 0
+    P_GW_denominator = 0
+
+    #determining denominator value
+    i = 1 #current rank stepping through listing of sorted genes
+    for gene in keys_sorted:
+        if gene in gene_set:
+            P_GW_denominator += i ** omega
+        i += 1
+
+    P_GW = lambda : P_GW_numerator / P_GW_denominator
+
+    #values representing the ECDF of genes not in the geneset
+    P_NG_numerator = 0
+    P_NG_denominator = len(x) - len(gene_set)
+    P_NG = lambda : P_NG_numerator / P_NG_denominator
+
+    #integrate different in P_GW and P_NG
+    i = 1 #current index in the traversal of sorted genes
+    scores = []
+    for gene in keys_sorted:
+        if gene in gene_set:
+            P_GW_numerator += i ** omega
+        else:
+            P_NG_numerator += 1
+        scores.append(P_GW() - P_NG())
+        i += 1
+
+    return sum(scores)
+
+
+
 def expr_format(x, exprcol, geneset_genes):
     sig_len_up = len(geneset_genes)
     su = []
@@ -191,6 +242,10 @@ def method_selector(gs, x, exprcol, geneset_genes, method, method_params):
 
     elif method == 'rank_biased_overlap':
         res0 = rank_biased_overlap(x, exprcol, gs, geneset_genes, method_params['rbo_depth'])
+
+    elif method == 'ssgsea':
+        #x, su, sig_len, omega, gene_set
+        res0 = ssgsea(exprdat, su, sig_len, method_params['omega'], geneset_genes)
 
     else:
         return(np.nan)
