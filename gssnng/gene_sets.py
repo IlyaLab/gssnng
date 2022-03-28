@@ -1,13 +1,15 @@
 
 class geneset:
     """ class object that holds a gene set, can be combination of up and dn"""
-    name = ''
-    info = ''
-    genes_up = []  # list of up regulated genes
-    genes_dn = []  # list of down regulated genes
-    mode = 'NA'    # what type of geneset, up, dn, or both
 
-    def __init__(self, name, info, gs_up, gs_dn, mode):
+    def __init__(self, name: str, info: str, gs_up: list, gs_dn: list, mode='NA'):
+        """
+        :param name: gene set name
+        :param info: gene set info
+        :param genes_up: list of up regulated genes
+        :param genes_dn:  list of down regulated genes
+        :param mode:  what type of geneset, up, dn, or both
+        """
         self.name = name
         self.info = info
         if mode == 'UP':
@@ -42,19 +44,18 @@ class geneset:
 
 
 class genesets:
-    set_list = []  # list of geneset obj
 
     def __init__(self, gmt_file):
-        ### initially all gene sets are entered as UP
-        ### then in the cleaning step, they are assigned as UP,DN,or MATCHED
-        txt = open(gmt_file).read().split('\n')
-        gd = dict()
-        for line in txt:
-            bits = line.split('\t')
-            if len(bits) >= 3:
-                self.set_list.append( geneset(name=bits[0], info=bits[1], gs_up=bits[2:], gs_dn=[], mode='?') )
+        # initially all gene sets are entered as UP
+        # then in the cleaning step, they are assigned as UP,DN,or MATCHED
+
+        self.set_list = []  # list of geneset obj
+        with open(gmt_file) as fh:
+            for line in fh:
+                bits = line.split('\t')
+                if len(bits) >= 3:
+                    self.set_list.append(geneset(name=bits[0], info=bits[1], gs_up=bits[2:], gs_dn=[], mode='?'))
         self.set_list = self.clean_sets()
-        return(None)
 
     def trim_name(self, gs):
         name = gs.name[0: (len(gs.name) - 2)]
@@ -65,9 +66,11 @@ class genesets:
         return(name)
 
     def clean_sets(self):
-        ### look for up and dn signifiers
-        ### and join up-dn pairs.
-        ### undefined sets will remain "?", could be up or down
+        """
+        look for up and dn signifiers
+        and join up-dn pairs.
+        undefined sets will remain "?", could be up or down
+        """
         cleaned_sets = []
         for gs1 in self.set_list:
             di = gs1.check_direction()
@@ -99,7 +102,5 @@ class genesets:
                 cleaned_sets.append(geneset(name=gs1.name, info=gs1.info, gs_up=gs1.genes_up, gs_dn=[], mode='?'))
         return(cleaned_sets)
 
-
     def num_genesets(self):
         return(len(self.set_list))
-
