@@ -12,10 +12,11 @@ from gssnng.gene_sets import genesets
 from typing import Union
 from multiprocessing import Pool
 
+
 def with_gene_sets(
         adata: anndata.AnnData,
         gene_set_file: str,
-        groupby: Union[str,list,dict],
+        groupby: Union[str, list, dict],
         smooth_mode: str,
         recompute_neighbors: int,
         score_method: str,
@@ -48,7 +49,7 @@ def with_gene_sets(
     :returns: adata with gene set scores in .obs
     """
 
-    noise_trials = 0 ### not used currently
+    noise_trials = 0  ### not used currently
 
     # our gene set data object list
     gs_obj = genesets(gene_set_file)
@@ -68,8 +69,14 @@ def with_gene_sets(
 
 
 def _smooth_out(adata, samp_neighbors, smooth_mode):
-    # NOTE: this is cells x genes
-    if not ((smooth_mode == 'connectivity') or (smooth_mode == 'adjacency')):
+    """
+    calculates a neighourhood-smoothed signal of adata.X.
+    :param samp_neighbors: how many NN to subsample (hence introducing some noise)
+    :param smooth_mode: 'connectivity', 'adjacency', see nn_smoothing()
+
+    Returns a complete AnnData with smooeth adata.X
+    """
+    if smooth_mode not in ['connectivity', 'adjacency']:
         print("ERROR:  please use smooth mode: `adjacency` or `connectivity`")
         exit()
     smoothed_matrix = nn_smoothing(adata.X, adata, smooth_mode, samp_neighbors)
@@ -78,7 +85,11 @@ def _smooth_out(adata, samp_neighbors, smooth_mode):
     return(smoothed_adata)
 
 
-def _build_data_list(adata, groupby, cats, recompute_neighbors, samp_neighbors, smooth_mode, gs_obj,score_method, method_params, noise_trials, ranked):
+def _build_data_list(adata, groupby, cats, recompute_neighbors, samp_neighbors, smooth_mode, gs_obj, score_method, method_params, noise_trials, ranked):
+    """
+    creates the smoothed adata.
+    Smoothing proceeds within splits via 'groupby' (i.e. a subset of the true NN graph)
+    """
     data_list = []  # list of dicts
     for ci in cats:
         ### then for each group
@@ -96,7 +107,7 @@ def _build_data_list(adata, groupby, cats, recompute_neighbors, samp_neighbors, 
 def _proc_data(
         adata: anndata.AnnData,
         gs_obj: genesets,
-        groupby: Union[str,list,dict],
+        groupby: Union[str, list, dict],
         smooth_mode: str,
         recompute_neighbors: int,
         score_method: str,
@@ -129,21 +140,22 @@ def _proc_data(
 
     if groupby is None:  # take all cells
         cats = ['cat1']
-        adata.obs['groupby'] = 'cat1'
+        adata.obs['groupby'] = 'cat1'  # TODO dangerous if 'groupy' already exists
         data_list = _build_data_list(adata, groupby, cats, recompute_neighbors,
                                      samp_neighbors, smooth_mode, gs_obj,
                                      score_method, method_params, noise_trials, ranked)
 
     # here we group by one category
-    elif type(groupby) == type("string"):
-        adata.obs['groupby'] = adata.obs[groupby]
-        cats = set(adata.obs[groupby]) # categories
+    elif isinstance(groupby, str):
+        adata.obs['groupby'] = adata.obs[groupby]  # TODO dangerous if 'groupy' already exists
+        cats = set(adata.obs[groupby])  # categories
         data_list = _build_data_list(adata, groupby, cats, recompute_neighbors,
                                      samp_neighbors, smooth_mode, gs_obj,
                                      score_method, method_params, noise_trials, ranked)
 
     # here we groupby an intersection of categories, up to 4
-    elif type(groupby) == type(['a','b']):  # if it's a type list
+    elif isinstance(groupby, list):
+
         if len(groupby) == 2:
             zipped_cols = zip(adata.obs[groupby[0]], adata.obs[groupby[1]])
         elif len(groupby) == 3:
@@ -152,13 +164,12 @@ def _proc_data(
             zipped_cols = zip(adata.obs[groupby[0]], adata.obs[groupby[1]], adata.obs[groupby[2]], adata.obs[groupby[3]])
         else:
             return("ERROR")
-        adata.obs['groupby'] = zipped_cols
-        cats = set(zipped_cols) # categories
+        adata.obs['groupby'] = zipped_cols  # TODO dangerous if 'groupy' already exists
+        cats = set(zipped_cols)  # categories
         data_list = _build_data_list(adata, groupby, cats, recompute_neighbors,
                                      samp_neighbors, smooth_mode, gs_obj,
                                      score_method, method_params, noise_trials, ranked)
-
-    elif type(groupby) == {'a':1, 'b':2}:  # if it's a type dict
+    elif isinstance(groupby, dict):
         # then we want to only score
         return("ERROR: dict not implemented")
 
@@ -244,7 +255,7 @@ def _score_all_cells_all_sets(
         results = dict()
         df_cell = _get_cell_data(smoothed_adata, cell_ix, noise_trials, method_params, ranked)
         barcodes.append(smoothed_adata.obs.index[cell_ix])
-        for gs_i in gene_set_obj.set_list:  #   for each gene set
+        for gs_i in gene_set_obj.set_list:  # for each gene set
             results[gs_i.name] = scorefun(gs_i, df_cell, score_method, method_params, ranked)
         results_list.append(results)
     results_df = pd.DataFrame(results_list, index=barcodes)
