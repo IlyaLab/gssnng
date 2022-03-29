@@ -3,7 +3,6 @@ import numpy as np
 from scipy import sparse
 import pandas as pd
 import scanpy as sc
-#import tqdm
 from anndata import AnnData
 from gssnng.smoothing import nn_smoothing
 from gssnng.util import error_checking
@@ -85,22 +84,29 @@ def _smooth_out(adata, samp_neighbors, smooth_mode):
     return(smoothed_adata)
 
 
-def _build_data_list(adata, groupby, cats, recompute_neighbors, samp_neighbors, smooth_mode, gs_obj, score_method, method_params, noise_trials, ranked):
+def _build_data_list(
+        adata,
+        groupby,
+        cats,
+        recompute_neighbors,
+        samp_neighbors,
+        smooth_mode,
+):
     """
     creates the smoothed adata.
     Smoothing proceeds within splits via 'groupby' (i.e. a subset of the true NN graph)
     """
     data_list = []  # list of dicts
     for ci in cats:
-        ### then for each group
+        # then for each group
         qi = adata[adata.obs['groupby'] == ci]
         if recompute_neighbors > 0:
             sc.pp.neighbors(qi, n_neighbors=recompute_neighbors)
-        ### smooth and make an adata, and add to the list
+        # smooth and make an adata, and add to the list
         qi_smoothed = _smooth_out(qi, samp_neighbors, smooth_mode)
-        params = (qi_smoothed, gs_obj, score_method, method_params, noise_trials, ranked, ci)
-        data_list.append( params )
-    ### send off for scores
+        params = (qi_smoothed, ci)
+        data_list.append(params)
+    # send off for scores
     return(data_list)
 
 
@@ -141,21 +147,17 @@ def _proc_data(
     if groupby is None:  # take all cells
         cats = ['cat1']
         adata.obs['groupby'] = 'cat1'  # TODO dangerous if 'groupy' already exists
-        data_list = _build_data_list(adata, groupby, cats, recompute_neighbors,
-                                     samp_neighbors, smooth_mode, gs_obj,
-                                     score_method, method_params, noise_trials, ranked)
 
     # here we group by one category
     elif isinstance(groupby, str):
         adata.obs['groupby'] = adata.obs[groupby]  # TODO dangerous if 'groupy' already exists
         cats = set(adata.obs[groupby])  # categories
-        data_list = _build_data_list(adata, groupby, cats, recompute_neighbors,
-                                     samp_neighbors, smooth_mode, gs_obj,
-                                     score_method, method_params, noise_trials, ranked)
 
     # here we groupby an intersection of categories, up to 4
     elif isinstance(groupby, list):
-
+        # probably more readable:
+        # glist = [adata.obs[g] for g in groupby ]
+        # zipped_cols = zip(*glist)
         if len(groupby) == 2:
             zipped_cols = zip(adata.obs[groupby[0]], adata.obs[groupby[1]])
         elif len(groupby) == 3:
@@ -166,16 +168,25 @@ def _proc_data(
             return("ERROR")
         adata.obs['groupby'] = zipped_cols  # TODO dangerous if 'groupy' already exists
         cats = set(zipped_cols)  # categories
-        data_list = _build_data_list(adata, groupby, cats, recompute_neighbors,
-                                     samp_neighbors, smooth_mode, gs_obj,
-                                     score_method, method_params, noise_trials, ranked)
+
     elif isinstance(groupby, dict):
         # then we want to only score
         return("ERROR: dict not implemented")
 
+    data_list = _build_data_list(adata, groupby, cats, recompute_neighbors, samp_neighbors, smooth_mode)
     # then we can start scoring cells #
+
+    # building up the argument list for the parallel call of _score_all_cells_all_sets
+    arglist = []
+    for smoothed_adata, groupname in data_list:
+        arglist.append(
+            (smoothed_adata, gs_obj, score_method, method_params, noise_trials, ranked, groupname)
+        )
+    # how about lambda x: _score_all_cells_all_sets(x, gs_obj, score_method, method_params, noise_trials, ranked)
+    # not sure if that works with parallel, due to pickling. might have to be a proper function
     with Pool(processes=cores) as pool:
-        res0 = pool.starmap_async(_score_all_cells_all_sets, data_list).get()
+
+        res0 = pool.starmap_async(_score_all_cells_all_sets, arglist).get()
     # we column-bind the vectors into a pandas table
     res1 = pd.concat(res0, axis=0)
     return(res1)
@@ -189,7 +200,8 @@ def _get_cell_data(
         ranked: bool
 ) -> pd.DataFrame:
     """
-    the processed expression data for each cell
+    the processed expression data for each cell: Pulls out the cells expression vector,
+    optinoally adding some noise
 
     :param smoothed_adata: anndata.AnnData containing the cells to be scored
     :param cell_ix: index of the cell in adata
