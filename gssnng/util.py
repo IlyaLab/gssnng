@@ -32,6 +32,7 @@ def error_checking(
     else:
         return('OK')
 
+
 def read_gene_sets(filepath):
     txt = open(filepath).read().split('\n')
     gd = dict()
@@ -109,9 +110,7 @@ def normalisation(norm_method,
 
 
 def normalisation_rank(norm_method, ranks, library_len, sig_len):
-
     """
-
     :param norm_method: method of normalisation, standard or theoretical
     :param ranks: a dataframe of ranks
     :param library_len: length of library (int)
