@@ -20,6 +20,10 @@ def error_checking(
     :param adata: the AnnData object
     :param samp_neighbors: integer, number of neighbors to sample
     """
+
+    if any([xi in adata.obs.columns for xi in gs_obj.get_gs_names()]):
+        raise Exception('ERROR: gene set names in columns of adata.obs, please drop.')
+
     if ranked == False and score_method == 'singscore':
         raise Exception('ERROR: singscore requires ranked data, set ranked parameter to True')
 

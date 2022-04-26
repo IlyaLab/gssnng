@@ -149,16 +149,18 @@ def ssgsea(x, su, sig_len, omega, gs):
 
     :param x: the pandas data frame of ranks, all genes
     :param su: the ranked list of genes *IN* the gene set
-    :param sig_len_up: the number of expressed genes matched in the set
+    :param sig_len: the number of expressed genes matched in the set
     :param norm_method: 'standard or theoretical' # from singscore
     :param score_up: is the rank up or down?  True or False
     :param gene_set: gene set object
 
     """
+    # The gene expression values for a given sample were rank-normalized
+
     gene_set = set(gs)
 
     #first sort by absolute expression value, starting with the highest expressed genes first
-    xsorted = x.sort_values(axis=0, ascending=False, inplace=False)
+    xsorted = x.sort_values(axis=0, ascending=True, inplace=False)  # changed to ascending True
     keys_sorted = xsorted.index.tolist()
 
     #values representing the ECDF of genes in the geneset

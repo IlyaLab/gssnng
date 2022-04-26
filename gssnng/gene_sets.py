@@ -26,6 +26,9 @@ class geneset:
             self.genes_dn = gs_dn
             self.mode = 'BOTH'
 
+    def get_name(self):
+        return(self.name)
+
     def up_gene_size(self):
         return (len(self.genes_up))
 
@@ -104,3 +107,7 @@ class genesets:
 
     def num_genesets(self):
         return(len(self.set_list))
+
+    def get_gs_names(self):
+        gs_names = [gs.get_name() for gs in self.set_list]
+        return(gs_names)
