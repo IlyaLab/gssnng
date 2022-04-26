@@ -53,8 +53,7 @@ def with_gene_sets(
     # our gene set data object list
     gs_obj = genesets(gene_set_file)
 
-    if error_checking(adata, samp_neighbors, gs_obj, score_method, ranked) == 'ERROR':
-        return("ERROR")
+    error_checking(adata, samp_neighbors, gs_obj, score_method, ranked)
 
     # score each cell with the list of gene sets
     all_scores = _proc_data(adata, gs_obj, groupby, smooth_mode, recompute_neighbors,
@@ -99,7 +98,7 @@ def _build_data_list(
     data_list = []  # list of dicts
     for ci in cats:
         # then for each group
-        qi = adata[adata.obs['groupby'] == ci]
+        qi = adata[adata.obs['gssnng_groupby'] == ci]
         if recompute_neighbors > 0:
             sc.pp.neighbors(qi, n_neighbors=recompute_neighbors)
         # smooth and make an adata, and add to the list
@@ -144,13 +143,16 @@ def _proc_data(
     """
     data_list = []  # list of dicts
 
+    if 'gssnng_groupby' in adata.obs.columns:
+        raise Exception("Error: please drop 'gssnng_groupby' as a column name.")
+
     if groupby is None:  # take all cells
         cats = ['cat1']
-        adata.obs['groupby'] = 'cat1'  # TODO dangerous if 'groupy' already exists
+        adata.obs['gssnng_groupby'] = 'cat1'  # altered to gssnng_groupby
 
     # here we group by one category
     elif isinstance(groupby, str):
-        adata.obs['groupby'] = adata.obs[groupby]  # TODO dangerous if 'groupy' already exists
+        adata.obs['gssnng_groupby'] = adata.obs[groupby]  #
         cats = set(adata.obs[groupby])  # categories
 
     # here we groupby an intersection of categories, up to 4
@@ -165,8 +167,8 @@ def _proc_data(
         elif len(groupby) == 4:
             zipped_cols = zip(adata.obs[groupby[0]], adata.obs[groupby[1]], adata.obs[groupby[2]], adata.obs[groupby[3]])
         else:
-            return("ERROR")
-        adata.obs['groupby'] = zipped_cols  # TODO dangerous if 'groupy' already exists
+            raise Exception("ERROR: Number of groups must be 4 or less")
+        adata.obs['gssnng_groupby'] = zipped_cols  #
         cats = set(zipped_cols)  # categories
 
     elif isinstance(groupby, dict):

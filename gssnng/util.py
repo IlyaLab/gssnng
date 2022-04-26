@@ -21,16 +21,16 @@ def error_checking(
     :param samp_neighbors: integer, number of neighbors to sample
     """
     if ranked == False and score_method == 'singscore':
-        return('ERROR: singscore requires ranked data, set ranked parameter to True')
+        raise Exception('ERROR: singscore requires ranked data, set ranked parameter to True')
 
     n_neighbors = adata.uns['neighbors']['params']['n_neighbors'] #[0] #in older AnnData versions need this??
     if n_neighbors < samp_neighbors:
         print('*******')
         print('WARNING: Number of neighbors too low for sampling parameter!')
         print('Please reduce number of neighbor samples or recompute neighbor graph.')
-        return('ERROR')
+        raise Exception('Samp Neighbors Error')
     else:
-        return('OK')
+        return(True)
 
 
 def read_gene_sets(filepath):
