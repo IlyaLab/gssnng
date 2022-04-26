@@ -160,7 +160,7 @@ def ssgsea(x, su, sig_len, omega, gs):
     gene_set = set(gs)
 
     #first sort by absolute expression value, starting with the highest expressed genes first
-    xsorted = x.sort_values(axis=0, ascending=True, inplace=False)  # changed to ascending True
+    xsorted = x.sort_values(axis=0, ascending=False, inplace=False)
     keys_sorted = xsorted.index.tolist()
 
     #values representing the ECDF of genes in the geneset
