@@ -18,6 +18,8 @@ Some method references (singscore, RBO) are below.
 
 ```
     singscore:            Normalised mean (median centered) ranks (requires ranked data)
+    
+    ssgsea:               The well known single sample GSEA.
         
     rank_biased_overlap:  RBO, Weighted average of agreement between sorted ranks and gene set.
 
@@ -51,7 +53,9 @@ Copy the script out from the cloned repo and run, check the paths if you get an 
 ```
 
 
-## Instructions (see notebooks for examples on all methods)
+## Usage 
+
+See gssnng/notebooks for examples on all methods
 
 1. Read in an AnnData object using scanpy (an h5ad file).
 
@@ -81,16 +85,50 @@ scores_cells.with_gene_sets(adata=q,                            # AnnData object
 sc.pl.umap(q, color=['louvain','T.cells.CD8.up'], wspace=0.35)
 ```
 
+## Parameters
+
+    adata:  AnnData object from scanpy.read_*
+    AnnData containing the cells to be scored
+
+    gene_set_file: str[path]
+    The gene set file with list of gene sets, gmt, one per line. See `this definition <https://software.broadinstitute.org/cancer/software/gsea/wiki/index.php/Data_formats#GMT:_Gene_Matrix_Transposed_file_format_.28.2A.gmt.29>`_ .
+
+    groupby: [str, list, dict]
+    either a column label in adata.obs, and all categories taken, or a dict specifies one group.
+    SEE DESCRIPTION BELOW
+
+    smooth_mode: "adjacency" or "connectivity",
+    Dictates how to use the neighborhood graph.
+    `adjacency` weights all neighbors equally, `connectivity` weights close neighbors more
+
+    recompute_neighbors: int
+    should neighbors be recomputed within each group, 0 for no, >0 for yes and specifies N
+
+    score_method: str
+    which scoring method to use
+
+    method_params: dict
+    python dict with XGBoost params.
+
+    samp_neighbors: int
+    number of neighbors to sample
+
+    ranked: bool
+    whether the gene expression counts should be rank ordered
+
+    cores: int
+    number of parallel processes to work through groupby groups
+
 ## Groupby
 
 The specific neighborhood for each cell can be controlled by using the groupby parameter. In the example
-above, by setting groupby='louvain', then only cells within a louvain cluster will be available for sampling.
+above, by setting groupby='louvain', only cells within a louvain cluster will be considered as being part of the
+neighborhood and will available for sampling.
 Groupby specifies a column name that's found in the AnnData.obs table, and it can also take a list of column names.
 In that case, cells will be grouped as the intersection of categories. For example, using groupby=['louvain','phenotype']
 will take cells that are first in a given louvain cluster and then also in a given phenotype group. By also setting
-the recompute_neighbors, the nearest neighbor graph is recomputed for this subset of cells. Controlling the 
+the recompute_neighbors, the nearest neighbor graph is recomputed within this subset of cells. Controlling the
 neighborhood leads to more controlled smoothing of the count matrix and is more suitable for downstream comparisons.
-
 
 ## Gene sets
 
@@ -124,6 +162,8 @@ Here, n is the depth that is decended down the ranks, where at each step, the ov
 rank biased overlap:  https://arxiv.org/pdf/1408.3587.pdf
 
 singscore:  https://pubmed.ncbi.nlm.nih.gov/30400809/
+
+ssGSEA: https://gsea-msigdb.github.io/ssGSEA-gpmodule/v10/index.html
 
 anndata: https://anndata.readthedocs.io/en/latest/
 
