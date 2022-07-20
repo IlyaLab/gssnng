@@ -165,11 +165,11 @@ def _proc_data(
         # glist = [adata.obs[g] for g in groupby ]
         # zipped_cols = zip(*glist)
         if len(groupby) == 2:
-            zipped_cols = zip(adata.obs[groupby[0]], adata.obs[groupby[1]])
+            zipped_cols = list(zip(adata.obs[groupby[0]], adata.obs[groupby[1]]))
         elif len(groupby) == 3:
-            zipped_cols = zip(adata.obs[groupby[0]], adata.obs[groupby[1]], adata.obs[groupby[2]])
+            zipped_cols = list(zip(adata.obs[groupby[0]], adata.obs[groupby[1]], adata.obs[groupby[2]]))
         elif len(groupby) == 4:
-            zipped_cols = zip(adata.obs[groupby[0]], adata.obs[groupby[1]], adata.obs[groupby[2]], adata.obs[groupby[3]])
+            zipped_cols = list(zip(adata.obs[groupby[0]], adata.obs[groupby[1]], adata.obs[groupby[2]], adata.obs[groupby[3]]))
         else:
             raise Exception("ERROR: Number of groups must be 4 or less")
         adata.obs['gssnng_groupby'] = zipped_cols  #
@@ -265,7 +265,7 @@ def _score_all_cells_all_sets(
 
     :return: list of list of gene set score dictionaries
     """
-    print("running " + group_name)
+    print("running " + str(group_name))
 
     results_list = []
     barcodes = []
