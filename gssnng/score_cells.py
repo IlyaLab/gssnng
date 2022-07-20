@@ -56,6 +56,9 @@ def with_gene_sets(
     error_checking(adata, samp_neighbors, recompute_neighbors,
                    gs_obj, score_method, ranked)
 
+    if method_params == None:
+        method_params = []
+
     # score each cell with the list of gene sets
     all_scores = _proc_data(adata, gs_obj, groupby, smooth_mode, recompute_neighbors,
                                   score_method, method_params, samp_neighbors,
