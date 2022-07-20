@@ -104,6 +104,7 @@ def _build_data_list(
         # then for each group
         qi = adata[adata.obs['gssnng_groupby'] == ci]
         if recompute_neighbors > 0:
+            print("RECOMPUTING KNN")
             sc.pp.neighbors(qi, n_neighbors=recompute_neighbors)
         # smooth and make an adata, and add to the list
         qi_smoothed = _smooth_out(qi, samp_neighbors, smooth_mode)
