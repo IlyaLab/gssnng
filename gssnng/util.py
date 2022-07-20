@@ -10,6 +10,7 @@ logger = logging.getLogger('gssnng')
 def error_checking(
         adata,
         samp_neighbors,
+        recompute_neighbors,
         gs_obj,
         score_method,
         ranked
@@ -27,7 +28,11 @@ def error_checking(
     if ranked == False and score_method == 'singscore':
         raise Exception('ERROR: singscore requires ranked data, set ranked parameter to True')
 
-    n_neighbors = adata.uns['neighbors']['params']['n_neighbors'] #[0] #in older AnnData versions need this??
+    if recompute_neighbors == None:
+        n_neighbors = adata.uns['neighbors']['params']['n_neighbors'] #[0] #in older AnnData versions need this??
+    else:
+        n_neighbors = recompute_neighbors
+
     if n_neighbors < samp_neighbors:
         print('*******')
         print('WARNING: Number of neighbors too low for sampling parameter!')
