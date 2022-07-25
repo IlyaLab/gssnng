@@ -1,11 +1,11 @@
 from setuptools import setup
 
 def readme():
-    with open('README.rst') as f:
+    with open('README.md') as f:
         return f.read()
 
 setup(name='gssnng',
-      version='0.1.0',
+      version='0.1.3',
       description='Gene Set Scoring on the Nearest Neighbor Graph (gssnng)',
       url='http://github.com/gibbsdavidl/gssnng',
       author='David Gibbs,Michael Strasser',
