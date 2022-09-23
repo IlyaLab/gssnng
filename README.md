@@ -145,6 +145,10 @@ Some methods have some additional options. They are passed as a dictionary, meth
 
 The singscore manuscript describes the theoretical method of standarization which involves determining the theoretical max and minimum ranks for the given gene set.
 
+    ssGSEA: {'omega': 0.25}
+    
+The ssGSEA method uses this parameter as a exponent to the ranks.
+
     rank_biased_overlap:  {'rbo_depth': n}  (n: int)
 
 Here, n is the depth that is decended down the ranks, where at each step, the overlap with the gene set is measured and added to the score.
