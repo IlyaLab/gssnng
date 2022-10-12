@@ -150,7 +150,9 @@ def _proc_data(
     data_list = []  # list of dicts
 
     if 'gssnng_groupby' in adata.obs.columns:
-        raise Exception("Error: please drop 'gssnng_groupby' as a column name.")
+        adata.obs.drop(columns='gssnng_groupby', inplace=True)
+        #raise Exception("Error: please drop 'gssnng_groupby' as a column name.")
+        print('Dropping gssnng_groupby column...')
 
     if groupby is None:  # take all cells
         cats = ['cat1']
