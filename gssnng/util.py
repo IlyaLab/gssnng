@@ -28,8 +28,8 @@ def error_checking(
     if ranked == False and score_method == 'singscore':
         raise Exception('ERROR: singscore requires ranked data, set ranked parameter to True')
 
-    if recompute_neighbors == None:
-        n_neighbors = adata.uns['neighbors']['params']['n_neighbors'] #[0] #in older AnnData versions need this??
+    if (recompute_neighbors == None) or (recompute_neighbors == 0):
+        n_neighbors = adata.uns['neighbors']['params']['n_neighbors'] #[0]# in older AnnData versions need this??
     else:
         n_neighbors = recompute_neighbors
 

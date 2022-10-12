@@ -8,7 +8,7 @@ if __name__ == '__main__':
         q = sc.read_h5ad('data/pbmc3k_processed.h5ad')
 
         print("computing neighborhood")
-        sc.pp.neighbors(q, n_neighbors=32)
+        sc.pp.neighbors(q, n_neighbors=64)
 
         t0 = time.time()
         print('start time: ' + str(t0))
