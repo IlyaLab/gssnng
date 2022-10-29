@@ -10,8 +10,7 @@ The problem:  single cells often have very poor overlap with any gene set of int
 The method works by sampling nearest neighbors for each cell, creating a mini-pseudobulk expression profile, 
 and performing single sample gene set scoring. This gives each cell a score and preserves gradients across clusters. 
 
-Works with AnnData objects stored as h5ad files. Expression values are taken from adata.X and the smoothed 
-matrix is stored in adata.obsm['smooth_X'].
+Works with AnnData objects stored as h5ad files. Expression values are taken from adata.X.
 
 Scoring functions, works with ranked or unranked data (**"your mileage may vary"**):
 

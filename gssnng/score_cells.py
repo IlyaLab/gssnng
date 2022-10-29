@@ -84,7 +84,7 @@ def _smooth_out(adata, samp_neighbors, smooth_mode):
     smoothed_matrix = nn_smoothing(adata.X, adata, smooth_mode, samp_neighbors)
     # for easier handling with gene names
     # smoothed_adata = AnnData(smoothed_matrix, obs=adata.obs, var=adata.var)
-    adata.obsm['smooth_X'] = smoothed_matrix
+    adata.obsm['X_smooth'] = smoothed_matrix
     return(adata)
 
 
@@ -221,7 +221,7 @@ def _get_cell_data(
     """
     # for each cell, rank the expression
     #gene_mat = smoothed_adata.X[cell_ix]
-    gene_mat = (smoothed_adata.obsm['smooth_X'])[cell_ix]
+    gene_mat = (smoothed_adata.obsm['X_smooth'])[cell_ix]
     # then we subset it to only the genes with counts
     _, gdx, _ = sparse.find(gene_mat)
 
