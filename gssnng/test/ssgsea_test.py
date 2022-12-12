@@ -19,7 +19,7 @@ if __name__ == '__main__':
                 gene_set_file="data/cibersort_lm22.gmt",
                 groupby='louvain',
                 smooth_mode='connectivity',
-                recompute_neighbors=0,
+                recompute_neighbors=32,
                 score_method="ssgsea",
                 method_params={'omega':0.25},
                 samp_neighbors=27,

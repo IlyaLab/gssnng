@@ -13,7 +13,8 @@ def error_checking(
         recompute_neighbors,
         gs_obj,
         score_method,
-        ranked
+        ranked,
+        method_params
 ):
     """
     QC on the adata. Need to make sure there's enough neighbors available given the sampling size.
@@ -21,6 +22,9 @@ def error_checking(
     :param adata: the AnnData object
     :param samp_neighbors: integer, number of neighbors to sample
     """
+
+    if type(method_params) != type(dict()):
+        raise Exception('ERROR: please use a dictionary to pass method params')
 
     if any([xi in adata.obs.columns for xi in gs_obj.get_gs_names()]):
         raise Exception('ERROR: gene set names in columns of adata.obs, please drop.')
