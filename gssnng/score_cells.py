@@ -83,8 +83,9 @@ def _smooth_out(adata, samp_neighbors, smooth_mode):
         exit()
     smoothed_matrix = nn_smoothing(adata.X, adata, smooth_mode, samp_neighbors)
     # for easier handling with gene names
-    smoothed_adata = AnnData(smoothed_matrix, obs=adata.obs, var=adata.var)
-    return(smoothed_adata)
+    # smoothed_adata = AnnData(smoothed_matrix, obs=adata.obs, var=adata.var)
+    adata.obsm['X_smooth'] = smoothed_matrix
+    return(adata)
 
 
 def _build_data_list(
@@ -149,7 +150,9 @@ def _proc_data(
     data_list = []  # list of dicts
 
     if 'gssnng_groupby' in adata.obs.columns:
-        raise Exception("Error: please drop 'gssnng_groupby' as a column name.")
+        adata.obs.drop(columns='gssnng_groupby', inplace=True)
+        #raise Exception("Error: please drop 'gssnng_groupby' as a column name.")
+        print('Dropping gssnng_groupby column...')
 
     if groupby is None:  # take all cells
         cats = ['cat1']
@@ -192,7 +195,6 @@ def _proc_data(
     # how about lambda x: _score_all_cells_all_sets(x, gs_obj, score_method, method_params, noise_trials, ranked)
     # not sure if that works with parallel, due to pickling. might have to be a proper function
     with Pool(processes=cores) as pool:
-
         res0 = pool.starmap_async(_score_all_cells_all_sets, arglist).get()
     # we column-bind the vectors into a pandas table
     res1 = pd.concat(res0, axis=0)
@@ -218,7 +220,8 @@ def _get_cell_data(
     :return: a data frame
     """
     # for each cell, rank the expression
-    gene_mat = smoothed_adata.X[cell_ix]
+    #gene_mat = smoothed_adata.X[cell_ix]
+    gene_mat = (smoothed_adata.obsm['X_smooth'])[cell_ix]
     # then we subset it to only the genes with counts
     _, gdx, _ = sparse.find(gene_mat)
 

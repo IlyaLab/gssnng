@@ -34,9 +34,16 @@ Some method references (singscore, RBO) are below.
     summed_up:      Sum up the ranks or counts.
 ```
 
-## Installation
+## Installation from PyPI
+```
+pip3 install gssnng
+```
+
+
+## Installation from GitHub
 
 ```
+# also gets you the demo data and gene sets.
 git clone https://github.com/Gibbsdavidl/gssnng
 
 pip install -e gssnng
@@ -139,13 +146,17 @@ use of singscore or Z scores, the undirected case is based on absolute values, s
 
 ## Method options
 
-Some methods have some additional options. They are passed as a dictionary, method_params={param_name, param_value}.
+Some methods have some additional options. They are passed as a dictionary, method_params={param_name: param_value}.
 
-    singscore:  {'normalization', 'theoretical'}, {'normalization', 'standard'}
+    singscore:  {'normalization': 'theoretical'}, {'normalization': 'standard'}
 
 The singscore manuscript describes the theoretical method of standarization which involves determining the theoretical max and minimum ranks for the given gene set.
 
-    rank_biased_overlap:  {'rbo_depth', n}  (n: int)
+    ssGSEA: {'omega': 0.25}
+    
+The ssGSEA method uses this parameter as a exponent to the ranks.
+
+    rank_biased_overlap:  {'rbo_depth': n}  (n: int)
 
 Here, n is the depth that is decended down the ranks, where at each step, the overlap with the gene set is measured and added to the score.
 
