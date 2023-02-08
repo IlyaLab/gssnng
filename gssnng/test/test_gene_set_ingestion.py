@@ -20,4 +20,3 @@ gslist = genesets(gmt_file)
 print("done")
 print("number of gene sets: " + str(gslist.num_genesets()))
 
-

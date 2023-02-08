@@ -143,3 +143,56 @@ def normalisation_rank(norm_method, ranks, library_len, sig_len):
 
     except:
         logger.exception('Normalisation method must be standard or theoretical.')
+
+
+def genesets_long_to_gmt(file_name_in, gmt_file_out, gs_mode, set_name_column, symbol_column, desc_column=None, header=True):
+    """
+    :param file_name_in: file path to long formatted gene set file
+    :param gmt_file_out: the path and filename for the newly formatted gmt file
+    :param gs_mode: gene set scoring mode, 'up', 'dn', or 'both'
+    :param set_name_column: integer, indicating the column containing the get set name
+    :param symbol_column: integer, indicates column containing the gene symbol or ID
+    :param desc_column: integer, indicates column containing the gene set description, if none, gene set name used.
+    :param header: boolean, indicates whether the first row in file_name_in contains column names (a header)
+    :return: None, no return
+    """
+    # if you have a two column file with
+    # gene set in set_name_column and gene symbol in symbol_column
+    # write a new gmt formatted file.
+    txt = open(file_name_in, 'r').read().split('\n')
+    outtxt = open(gmt_file_out,'w')
+    gd = dict()
+
+    if header: # drop the first row
+        txt = txt[1:]
+
+    if desc_column is None:
+        desc_column = set_name_column
+
+    i = set_name_column
+    j = symbol_column
+    k = desc_column
+
+    for line in txt:
+        if '.tsv' in file_name_in:
+            bits = line.strip().split('\t')
+        elif '.csv' in file_name_in:
+            bits = line.strip().split(',')
+        else:
+            print('ERROR, only .csv or .tsv files allowed.')
+            return()
+        # collect the next gene
+        if bits[i] in gd:
+            gd[ bits[i] ] = gd[ bits[i] ] + [ bits[j] ]   # past items + next gene
+        else:
+            gd[ bits[i] ] = [ bits[k] ] + [ bits[j] ]  # desc + first gene
+    #
+    # now we walk the dictionary
+    for ki in gd.keys():
+        if gs_mode == 'up':
+            outtxt.write(ki+'.up'+'\t'+'\t'.join(gd[ki]) +'\n')
+        elif gs_mode == 'both':
+            outtxt.write(ki+'.both'+'\t'+'\t'.join(gd[ki]) +'\n')
+        else:
+            outtxt.write(ki+'.dn'+'\t'+'\t'.join(gd[ki]) +'\n')
+    return()
