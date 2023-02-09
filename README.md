@@ -78,7 +78,7 @@ q = sc.read_h5ad('gssnng/gssnng/test/data/pbmc3k_processed.h5ad')
 
 sc.pp.neighbors(q, n_neighbors=32)
 
-scores_cells.with_gene_sets(adata=q,                            # AnnData object
+score_cells.with_gene_sets(adata=q,                            # AnnData object
                             gene_set_file='cibersort_lm22.gmt', # File path of gene sets
                             groupby='louvain',                  # Will sample neighbors within this group
                             smooth_mode='connectivity',         # Smooths matrix using distance weights from NN graph.
