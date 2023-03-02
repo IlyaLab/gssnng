@@ -114,4 +114,4 @@ def nn_smoothing(X, adata, mode, samp_neighbors, add_diag=True):
 
     smooth_signals = smoothing_mat @ X
 
-    return smooth_signals
+    return(smooth_signals)

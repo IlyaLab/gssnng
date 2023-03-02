@@ -6,14 +6,22 @@
 
 Gene Set Scoring on the Nearest Neighbor Graph (gssnng) for Single Cell RNA-seq (scRNA-seq).
 
-The problem:  single cells often have very poor overlap with any gene set of interest, making gene set scoring difficult.
+The problem:  With scRNA-seq, the many zeros in a single cell expression profile create poor overlap with any gene set 
+of interest, which in turn makes gene set scoring difficult. 
 
-The method works by sampling nearest neighbors for each cell, creating a mini-pseudobulk expression profile, 
-and performing single sample gene set scoring. This gives each cell a score and preserves gradients across clusters. 
+This method is based on creating a smoother matrix from the nearest neighbor graph of cells. This essentially creates 
+what are like mini-pseudobulk expression profiles, which are then useful for applying single sample gene set scoring 
+methods often used with bulk RNA-seq. Variance can be preserved by sampling from the neighborhood.
 
-Works with AnnData objects stored as h5ad files. Expression values are taken from adata.X.
+Nearest neighbor graphs (NNG) can be constructed based on user defined groups (see the 'groupby' parameter below). 
+The defined groups can be processed in parallel, speeding up the calculations. For example, a NNG could be 
+constructed within each cluster or jointly by cluster *and* sample. Smoothing can use either the adjacency matrix (all 1s)
+or the weighted graph to give less weight to more distant cells.
 
-Scoring functions, works with ranked or unranked data (**"your mileage may vary"**):
+This package works with AnnData objects stored as h5ad files. Expression values are taken from adata.X.
+For creating groups, up to four categorical variables can be used, which are found in the adata.obs table.
+
+Scoring functions work with ranked or unranked data (**"your mileage may vary"**):
 
 Some method references (singscore, RBO) are below.
 
@@ -44,7 +52,7 @@ pip3 install gssnng
 ## Installation from GitHub
 
 ```
-# also gets you the demo data and gene sets.
+# also gets you the demo data and some gene sets.
 git clone https://github.com/Gibbsdavidl/gssnng
 
 pip install -e gssnng
@@ -67,7 +75,7 @@ See gssnng/notebooks for examples on all methods
 
 1. Read in an AnnData object using scanpy (an h5ad file).
 
-2. Get gene sets formatted as a .gmt file. (default is undirected, can take _UP,  _DN, and split gene sets _UP+_DN)
+2. Get your gene sets formatted as a .gmt file. (default is undirected, can take _UP,  _DN, and split gene sets _UP+_DN)
 
 3. Score cells, each gene set will show up as a column in adata.obs.
 
