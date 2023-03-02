@@ -6,17 +6,17 @@
 
 Gene Set Scoring on the Nearest Neighbor Graph (gssnng) for Single Cell RNA-seq (scRNA-seq).
 
-The problem:  With scRNA-seq, the many zeros in a single cell expression profile create poor overlap with any gene set 
-of interest, which in turn makes gene set scoring difficult. 
+The problem:  The many zeros in scRNA-seq data creates a poor overlap with any gene set of interest, 
+which in turn makes gene set scoring difficult. 
 
-This method is based on creating a smoother matrix from the nearest neighbor graph of cells. This essentially creates 
-what are like mini-pseudobulk expression profiles, which are then useful for applying single sample gene set scoring 
-methods often used with bulk RNA-seq. Variance can be preserved by sampling from the neighborhood.
+This method is based on using the nearest neighbor graph of cells for data smoothing. This essentially creates 
+mini-pseudobulk expression profiles for each cell, which can be scored by using single sample gene set scoring 
+methods often associated with bulk RNA-seq. 
 
-Nearest neighbor graphs (NNG) can be constructed based on user defined groups (see the 'groupby' parameter below). 
+Nearest neighbor graphs (NNG) are constructed based on user defined groups (see the 'groupby' parameter below). 
 The defined groups can be processed in parallel, speeding up the calculations. For example, a NNG could be 
-constructed within each cluster or jointly by cluster *and* sample. Smoothing can use either the adjacency matrix (all 1s)
-or the weighted graph to give less weight to more distant cells.
+constructed within each cluster or jointly by cluster *and* sample. Smoothing can be performed using either the 
+adjacency matrix (all 1s) or the weighted graph to give less weight to more distant cells.
 
 This package works with AnnData objects stored as h5ad files. Expression values are taken from adata.X.
 For creating groups, up to four categorical variables can be used, which are found in the adata.obs table.
