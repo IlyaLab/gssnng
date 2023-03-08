@@ -11,12 +11,13 @@
 ### MSIGDB is labeled as UP and DN ###
 
 
+# rootdir: /home/runner/work/gssnng/gssnng
+
 from gssnng.gene_sets import genesets
+def get_number_of_genesets():
+    gmt_file = 'test/data/gene_set_test.gmt'
+    gslist = genesets(gmt_file)
+    return(gslist.num_genesets())
 
-gmt_file = 'data/gene_set_test.gmt'
-
-gslist = genesets(gmt_file)
-
-print("done")
-print("number of gene sets: " + str(gslist.num_genesets()))
-
+def test_number_of_genesets():
+    assert get_number_of_genesets() == 22
