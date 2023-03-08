@@ -13,10 +13,13 @@
 
 # rootdir: /home/runner/work/gssnng/gssnng
 
+import os
+
+env_file = os.getenv('DATA_ENV')
+
 from gssnng.gene_sets import genesets
 def get_number_of_genesets():
-    gmt_file = 'gene_set_test.gmt'
-    gslist = genesets(gmt_file)
+    gslist = genesets(env_file)
     return(gslist.num_genesets())
 
 def test_number_of_genesets():
