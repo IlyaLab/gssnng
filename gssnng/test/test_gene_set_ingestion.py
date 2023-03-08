@@ -13,9 +13,11 @@
 
 # rootdir: /home/runner/work/gssnng/gssnng
 
+TEST_DATA_DIR = Path(__file__).resolve().parent / 'data'
+
 from gssnng.gene_sets import genesets
 def get_number_of_genesets():
-    gmt_file = 'test/data/gene_set_test.gmt'
+    gmt_file = TEST_DATA_DIR / 'gene_set_test.gmt'
     gslist = genesets(gmt_file)
     return(gslist.num_genesets())
 
