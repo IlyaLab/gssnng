@@ -27,7 +27,15 @@ def error_checking(
         raise Exception('ERROR: please use a dictionary to pass method params')
 
     if any([xi in adata.obs.columns for xi in gs_obj.get_gs_names()]):
-        raise Exception('ERROR: gene set names in columns of adata.obs, please drop.')
+        #raise Exception('ERROR: gene set names in columns of adata.obs, please drop.')
+        print("Warning! Dropping gene set names from obs!")
+        genesetlist = [x.name for x in gs_obj.set_list]
+        adata.obs.drop(columns=genesetlist, inplace=True)
+
+    if 'gssnng_groupby' in adata.obs.columns:
+        adata.obs.drop(columns='gssnng_groupby', inplace=True)
+        #raise Exception("Error: please drop 'gssnng_groupby' as a column name.")
+        print('... and dropping gssnng_groupby column...')
 
     if ranked == False and score_method == 'singscore':
         raise Exception('ERROR: singscore requires ranked data, set ranked parameter to True')

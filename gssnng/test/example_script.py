@@ -35,3 +35,26 @@ if __name__ == '__main__':
         print('end time: ' + str(t1))
         print('TOTAL TIME: ' + str(t1-t0))
         print("done")
+
+        print("scoring cells ... again!")
+        score_cells.with_gene_sets(
+                adata=q,
+                gene_set_file="data/cibersort_lm22.gmt",
+                groupby='louvain',
+                smooth_mode='connectivity',
+                recompute_neighbors=0,
+                score_method="singscore",
+                method_params={'normalization':'theoretical'},
+                samp_neighbors=27,
+                ranked=True,
+                cores=8
+            )
+
+        t2 = time.time()
+
+        print("MEAN SCORES for the T.cells.CD8.up signature")
+        print(q.obs.groupby(['louvain'])['T.cells.CD8.up'].mean().reset_index())
+
+        print('end time: ' + str(t1))
+        print('TOTAL TIME: ' + str(t1-t0))
+        print("done")

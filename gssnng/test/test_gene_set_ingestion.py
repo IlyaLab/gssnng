@@ -11,12 +11,17 @@
 ### MSIGDB is labeled as UP and DN ###
 
 
+# rootdir: /home/runner/work/gssnng/gssnng
+
+import os
+
+#env_file = os.getenv('DATA_ENV')
+
 from gssnng.gene_sets import genesets
+def get_number_of_genesets():
+    filename = 'gssnng/test/data/gene_set_test.gmt'
+    gslist = genesets(filename)
+    return(gslist.num_genesets())
 
-gmt_file = 'data/gene_set_test.gmt'
-
-gslist = genesets(gmt_file)
-
-print("done")
-print("number of gene sets: " + str(gslist.num_genesets()))
-
+def test_number_of_genesets():
+    assert get_number_of_genesets() == 19  ## The up and dn sets are combined into one.
