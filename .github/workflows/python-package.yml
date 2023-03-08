@@ -29,6 +29,6 @@ jobs:
           flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
       - name: Test with pytest
         env:
-          DATA_ENV: /home/runner/work/gssnng/gssnng/test/data/gene_set_test.gmt
+          DATA_ENV: ${{ github.workspace }}/gssnng/test/data/
         run: |
           pytest

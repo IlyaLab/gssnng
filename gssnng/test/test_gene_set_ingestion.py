@@ -24,4 +24,4 @@ def get_number_of_genesets():
     return(gslist.num_genesets())
 
 def test_number_of_genesets():
-    assert get_number_of_genesets() == 22
+    assert get_number_of_genesets() == 19  ## The up and dn sets are combined into one.
