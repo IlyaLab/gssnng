@@ -6,10 +6,10 @@
 
 Gene Set Scoring on the Nearest Neighbor Graph (gssnng) for Single Cell RNA-seq (scRNA-seq).
 
-The problem:  The many zeros in scRNA-seq data creates a poor overlap with any gene set of interest, 
+The problem:  The sparsity of scRNA-seq data creates a poor overlap with many gene sets, 
 which in turn makes gene set scoring difficult. 
 
-This method is based on using the nearest neighbor graph of cells for data smoothing. This essentially creates 
+The GSSNNG method is based on using the nearest neighbor graph of cells for data smoothing. This essentially creates 
 mini-pseudobulk expression profiles for each cell, which can be scored by using single sample gene set scoring 
 methods often associated with bulk RNA-seq. 
 
