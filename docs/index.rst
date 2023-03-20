@@ -22,23 +22,34 @@ Gene Set Scoring on the Nearest Neighbor Graph (gssnng) for Single Cell RNA-seq 
    References
 
 
-The problem:  the set of genes expressed by single cells often have very poor overlap with
-any gene set of interest, making gene set scoring difficult.
+`Try it on colab!<https://colab.research.google.com/github/Gibbsdavidl/gssnng/blob/main/notebooks/gssnng_quick_start.ipynb>`_
 
-The gssnng method works by sampling nearest neighbors for each cell,
-like creating a mini-pseudobulk expression profile, and then performing single sample gene set scoring.
-This gives each cell a score and preserves interesting gradients across clusters.
+Gene Set Scoring on the Nearest Neighbor Graph (gssnng) for Single Cell RNA-seq (scRNA-seq).
 
-The package works with AnnData objects stored as h5ad files.
-Expression values are taken from the adata.X counts matrix.
+The problem: The sparsity of scRNA-seq data creates a poor overlap with many gene sets, which in turn makes gene set scoring difficult.
 
-The scoring functions work with ranked or unranked data (**"your mileage may vary"**).
-Some methods require ranked data however. See method references (singscore, RBO) are below.
+The GSSNNG method is based on using the nearest neighbor graph of cells for data smoothing. This essentially creates mini-pseudobulk expression profiles for each cell, which can be scored by using single sample gene set scoring methods often associated with bulk RNA-seq.
+
+Nearest neighbor graphs (NNG) are constructed based on user defined groups (see the 'groupby' parameter below). The defined groups can be processed in parallel, speeding up the calculations. For example, a NNG could be constructed within each cluster or jointly by cluster and sample. Smoothing can be performed using either the adjacency matrix (all 1s) or the weighted graph to give less weight to more distant cells.
+
+This package works with AnnData objects stored as h5ad files. Expression values are taken from adata.X. For creating groups, up to four categorical variables can be used, which are found in the adata.obs table.
+
+Scoring functions work with ranked or unranked data ("your mileage may vary"):
+
+Some method references (singscore, RBO) are below.
+
 
 Installation
 ============
 
 Install the package using the following commands::
+
+   pip3 install gssnng
+   
+   
+
+Installation from GitHub
+========================
 
    git clone https://github.com/Gibbsdavidl/gssnng
 
@@ -112,6 +123,7 @@ See gssnng/notebooks for examples on all methods.
 
     sc.pl.umap(q, color=['louvain','T.cells.CD8.up'], wspace=0.35)
 
+
 Parameters
 ==========
 
@@ -148,6 +160,7 @@ These parameters are used with the "scores_cells.with_gene_sets" function.::
 
     cores: int
     number of parallel processes to work through groupby groups
+
 
 Groupby
 =======
