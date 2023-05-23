@@ -19,7 +19,7 @@ if __name__ == '__main__':
 
 
     def test_score_all_sets():
-        q = sc.read_h5ad('data/pbmc3k_processed.h5ad')
+        q = sc.datasets.pbmc3k_processed()
         gs = 'data/cibersort_lm22.gmt' # 'data/gene_set_test.gmt' #'data/cibersort_lm22.gmt'  #
         print("computing knn...")
         sc.pp.neighbors(q, n_neighbors=32)
