@@ -7,9 +7,101 @@ from anndata import AnnData
 from gssnng.smoothing import nn_smoothing
 from gssnng.util import error_checking
 from gssnng.score_funs import scorefun
-from gssnng.gene_sets import genesets
+from gssnng.gene_sets import genesets_from_gmt, Genesets, genesets_from_decoupler_model
 from typing import Union
 from multiprocessing import Pool
+
+
+def run_gssnng(
+    mat, net, source, target, weight, 
+    groupby: Union[str, list, dict],
+    smooth_mode: str,
+    recompute_neighbors: int,
+    score_method: str,
+    method_params: dict,
+    samp_neighbors: int,
+    ranked: bool,
+    cores: int,
+    verbose=False, use_raw=True
+    ):
+    
+    """
+    GSSNNG: gene set scoring (all gene sets in file) with nearest neighbor smoothing of the expression matrix
+
+    Improved single cell scoring by:
+    - smoothing the data matrix
+        - adding noise to the nearest neighbor smoothing via `samp_neighbors`
+    - adding noise to the expression data itself (via noise_trials)
+
+
+    Parameters
+    ----------
+    mat : list, DataFrame or AnnData
+        List of [features, matrix], dataframe (samples x features) or an AnnData
+        instance.
+    net : DataFrame
+        Network in long format.
+    source : str
+        Column name in net with source nodes.
+    target : str
+        Column name in net with target nodes.
+    weight : str
+        Column name in net with weights.
+    groupby : str
+        Either a column label in adata.obs, and all categories taken, or a dict specifies one group.
+    smooth_mode : ['adjacency','connectivity']
+        Which representation of the neighborhood graph to use.
+        `adjacency` weights all neighbors equally, `connectivity` weights close neighbors more
+    recompute_neighbors : bool
+        should neighbors be recomputed within each group, 0 for no, >0 for yes and specifies N.
+    score_method : str
+        Which scoring method to use.
+    method_params: dict
+        specific params for each method.
+    samp_neighbors: int
+        Number of neighbors to sample
+    ranked: int
+        Whether the gene expression counts should be rank ordered
+    cores: int
+        number of parallel processes to work through groupby groups
+
+    Returns
+    -------
+    if mat is an AnnData object:
+        gssnng scores in `mat.obsm['gssnng_estimate']` 
+    else:
+        pd.DataFrame with the scores
+    """
+
+    # This whole function is basically a wrapper around the old gssnng-API
+    # but working with decoupler-input and -output
+
+    noise_trials = 0  ### !TODO! not used currently
+
+    # our gene set data object list
+    gs_obj = genesets_from_decoupler_model(net, source, target , weight)
+
+    error_checking(mat, samp_neighbors, recompute_neighbors,
+                   gs_obj, score_method, ranked, method_params)
+
+    if method_params == None:
+        method_params = dict()
+
+    # score each cell with the list of gene sets
+    all_scores = _proc_data(mat, gs_obj, groupby, smooth_mode, recompute_neighbors,
+                                  score_method, method_params, samp_neighbors,
+                                  noise_trials, ranked, cores)
+
+    # warning: the all_scores rows might have a diferent order!
+    # make sure to resort them according to the mat.obs.index
+    all_scores = all_scores.loc[mat.obs.index]
+
+    # AnnData support
+    if isinstance(mat, AnnData):
+        # Update obsm AnnData object
+        mat.obsm['gssnng_estimate'] = all_scores
+    else:
+        return all_scores
 
 
 def with_gene_sets(
@@ -51,7 +143,7 @@ def with_gene_sets(
     noise_trials = 0  ### not used currently
 
     # our gene set data object list
-    gs_obj = genesets(gene_set_file)
+    gs_obj = genesets_from_gmt(gene_set_file)
 
     error_checking(adata, samp_neighbors, recompute_neighbors,
                    gs_obj, score_method, ranked, method_params)
@@ -117,7 +209,7 @@ def _build_data_list(
 
 def _proc_data(
         adata: anndata.AnnData,
-        gs_obj: genesets,
+        gs_obj: Genesets,
         groupby: Union[str, list, dict],
         smooth_mode: str,
         recompute_neighbors: int,
@@ -244,7 +336,7 @@ def _get_cell_data(
 
 def _score_all_cells_all_sets(
         smoothed_adata: AnnData,
-        gene_set_obj: genesets,
+        gene_set_obj: Genesets,
         score_method: str,
         method_params: dict,
         noise_trials: int,
