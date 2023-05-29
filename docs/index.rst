@@ -106,7 +106,7 @@ See gssnng/notebooks for examples on all methods.
 
    from gssnng import score_cells
 
-    q = sc.read_h5ad('gssnng/gssnng/test/data/pbmc3k_processed.h5ad')
+    q = sc.datasets.pbmc3k_processed()
 
     sc.pp.neighbors(q, n_neighbors=32)
 

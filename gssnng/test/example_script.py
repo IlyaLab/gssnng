@@ -5,7 +5,7 @@ if __name__ == '__main__':
         import time
 
         print("reading data")
-        q = sc.read_h5ad('data/pbmc3k_processed.h5ad')
+        q = sc.datasets.pbmc3k_processed()
 
         print("computing neighborhood")
         sc.pp.neighbors(q, n_neighbors=32)
