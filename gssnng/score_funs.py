@@ -143,9 +143,28 @@ def singscore(x, su, sig_len, norm_method, gs):
     return(norm_up)
 
 
+def max_deviation_from_zero(x):
+    """
+    for vector x, get its biggest deviation from zero (inlcuding its sign)
+    e.g:
+    x = [0,1,-1, 2]  -> 2
+    x = [0,1,-2, 1]  -> -2
+
+    This is different than np.max(np.abs(x))!!
+    """
+    themax = np.max(x)
+    themin = np.min(x)
+
+    if np.abs(themax) > np.abs(themin):
+        return themax
+    else:
+        return themin
+
+
 def ssgsea(x, su, sig_len, omega, gs):
     """
     The ssGSEA method
+    see https://www.pathwaycommons.org/guide/primers/data_analysis/gsea/ for some details
 
     :param x: the pandas data frame of ranks, all genes
     :param su: the ranked list of genes *IN* the gene set
@@ -158,21 +177,23 @@ def ssgsea(x, su, sig_len, omega, gs):
     # The gene expression values for a given sample were rank-normalized
 
     gene_set = set(gs)
-
+    assert isinstance(x, pd.Series), "x must be a pd.Series"
     #first sort by absolute expression value, starting with the highest expressed genes first
     xsorted = x.sort_values(axis=0, ascending=False, inplace=False)
     keys_sorted = xsorted.index.tolist()
+
+    # increments will always be positive, |s_t| in the above link
+    xsorted = np.abs(xsorted)
 
     #values representing the ECDF of genes in the geneset
     P_GW_numerator = 0
     P_GW_denominator = 0
 
     #determining denominator value
-    i = 1 #current rank stepping through listing of sorted genes
     for gene in keys_sorted:
         if gene in gene_set:
-            P_GW_denominator += i ** omega
-        i += 1
+            s = xsorted.loc[gene]
+            P_GW_denominator += s ** omega
 
     P_GW = lambda : P_GW_numerator / P_GW_denominator
 
@@ -182,18 +203,18 @@ def ssgsea(x, su, sig_len, omega, gs):
     P_NG = lambda : P_NG_numerator / P_NG_denominator
 
     #integrate different in P_GW and P_NG
-    i = 1 #current index in the traversal of sorted genes
     scores = []
     for gene in keys_sorted:
         if gene in gene_set:
-            P_GW_numerator += i ** omega
+            s = xsorted.loc[gene]
+            P_GW_numerator += s ** omega
         else:
             P_NG_numerator += 1
         scores.append(P_GW() - P_NG())
-        i += 1
 
-    return sum(scores)
-
+    # up to debate if we return max.dev or just sum(score)
+    # max.dev is argued to be more robust. Also relates to the KS-test (omega=0)
+    return max_deviation_from_zero(scores)
 
 
 def expr_format(x, exprcol, geneset_genes):
