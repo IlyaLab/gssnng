@@ -17,10 +17,11 @@ import os
 
 #env_file = os.getenv('DATA_ENV')
 
-from gssnng.gene_sets import genesets
+from gssnng.gene_sets import genesets_from_gmt
 def get_number_of_genesets():
     filename = 'gssnng/test/data/gene_set_test.gmt'
-    gslist = genesets(filename)
+    gslist = genesets_from_gmt(filename)
+
     return(gslist.num_genesets())
 
 def test_number_of_genesets():
