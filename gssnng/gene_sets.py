@@ -99,7 +99,7 @@ def genesets_from_gmt(gmt_file: str):
         for line in fh:
             bits = line.split('\t')
             if len(bits) >= 3:
-                set_list.append(Geneset(name=bits[0], info=bits[1], gs_up=bits[2:], gs_dn=[], mode='?'))
+                set_list.append(Geneset(name=bits[0], info=bits[1], gs_up=[x.strip() for x in bits[2:]], gs_dn=[], mode='?'))
     
     return Genesets(clean_sets(set_list))
 

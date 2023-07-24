@@ -218,6 +218,15 @@ def ssgsea(x, su, sig_len, omega, gs):
 
 
 def expr_format(x, exprcol, geneset_genes):
+    """
+    Prepare the cell's expression for scoring.
+    :param x: the gene expr data frame, columns are: counts, uprank, dnrank
+    :param exprcol: the column containing values we'll compute on
+    :param geneset_genes: genes in the gene set
+
+    :return su: values for the genes *IN* the gene set, ranked or not
+    :return sig_len: the number of expressed genes matched in the set
+    """
     sig_len_up = len(geneset_genes)
     su = []
     for j in geneset_genes:
@@ -269,6 +278,9 @@ def method_selector(gs, x, exprcol, geneset_genes, method, method_params):
     elif method == 'ssgsea':
         #x, su, sig_len, omega, gene_set
         res0 = ssgsea(exprdat, su, sig_len, method_params['omega'], geneset_genes)
+
+    elif method == 'geneset_overlap':
+        res0 = sig_len
 
     else:
         return(np.nan)

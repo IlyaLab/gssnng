@@ -23,7 +23,7 @@ For creating groups, up to four categorical variables can be used, which are fou
 
 Scoring functions work with ranked or unranked data (**"your mileage may vary"**):
 
-Some method references (singscore, RBO) are below.
+Some method references (singscore, RBO) are below. See method options below!
 
 ```
     singscore:            Normalised mean (median centered) ranks (requires ranked data)
@@ -32,15 +32,17 @@ Some method references (singscore, RBO) are below.
         
     rank_biased_overlap:  RBO, Weighted average of agreement between sorted ranks and gene set.
 
-    robust_std:     Med(x-med / mad), median of robust standardized values (recommend unranked).
+    robust_std:      Med(x-med / mad), median of robust standardized values (recommend unranked).
     
-    mean_z:         Mean( (x - mean)/stddv ), average z score. (recommend unranked).
+    mean_z:          Mean( (x - mean)/stddv ), average z score. (recommend unranked).
     
-    average_score:  Mean ranks or counts     
+    average_score:   Mean ranks or counts     
     
-    median_score:   Median of counts or ranks
+    median_score:    Median of counts or ranks
     
-    summed_up:      Sum up the ranks or counts.
+    summed_up:       Sum up the ranks or counts.
+    
+    geneset_overlap: Number of expressed genes that overlap with each geneset.
 ```
 
 ## Installation from PyPI
