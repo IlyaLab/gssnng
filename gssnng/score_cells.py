@@ -170,13 +170,16 @@ def _smooth_out(adata, samp_neighbors, smooth_mode):
 
     Returns a complete AnnData with smooeth adata.X
     """
-    if smooth_mode not in ['connectivity', 'adjacency']:
-        print("ERROR:  please use smooth mode: `adjacency` or `connectivity`")
+    if smooth_mode not in ['connectivity', 'adjacency', 'off']:
+        print("ERROR:  please use smooth mode: `adjacency`, `connectivity`, or `off`.")
         exit()
-    smoothed_matrix = nn_smoothing(adata.X, adata, smooth_mode, samp_neighbors)
-    # for easier handling with gene names
-    # smoothed_adata = AnnData(smoothed_matrix, obs=adata.obs, var=adata.var)
-    adata.obsm['X_smooth'] = smoothed_matrix
+    if smooth_mode == 'off':
+        adata.obsm['X_smooth'] = sparse.csr_matrix(adata.X)
+    else:
+        smoothed_matrix = nn_smoothing(adata.X, adata, smooth_mode, samp_neighbors)
+        # for easier handling with gene names
+        # smoothed_adata = AnnData(smoothed_matrix, obs=adata.obs, var=adata.var)
+        adata.obsm['X_smooth'] = smoothed_matrix
     return(adata)
 
 

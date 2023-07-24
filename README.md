@@ -115,9 +115,9 @@ sc.pl.umap(q, color=['louvain','T.cells.CD8.up'], wspace=0.35)
     either a column label in adata.obs, and all categories taken, or a dict specifies one group.
     SEE DESCRIPTION BELOW
 
-    smooth_mode: "adjacency" or "connectivity",
+    smooth_mode: "adjacency", "connectivity", or "off"
     Dictates how to use the neighborhood graph.
-    `adjacency` weights all neighbors equally, `connectivity` weights close neighbors more
+    `adjacency` weights all neighbors equally, `connectivity` weights close neighbors more, `off` does no smoothing.
 
     recompute_neighbors: int
     should neighbors be recomputed within each group, 0 for no, >0 for yes and specifies N
@@ -139,10 +139,11 @@ sc.pl.umap(q, color=['louvain','T.cells.CD8.up'], wspace=0.35)
 
 ## Groupby
 
-The specific neighborhood for each cell can be controlled by using the groupby parameter. In the example
+The group of cells available for constructing the neighborhood graph can be controlled by using the groupby parameter. In the example
 above, by setting groupby='louvain', only cells within a louvain cluster will be considered as being part of the
 neighborhood and will available for sampling.
-Groupby specifies a column name that's found in the AnnData.obs table, and it can also take a list of column names.
+
+Groupby specifies a column name (or list of columns) that's found in the AnnData.obs table.
 In that case, cells will be grouped as the intersection of categories. For example, using groupby=['louvain','phenotype']
 will take cells that are first in a given louvain cluster and then also in a given phenotype group. By also setting
 the recompute_neighbors, the nearest neighbor graph is recomputed within this subset of cells. Controlling the
@@ -162,6 +163,7 @@ Some methods have some additional options. They are passed as a dictionary, meth
     geneset_overlap: {'threshold': 0}
     
 The geneset overlap compares the smoothed value or rank of geneset genes to the threshold. If ranked=False, then ranks are used.
+If smooth_mode is set to "off", this method can be used with untransformed counts.
 
     singscore:  {'normalization': 'theoretical'}, {'normalization': 'standard'}
 

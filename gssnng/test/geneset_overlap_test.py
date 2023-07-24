@@ -8,11 +8,11 @@ if __name__ == '__main__':
         res0 = with_gene_sets(adata=adata,
                               gene_set_file=genesets,
                               groupby='louvain',
-                              smooth_mode='connectivity',
-                              recompute_neighbors=0,
+                              smooth_mode='adjacency',
+                              recompute_neighbors=32,
                               score_method='geneset_overlap',  #'rank_biased_overlap',   #,
                               method_params={'threshold':0},  #{'rbo_depth':50},   #{'normalization':'theoretical'},
-                              samp_neighbors=30,
+                              samp_neighbors=32,
                               ranked=False,
                               cores=6)
         return(res0)
