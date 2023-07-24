@@ -42,7 +42,7 @@ Some method references (singscore, RBO) are below. See method options below!
     
     summed_up:       Sum up the ranks or counts.
     
-    geneset_overlap: Number of expressed genes that overlap with each geneset.
+    geneset_overlap: Number of expressed genes, beyond given threshold, that overlap with each geneset.
 ```
 
 ## Installation from PyPI
@@ -159,6 +159,10 @@ use of singscore or Z scores, the undirected case is based on absolute values, s
 
 Some methods have some additional options. They are passed as a dictionary, method_params={param_name: param_value}.
 
+    geneset_overlap: {'threshold': 0}
+    
+The geneset overlap compares the smoothed value or rank of geneset genes to the threshold. If ranked=False, then ranks are used.
+
     singscore:  {'normalization': 'theoretical'}, {'normalization': 'standard'}
 
 The singscore manuscript describes the theoretical method of standarization which involves determining the theoretical max and minimum ranks for the given gene set.
@@ -170,6 +174,7 @@ The ssGSEA method uses this parameter as a exponent to the ranks.
     rank_biased_overlap:  {'rbo_depth': n}  (n: int)
 
 Here, n is the depth that is decended down the ranks, where at each step, the overlap with the gene set is measured and added to the score.
+
 
 *The following methods do not have additional options.*
 
