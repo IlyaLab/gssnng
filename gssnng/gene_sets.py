@@ -98,9 +98,11 @@ def genesets_from_gmt(gmt_file: str):
     with open(gmt_file) as fh:
         for line in fh:
             bits = line.split('\t')
-            if len(bits) >= 3:
+            if len(bits) > 3:
                 set_list.append(Geneset(name=bits[0], info=bits[1], gs_up=[x.strip() for x in bits[2:]], gs_dn=[], mode='?'))
-    
+            else:
+                raise Exception("ERROR: problem with the geneset definitions, make sure it's only tabs.")
+
     return Genesets(clean_sets(set_list))
 
 def trim_gs_name(gs: Geneset):
