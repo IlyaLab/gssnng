@@ -217,6 +217,18 @@ def ssgsea(x, su, sig_len, omega, gs):
     return max_deviation_from_zero(scores)
 
 
+def geneset_overlap(su, threshold):
+    """
+    Median of median standardized counts
+
+    :param exprdat: the pandas data frame of ranks, all genes
+    :param treshold: the value compared to exprdat['counts']
+    """
+    score = np.sum([x > threshold for x in su])
+    return(score)
+
+
+
 def expr_format(x, exprcol, geneset_genes):
     """
     Prepare the cell's expression for scoring.
@@ -280,7 +292,7 @@ def method_selector(gs, x, exprcol, geneset_genes, method, method_params):
         res0 = ssgsea(exprdat, su, sig_len, method_params['omega'], geneset_genes)
 
     elif method == 'geneset_overlap':
-        res0 = sig_len
+        res0 = geneset_overlap(su, method_params['threshold'])
 
     else:
         return(np.nan)

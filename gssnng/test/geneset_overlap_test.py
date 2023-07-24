@@ -11,9 +11,9 @@ if __name__ == '__main__':
                               smooth_mode='connectivity',
                               recompute_neighbors=0,
                               score_method='geneset_overlap',  #'rank_biased_overlap',   #,
-                              method_params={},  #{'rbo_depth':50},   #{'normalization':'theoretical'},
+                              method_params={'threshold':0},  #{'rbo_depth':50},   #{'normalization':'theoretical'},
                               samp_neighbors=30,
-                              ranked=True,
+                              ranked=False,
                               cores=6)
         return(res0)
 

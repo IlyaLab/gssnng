@@ -35,13 +35,13 @@ def get_smoothing_matrix(adata, mode, add_diag):
         # normalize to sum=1 per  row
         row_scaler = 1 / A.sum(axis=1).A.flatten()
 
-        # multiplying with a diag matrix d on the left multiplys each row i by d_i
+        # multiplying with a diag matrix d on the left multiplies each row i by d_i
         normA = sparse.diags(row_scaler) @ A
         return normA
 
     # actually works exactly the same; could just switch out the obsp key
     elif mode == 'connectivity':
-        A = adata.obsp[NN_CONN_KEY]
+        A = adata.obsp[NN_CONN_KEY] ## neighbor graph
         # add the diagnoal, ie. the datapoint itself should be represented
         # in the smoothing! Note that the max connectivity == 1
         assert np.all(A.diagonal() == 0), "diagonal of connectivity matrix not 0!!"
