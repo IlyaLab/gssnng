@@ -316,7 +316,8 @@ def _get_cell_data(
     _, gdx, _ = sparse.find(gene_mat)
 
     if gene_mat.ndim == 2:
-        df = pd.DataFrame(gene_mat[:, gdx].A.flatten(), index=smoothed_adata.var.index[gdx])  ## ????
+        df = pd.DataFrame(gene_mat[:, gdx].A.flatten(),
+                          index=smoothed_adata.var.index[gdx])  ## ????
     else:
         df = pd.DataFrame(gene_mat[gdx],
                           index=smoothed_adata.var.index[gdx])  ## not sure why it's coming off as an array

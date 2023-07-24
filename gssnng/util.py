@@ -30,7 +30,9 @@ def error_checking(
         #raise Exception('ERROR: gene set names in columns of adata.obs, please drop.')
         print("Warning! Dropping gene set names from obs!")
         genesetlist = [x.name for x in gs_obj.set_list]
-        adata.obs.drop(columns=genesetlist, inplace=True)
+        for gsi in genesetlist:
+            print('dropping: ' + gsi)
+            adata.obs.drop(columns=[gsi], inplace=True)
 
     if 'gssnng_groupby' in adata.obs.columns:
         adata.obs.drop(columns='gssnng_groupby', inplace=True)
