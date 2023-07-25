@@ -217,14 +217,18 @@ def ssgsea(x, su, sig_len, omega, gs):
     return max_deviation_from_zero(scores)
 
 
-def geneset_overlap(su, threshold):
+def geneset_overlap(su, threshold, geneset_len):
     """
     Median of median standardized counts
 
     :param exprdat: the pandas data frame of ranks, all genes
     :param treshold: the value compared to exprdat['counts']
     """
-    score = np.sum([x > threshold for x in su])
+    if geneset_len > 0:
+        score = float(np.sum([x > threshold for x in su])) / float(geneset_len)
+    else:
+        score = np.sum([x > threshold for x in su])
+
     return(score)
 
 
@@ -292,7 +296,10 @@ def method_selector(gs, x, exprcol, geneset_genes, method, method_params):
         res0 = ssgsea(exprdat, su, sig_len, method_params['omega'], geneset_genes)
 
     elif method == 'geneset_overlap':
-        res0 = geneset_overlap(su, method_params['threshold'])
+        if ('percent' in method_params) and (method_params['percent'] == True):
+            res0 = geneset_overlap(su, method_params['threshold'], len(geneset_genes))
+        else:
+            res0 = geneset_overlap(su, method_params['threshold'], 0)
 
     else:
         return(np.nan)
@@ -327,7 +334,7 @@ def scorefun(gs,
         elif (gs.mode == 'BOTH') and (ranked == False):
             res0_up = method_selector(gs, x, 'counts', gs.genes_up, method, method_params)
             res0_dn = method_selector(gs, x, 'counts', gs.genes_dn, method, method_params)
-            res0 = (res0_up + res0_dn)
+            res0 = (res0_up - res0_dn)
 
         elif (gs.mode == '?') and (ranked == False):
             res0 = method_selector(gs, x, 'counts', gs.genes_up, method, method_params)
