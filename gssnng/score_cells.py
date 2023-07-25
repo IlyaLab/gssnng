@@ -171,8 +171,8 @@ def _smooth_out(adata, samp_neighbors, smooth_mode):
     Returns a complete AnnData with smooeth adata.X
     """
     if smooth_mode not in ['connectivity', 'adjacency', 'off']:
-        print("ERROR:  please use smooth mode: `adjacency`, `connectivity`, or `off`.")
-        exit()
+        raise Exception("ERROR:  please use smooth mode: `adjacency`, `connectivity`, or `off`.")
+
     if smooth_mode == 'off':
         adata.obsm['X_smooth'] = sparse.csr_matrix(adata.X)
     else:
