@@ -42,7 +42,7 @@ Some method references (singscore, RBO) are below. See method options below!
     
     summed_up:       Sum up the ranks or counts.
     
-    geneset_overlap: Number of expressed genes, beyond given threshold, that overlap with each geneset.
+    geneset_overlap: Number (or percent) of genes, past an expression threshold, that overlap with each geneset.
 ```
 
 ## Installation from PyPI
