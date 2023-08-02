@@ -106,7 +106,7 @@ def nn_smoothing(X, adata, mode, samp_neighbors, add_diag=True):
     logging.info("creating smoothing matrix")
     smoothing_mat = get_smoothing_matrix(adata, mode, add_diag)
 
-    if samp_neighbors > 0:
+    if (samp_neighbors is not None) and (samp_neighbors > 0):
         # randomly set some edges/neighbours to zero
         # experimental and pretty slow!
         logging.info("creating random mask")

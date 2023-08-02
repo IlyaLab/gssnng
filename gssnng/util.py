@@ -47,13 +47,13 @@ def error_checking(
     else:
         n_neighbors = recompute_neighbors
 
-    if n_neighbors < samp_neighbors:
-        print('*******')
-        print('WARNING: Number of neighbors too low for sampling parameter!')
-        print('Please reduce number of neighbor samples or recompute neighbor graph.')
-        raise Exception('Samp Neighbors Error')
-    else:
-        return(True)
+    #if n_neighbors < samp_neighbors:
+    #    print('*******')
+    #    print('WARNING: Number of neighbors too low for sampling parameter!')
+    #    print('Please reduce number of neighbor samples or recompute neighbor graph.')
+    #    raise Exception('Samp Neighbors Error')
+    #else:
+    return(True)
 
 
 def read_gene_sets(filepath):

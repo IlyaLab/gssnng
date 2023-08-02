@@ -12,7 +12,6 @@ if __name__ == '__main__':
                               recompute_neighbors=0,
                               score_method='singscore',  #'rank_biased_overlap',   #,
                               method_params={'normalization':'theoretical'},  #{'rbo_depth':50},   #{'normalization':'theoretical'},
-                              samp_neighbors=17,
                               ranked=True,
                               cores=8)
         return(res0)

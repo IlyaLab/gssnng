@@ -19,10 +19,11 @@ def run_gssnng(
     recompute_neighbors: int,
     score_method: str,
     method_params: dict,
-    samp_neighbors: int,
+    #samp_neighbors: int,
     ranked: bool,
     cores: int,
-    verbose=False, use_raw=True
+    verbose=False,
+    use_raw=True
     ):
     
     """
@@ -58,8 +59,6 @@ def run_gssnng(
         Which scoring method to use.
     method_params: dict
         specific params for each method.
-    samp_neighbors: int
-        Number of neighbors to sample
     ranked: int
         Whether the gene expression counts should be rank ordered
     cores: int
@@ -75,12 +74,12 @@ def run_gssnng(
 
     # This whole function is basically a wrapper around the old gssnng-API
     # but working with decoupler-input and -output
-
     noise_trials = 0  ### !TODO! not used currently
 
     # our gene set data object list
     gs_obj = genesets_from_decoupler_model(net, source, target , weight)
 
+    samp_neighbors = None
     error_checking(mat, samp_neighbors, recompute_neighbors,
                    gs_obj, score_method, ranked, method_params)
 
@@ -112,7 +111,7 @@ def with_gene_sets(
         recompute_neighbors: int,
         score_method: str,
         method_params: dict,
-        samp_neighbors: int,
+        #samp_neighbors: int,
         ranked: bool,
         cores: int
     ) -> anndata.AnnData:
@@ -125,17 +124,25 @@ def with_gene_sets(
         - adding noise to the nearest neighbor smoothing via `samp_neighbors`
     - adding noise to the expression data itself (via noise_trials)
 
-    :param adata: anndata.AnnData containing the cells to be scored
-    :param gene_set_file: the gene set file with list of gene sets, gmt, one per line
-    :param groupby: either a column label in adata.obs, and all categories taken, or a dict specifies one group.
-    :param smooth_mode: `adjacency` or `connectivity`, which representation of the neighborhood graph to use.
+    :param adata
+        anndata.AnnData containing the cells to be scored
+    :param gene_set_file
+        the gene set file with list of gene sets, gmt, one per line
+    :param groupby
+        either a column label in adata.obs, and all categories taken, or a dict specifies one group.
+    :param smooth_mode
+        `adjacency` or `connectivity`, which representation of the neighborhood graph to use.
         `adjacency` weights all neighbors equally, `connectivity` weights close neighbors more
-    :param recompute_neighbors: should neighbors be recomputed within each group, 0 for no, >0 for yes and specifies N
-    :param score_method: which scoring method to use
-    :param method_params: specific params for each method.
-    :param samp_neighbors: number of neighbors to sample
-    :param ranked: whether the gene expression counts should be rank ordered
-    :param cores: number of parallel processes to work through groupby groups
+    :param recompute_neighbors
+        should neighbors be recomputed within each group, 0 for no, >0 for yes and specifies N
+    :param score_method
+        which scoring method to use
+    :param method_params
+        specific params for each method.
+    :param ranked
+        whether the gene expression counts should be rank ordered
+    :param cores
+        number of parallel processes to work through groupby groups
 
     :returns: adata with gene set scores in .obs
     """
@@ -145,6 +152,7 @@ def with_gene_sets(
     # our gene set data object list
     gs_obj = genesets_from_gmt(gene_set_file)
 
+    samp_neighbors = None
     error_checking(adata, samp_neighbors, recompute_neighbors,
                    gs_obj, score_method, ranked, method_params)
 

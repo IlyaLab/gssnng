@@ -23,12 +23,16 @@ For creating groups, up to four categorical variables can be used, which are fou
 
 Scoring functions work with ranked or unranked data (**"your mileage may vary"**):
 
-Some method references (singscore, RBO) are below. See method options below!
+Method references (singscore, RBO) are below. 
+
+Some methods have additional parameters, see below!
 
 ```
-    singscore:            Normalised mean (median centered) ranks (requires ranked data)
+    geneset_overlap: Number (or fraction) of genes, past an expression threshold, that overlap with each geneset.
+
+    singscore:       Normalised mean (median centered) ranks (requires ranked data)
     
-    ssgsea:               The well known single sample GSEA.
+    ssgsea:          The well known single sample GSEA.
         
     rank_biased_overlap:  RBO, Weighted average of agreement between sorted ranks and gene set.
 
@@ -42,7 +46,6 @@ Some method references (singscore, RBO) are below. See method options below!
     
     summed_up:       Sum up the ranks or counts.
     
-    geneset_overlap: Number (or percent) of genes, past an expression threshold, that overlap with each geneset.
 ```
 
 ## Installation from PyPI
@@ -95,7 +98,6 @@ score_cells.with_gene_sets(adata=q,                            # AnnData object
                             recompute_neighbors=0,              # Rebuild nearest neighbor graph with groups, 0 turns off function
                             score_method='singscore',           # Method of scoring
                             method_params={'normalization':'theoretical'},  # Special parameters for some methods 
-                            samp_neighbors=27,                  # Number of sampled neighbors for pseudobulk
                             ranked=True,                        # Use ranked data, True or False
                             cores=8)                            # Groups are scored in parallel.
     
@@ -127,9 +129,6 @@ sc.pl.umap(q, color=['louvain','T.cells.CD8.up'], wspace=0.35)
 
     method_params: dict
     python dict with XGBoost params.
-
-    samp_neighbors: int
-    number of neighbors to sample
 
     ranked: bool
     whether the gene expression counts should be rank ordered
@@ -170,13 +169,13 @@ the overlap will be given as a percentage of the total number of genes in the ge
 
 The singscore manuscript describes the theoretical method of standarization which involves determining the theoretical max and minimum ranks for the given gene set.
 
-    ssGSEA: {'omega': 0.25}
+    ssGSEA: {'omega': 0.75}
     
-The ssGSEA method uses this parameter as a exponent to the ranks.
+The ssGSEA method uses this parameter as a exponent to the ranks. It has been strongly suggested to use 0.75.
 
     rank_biased_overlap:  {'rbo_depth': n}  (n: int)
 
-Here, n is the depth that is decended down the ranks, where at each step, the overlap with the gene set is measured and added to the score.
+Here, n is the depth that we decend down the ranks, where at each step, the overlap with the gene set is measured and added to the score.
 
 
 *The following methods do not have additional options.*

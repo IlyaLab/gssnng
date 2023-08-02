@@ -22,7 +22,6 @@ if __name__ == '__main__':
                 recompute_neighbors=0,
                 score_method="singscore",
                 method_params={'normalization':'theoretical'},
-                samp_neighbors=27,
                 ranked=True,
                 cores=8
             )
@@ -45,7 +44,6 @@ if __name__ == '__main__':
                 recompute_neighbors=0,
                 score_method="singscore",
                 method_params={'normalization':'theoretical'},
-                samp_neighbors=27,
                 ranked=True,
                 cores=8
             )
