@@ -19,7 +19,8 @@ constructed within each cluster or jointly by cluster *and* sample. Smoothing ca
 adjacency matrix (all 1s) or the weighted graph to give less weight to more distant cells.
 
 This package works with AnnData objects stored as h5ad files. Expression values are taken from adata.X.
-For creating groups, up to four categorical variables can be used, which are found in the adata.obs table.
+For creating groups, up to four categorical variables can be used, which are found in the adata.obs table. 
+Gene sets can be provided by using .gmt files or the through OmniPath API (see below).
 
 Scoring functions work with ranked or unranked data (**"your mileage may vary"**):
 
@@ -152,6 +153,8 @@ We are following the MSigDB nomenclature, where gene sets default to undirected,
 (example: CD8_signature_UP or CD8.signature.up).  In this case, when data is ranked, genes with higher expression have larger ranks. If the 
 gene set has suffix "_DN" (example: CD8_signature_DN or CD8.signature.dn), then lowest expressed genes have largest ranks. In the 
 use of singscore or Z scores, the undirected case is based on absolute values, so either direction, in the extreme, will result in a large score.
+
+To access OmniPath signatures, see the ["decoupler-style"](https://github.com/IlyaLab/gssnng/blob/main/notebooks/gssnng_decoupler.ipynb) notebook.
 
 ## Method options
 
