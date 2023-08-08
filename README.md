@@ -20,7 +20,7 @@ adjacency matrix (all 1s) or the weighted graph to give less weight to more dist
 
 This package works with AnnData objects stored as h5ad files. Expression values are taken from adata.X.
 For creating groups, up to four categorical variables can be used, which are found in the adata.obs table. 
-Gene sets can be provided by using .gmt files or the through OmniPath API (see below).
+Gene sets can be provided by using .gmt files or through the OmniPath API (see below).
 
 Scoring functions work with ranked or unranked data (**"your mileage may vary"**):
 
