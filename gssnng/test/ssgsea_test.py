@@ -22,7 +22,6 @@ if __name__ == '__main__':
                 recompute_neighbors=32,
                 score_method="ssgsea",
                 method_params={'omega':0.25},
-                samp_neighbors=27,
                 ranked=True,
                 cores=8
             )
