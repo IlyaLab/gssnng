@@ -296,7 +296,7 @@ def method_selector(gs, x, exprcol, geneset_genes, method, method_params):
         res0 = ssgsea(exprdat, su, sig_len, method_params['omega'], geneset_genes)
 
     elif method == 'geneset_overlap':
-        if ('percent' in method_params) and (method_params['percent'] == True):
+        if ('fraction' in method_params) and (method_params['fraction'] == True):
             res0 = geneset_overlap(su, method_params['threshold'], len(geneset_genes))
         else:
             res0 = geneset_overlap(su, method_params['threshold'], 0)
