@@ -159,7 +159,7 @@ use of singscore or Z scores, the undirected case is based on absolute values, s
 
 Some methods have some additional options. They are passed as a dictionary, method_params={param_name: param_value}.
 
-    geneset_overlap: {'threshold': 0, 'percent': False}
+    geneset_overlap: {'threshold': 0, 'fraction': False}
     
 The geneset overlap compares the smoothed value or rank of geneset genes to the threshold. If ranked=False, then ranks are used.
 If smooth_mode is set to "off", this method can be used with untransformed counts.  If 'percent' is set to True, then 
