@@ -89,11 +89,11 @@ from gssnng import score_cells
 
 q = sc.datasets.pbmc3k_processed()
 
-score_cells.with_gene_sets(adata=q,                            # AnnData object
+score_cells.with_gene_sets(adata=adata,                         # AnnData object
                             gene_set_file='cibersort_lm22.gmt', # File path of gene sets
                             groupby='louvain',                  # Will sample neighbors within this group
                             smooth_mode='connectivity',         # Smooths matrix using distance weights from NN graph.
-                            recompute_neighbors=32,              # Rebuild nearest neighbor graph with groups, 0 turns off function
+                            recompute_neighbors=32,             # Rebuild nearest neighbor graph with groups, 0 turns off function
                             score_method='singscore',           # Method of scoring
                             method_params={'normalization':'theoretical'},  # Special parameters for some methods 
                             ranked=True,                        # Use ranked data, True or False
