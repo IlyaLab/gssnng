@@ -58,7 +58,7 @@ pip3 install gssnng
 
 ```
 # also gets you the demo data and some gene sets.
-git clone https://github.com/Gibbsdavidl/gssnng
+git clone https://github.com/IlyaLab/gssnng
 
 pip install -e gssnng
 ```
