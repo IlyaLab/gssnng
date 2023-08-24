@@ -1,20 +1,22 @@
 if __name__ == '__main__':
 
     import scanpy as sc
-    from gssnng.score_cells import with_gene_sets
+    from gssnng import score_cells
     import time
 
-    def test_score_all_sets_fun(adata, genesets):
-        res0 = with_gene_sets(adata=adata,
-                              gene_set_file=genesets,
-                              groupby='louvain',
-                              smooth_mode='connectivity',
-                              recompute_neighbors=0,
-                              score_method='singscore',  #'rank_biased_overlap',   #,
-                              method_params={'normalization':'theoretical'},  #{'rbo_depth':50},   #{'normalization':'theoretical'},
-                              ranked=True,
-                              cores=8)
-        return(res0)
+    def test_score_all_sets_fun(adata, gene_set_file):
+        q=score_cells.with_gene_sets(
+            adata=adata,
+            gene_set_file=gene_set_file,
+            groupby="louvain",
+            smooth_mode='connectivity',
+            recompute_neighbors=0,
+            score_method="median_score",
+            method_params={},
+            ranked=True,
+            cores=6
+        )
+        return(q)
 
 
     def test_score_all_sets():
