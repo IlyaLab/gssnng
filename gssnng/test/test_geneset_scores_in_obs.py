@@ -32,6 +32,6 @@ def test_get_number_of_columns_in_obs(adata, genesets):
 
 def test_number_of_genesets():
     q = sc.datasets.pbmc3k_processed()
-    gs = 'data/cibersort_lm22.gmt'  # 'data/gene_set_test.gmt' #'data/cibersort_lm22.gmt'  #
+    gs = 'gssnng/test/data/cibersort_lm22.gmt'  # 'data/gene_set_test.gmt' #'data/cibersort_lm22.gmt'  #
     assert test_get_number_of_columns_in_obs(q,gs) == 27  ## The up and dn sets should be combined into one.
 
