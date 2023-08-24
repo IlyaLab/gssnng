@@ -15,7 +15,7 @@
 
 # rootdir: /home/runner/work/gssnng/gssnng
 
-
+import scanpy as sc
 from gssnng import score_cells
 def test_get_number_of_columns_in_obs(adata, genesets):
     res0 = score_cells.with_gene_sets(adata=adata,
