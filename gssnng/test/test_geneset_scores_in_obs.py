@@ -27,7 +27,7 @@ def test_get_number_of_columns_in_obs(adata, genesets):
                           method_params={},
                           ranked=False,
                           cores=4)
-    return (res0)
+    return (res0.obs.shape[1])
 
 
 def test_number_of_genesets():
