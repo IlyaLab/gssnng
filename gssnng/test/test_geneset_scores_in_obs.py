@@ -17,9 +17,11 @@
 
 import scanpy as sc
 from gssnng import score_cells
-def test_get_number_of_columns_in_obs(adata, genesets):
-    res0 = score_cells.with_gene_sets(adata=adata,
-                          gene_set_file=genesets,
+def test_get_number_of_columns_in_obs():
+    q = sc.datasets.pbmc3k_processed()
+    gs = 'gssnng/test/data/cibersort_lm22.gmt'  # 'data/cibersort_lm22.gmt'  #
+    res0 = score_cells.with_gene_sets(adata=q,
+                          gene_set_file=gs,
                           groupby='louvain',
                           smooth_mode='connectivity',
                           recompute_neighbors=32,
@@ -31,7 +33,5 @@ def test_get_number_of_columns_in_obs(adata, genesets):
 
 
 def test_number_of_genesets():
-    q = sc.datasets.pbmc3k_processed()
-    gs = 'gssnng/test/data/cibersort_lm22.gmt'  # 'data/gene_set_test.gmt' #'data/cibersort_lm22.gmt'  #
-    assert test_get_number_of_columns_in_obs(q,gs) == 27  ## The up and dn sets should be combined into one.
+    assert test_get_number_of_columns_in_obs() == 27  ## The up and dn sets should be combined into one.
 
