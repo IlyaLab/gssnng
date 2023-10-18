@@ -2,7 +2,7 @@
 
 **Try it out!  ===>>>**  [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/IlyaLab/gssnng/blob/main/notebooks/gssnng_quick_start.ipynb)
 
-**Decoupler/Omnipath style API ===>>>** [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1d2jTF980khKgaxI_olGwL9YbpQIArpXU?usp=sharing)
+**Decoupler/Omnipath style API ===>>>** [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/blob/main/notebooks/Scoring_PBMC_data_with_the_GSSNNG_decoupleR_API.ipynb)
 
 **See the paper ===>>>** [bioRxiv](https://www.biorxiv.org/content/10.1101/2022.11.29.518384v1)
 
