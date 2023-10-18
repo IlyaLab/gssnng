@@ -2,6 +2,8 @@
 
 **Try it out!  ===>>>**  [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/IlyaLab/gssnng/blob/main/notebooks/gssnng_quick_start.ipynb)
 
+**Decoupler/Omnipath style API ===>>>** [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1d2jTF980khKgaxI_olGwL9YbpQIArpXU?usp=sharing)
+
 **See the paper ===>>>** [bioRxiv](https://www.biorxiv.org/content/10.1101/2022.11.29.518384v1)
 
 Gene Set Scoring on the Nearest Neighbor Graph (gssnng) for Single Cell RNA-seq (scRNA-seq).
