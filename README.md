@@ -4,7 +4,7 @@
 
 **Decoupler/Omnipath style API ===>>>** [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/IlyaLab/gssnng/blob/main/notebooks/Scoring_PBMC_data_with_the_GSSNNG_decoupleR_API.ipynb)
 
-**See the paper ===>>>** [bioRxiv](https://www.biorxiv.org/content/10.1101/2022.11.29.518384v1)
+**See the paper ===>>>** [gssnng](https://academic.oup.com/bioinformaticsadvances/article/3/1/vbad150/7321111?login=false)
 
 Gene Set Scoring on the Nearest Neighbor Graph (gssnng) for Single Cell RNA-seq (scRNA-seq).
 
