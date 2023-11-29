@@ -24,19 +24,36 @@ Gene Set Scoring on the Nearest Neighbor Graph (gssnng) for Single Cell RNA-seq 
 
 `Try it on colab! <https://colab.research.google.com/github/Gibbsdavidl/gssnng/blob/main/notebooks/gssnng_quick_start.ipynb>`_
 
+`**Try it out!**  <https://colab.research.google.com/github/IlyaLab/gssnng/blob/main/notebooks/gssnng_quick_start.ipynb>`_
+
+`**Decoupler/Omnipath style API** <https://colab.research.google.com/github/IlyaLab/gssnng/blob/main/notebooks/Scoring_PBMC_data_with_the_GSSNNG_decoupleR_API.ipynb>`_
+
+`**See the paper** <https://academic.oup.com/bioinformaticsadvances/article/3/1/vbad150/7321111?login=false>`_
+
+
 Gene Set Scoring on the Nearest Neighbor Graph (gssnng) for Single Cell RNA-seq (scRNA-seq).
 
-The problem: The sparsity of scRNA-seq data creates a poor overlap with many gene sets, which in turn makes gene set scoring difficult.
+The problem:  The sparsity of scRNA-seq data creates a poor overlap with many gene sets, 
+which in turn makes gene set scoring difficult. 
 
-The GSSNNG method is based on using the nearest neighbor graph of cells for data smoothing. This essentially creates mini-pseudobulk expression profiles for each cell, which can be scored by using single sample gene set scoring methods often associated with bulk RNA-seq.
+The GSSNNG method is based on using the nearest neighbor graph of cells for data smoothing. This essentially creates 
+mini-pseudobulk expression profiles for each cell, which can be scored by using single sample gene set scoring 
+methods often associated with bulk RNA-seq. 
 
-Nearest neighbor graphs (NNG) are constructed based on user defined groups (see the 'groupby' parameter below). The defined groups can be processed in parallel, speeding up the calculations. For example, a NNG could be constructed within each cluster or jointly by cluster and sample. Smoothing can be performed using either the adjacency matrix (all 1s) or the weighted graph to give less weight to more distant cells.
+Nearest neighbor graphs (NNG) are constructed based on user defined groups (see the 'groupby' parameter below). 
+The defined groups can be processed in parallel, speeding up the calculations. For example, a NNG could be 
+constructed within each cluster or jointly by cluster *and* sample. Smoothing can be performed using either the 
+adjacency matrix (all 1s) or the weighted graph to give less weight to more distant cells.
 
-This package works with AnnData objects stored as h5ad files. Expression values are taken from adata.X. For creating groups, up to four categorical variables can be used, which are found in the adata.obs table.
+This package works with AnnData objects stored as h5ad files. Expression values are taken from adata.X.
+For creating groups, up to four categorical variables can be used, which are found in the adata.obs table. 
+Gene sets can be provided by using .gmt files or through the OmniPath API (see below).
 
-Scoring functions work with ranked or unranked data ("your mileage may vary"):
+Scoring functions work with ranked or unranked data (**"your mileage may vary"**):
 
-Some method references (singscore, RBO) are below.
+Method references (singscore, RBO) are below. 
+
+Some methods have additional parameters, see below!
 
 
 Installation
@@ -51,7 +68,7 @@ Install the package using the following commands::
 Installation from GitHub
 ========================
 
-   git clone https://github.com/Gibbsdavidl/gssnng
+   git clone https://github.com/IlyaLab/gssnng
 
    pip install -e gssnng
 
@@ -88,7 +105,7 @@ Copy the script out from the cloned repo and run, check the paths if you get an 
 
  cp gssnng/gssnng/test/example_script.py  .
 
- python3.8 test_gssnng.py
+ python3.10 test_gssnng.py
 
 
 Usage
@@ -98,7 +115,7 @@ See gssnng/notebooks for examples on all methods.
 
 1. Read in an AnnData object using scanpy (an h5ad file).
 
-2. Get gene sets formatted as a .gmt file. (default is undirected, can take _UP,  _DN, and split gene sets _UP+_DN)
+2. Get gene sets formatted as a .gmt file. (default is UP, also uses _UP,  _DN, and split gene sets _UP+_DN)
 
 3. Score cells, each gene set will show up as a column in adata.obs.
 
@@ -108,16 +125,13 @@ See gssnng/notebooks for examples on all methods.
 
     q = sc.datasets.pbmc3k_processed()
 
-    sc.pp.neighbors(q, n_neighbors=32)
-
     scores_cells.with_gene_sets(adata=q,                            # AnnData object
                                 gene_set_file='cibersort_lm22.gmt', # File path of gene sets
                                 groupby='louvain',                  # Will sample neighbors within this group, can take a list
                                 smooth_mode='connectivity',         # Smooths matrix using distance weights from NN graph.
-                                recompute_neighbors=0,              # Rebuild nearest neighbor graph with groups, 0 turns off function
+                                recompute_neighbors=32,              # Rebuild nearest neighbor graph with groups, 0 turns off function
                                 score_method='singscore',           # Method of scoring
                                 method_params={'normalization':'theoretical'},  # Special parameters for some methods
-                                samp_neighbors=27,                  # Number of sampled neighbors for pseudobulk
                                 ranked=True,                        # Use ranked data, True or False
                                 cores=8)                            # Groups are scored in parallel.
 
@@ -152,9 +166,6 @@ These parameters are used with the "scores_cells.with_gene_sets" function.::
     method_params: dict
     python dict with XGBoost params.
 
-    samp_neighbors: int
-    number of neighbors to sample
-
     ranked: bool
     whether the gene expression counts should be rank ordered
 
@@ -168,6 +179,7 @@ Groupby
 The specific neighborhood for each cell can be controlled by using the groupby parameter. In the example
 above, by setting groupby='louvain', only cells within a louvain cluster will be considered as being part of the
 neighborhood and will available for sampling.
+
 Groupby specifies a column name that's found in the AnnData.obs table, and it can also take a list of column names.
 In that case, cells will be grouped as the intersection of categories. For example, using groupby=['louvain','phenotype']
 will take cells that are first in a given louvain cluster and then also in a given phenotype group. By also setting
@@ -194,7 +206,11 @@ The singscore manuscript describes the theoretical method of standarization whic
 
     rank_biased_overlap:  {'rbo_depth', n}  (n: int)
 
-Here, n is the depth that is decended down the ranks, where at each step, the overlap with the gene set is measured and added to the score.
+Here, n is the depth that is decended down the ranks, where at each step, the overlap with the gene set is measured and added to the score.::
+
+    ssGSEA: {'omega': 0.75}
+
+The ssGSEA method uses this parameter as a exponent to the ranks. It has been strongly suggested to use 0.75.
 
 *The following methods do not have additional options.*
 
@@ -214,3 +230,7 @@ singscore:  https://pubmed.ncbi.nlm.nih.gov/30400809/
 anndata: https://anndata.readthedocs.io/en/latest/
 
 MSigDB: https://www.gsea-msigdb.org/gsea/msigdb/
+
+ssGSEA: https://gsea-msigdb.github.io/ssGSEA-gpmodule/v10/index.html
+
+decoupler: https://academic.oup.com/bioinformaticsadvances/article/2/1/vbac016/6544613
