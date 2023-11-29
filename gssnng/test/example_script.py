@@ -16,19 +16,19 @@ if __name__ == '__main__':
         print("scoring cells")
         score_cells.with_gene_sets(
                 adata=q,
-                gene_set_file="data/cibersort_lm22.gmt",
+                gene_set_file="gssnng/gssnng/test/data/cibersort_lm22.gmt",
                 groupby='louvain',
                 smooth_mode='connectivity',
                 recompute_neighbors=0,
-                score_method="singscore",
-                method_params={'normalization':'theoretical'},
+                score_method="geneset_overlap",
+                method_params= {'threshold': 0, 'fraction': False},
                 ranked=True,
                 cores=8
             )
 
         t1 = time.time()
 
-        print("MEAN SCORES for the T.cells.CD8.up signature")
+        print("MEAN GENESET OVERLAP for the T.cells.CD8.up signature")
         print(q.obs.groupby(['louvain'])['T.cells.CD8.up'].mean().reset_index())
 
         print('end time: ' + str(t1))
@@ -38,19 +38,19 @@ if __name__ == '__main__':
         print("scoring cells ... again!")
         score_cells.with_gene_sets(
                 adata=q,
-                gene_set_file="data/cibersort_lm22.gmt",
+                gene_set_file="gssnng/gssnng/test/data/cibersort_lm22.gmt",
                 groupby='louvain',
                 smooth_mode='connectivity',
                 recompute_neighbors=0,
-                score_method="singscore",
-                method_params={'normalization':'theoretical'},
+                score_method="summed_up",
+                method_params={},
                 ranked=True,
                 cores=8
             )
 
         t2 = time.time()
 
-        print("MEAN SCORES for the T.cells.CD8.up signature")
+        print("MEAN SUMMED_UP SCORES for the T.cells.CD8.up signature")
         print(q.obs.groupby(['louvain'])['T.cells.CD8.up'].mean().reset_index())
 
         print('end time: ' + str(t1))
