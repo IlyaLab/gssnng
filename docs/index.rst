@@ -77,6 +77,8 @@ Scoring Functions
 
 The list of scoring functions::
 
+    geneset_overlap: For each geneset, number (or fraction) of genes expressed past a given threshold.
+
     singscore:      Normalised mean (median centered) ranks (requires ranked data)
 
     ssGSEA:         Single sample GSEA based on ranked data.
@@ -103,7 +105,7 @@ Copy the script out from the cloned repo and run, check the paths if you get an 
 
  cp gssnng/gssnng/test/example_script.py  .
 
- python3.10 test_gssnng.py
+ python3.10 example_script.py
 
 
 Usage

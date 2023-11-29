@@ -31,7 +31,7 @@ Method references (singscore, RBO) are below.
 Some methods have additional parameters, see below!
 
 ```
-    geneset_overlap: Number (or fraction) of genes, past an expression threshold, that overlap with each geneset.
+    geneset_overlap: For each geneset, number (or fraction) of genes expressed past a given threshold.
 
     singscore:       Normalised mean (median centered) ranks (requires ranked data)
     
@@ -73,7 +73,7 @@ Copy the script out from the cloned repo and run, check the paths if you get an 
 ```
  cp gssnng/gssnng/test/example_script.py  .
  
- python3 test_gssnng.py
+ python3 example_script.py
 ```
 
 
@@ -201,4 +201,4 @@ anndata: https://anndata.readthedocs.io/en/latest/
 
 MSigDB: https://www.gsea-msigdb.org/gsea/msigdb/
 
-
+decoupler: https://academic.oup.com/bioinformaticsadvances/article/2/1/vbac016/6544613
