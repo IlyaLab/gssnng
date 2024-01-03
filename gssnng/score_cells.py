@@ -229,7 +229,8 @@ def _proc_data(
         samp_neighbors: int,
         noise_trials: int,
         ranked: bool,
-        cores: int
+        cores: int,
+        return_data: int
                      ):
     """
     In many cases, the neighbors should be defined.  If you have mixed clinical endpoints,
@@ -247,6 +248,7 @@ def _proc_data(
     :param noise_trials: number of noisy samples to create, integer
     :param ranked: whether the gene expression counts should be rank ordered
     :param cores: number of parallel processes to work through groupby groups
+    :param return_data: should the smoothed data list be returned?
 
     :returns: scores in a dict for each cell in a list.
     """
@@ -283,6 +285,9 @@ def _proc_data(
 
     data_list = _build_data_list(adata, groupby, cats, recompute_neighbors, samp_neighbors, smooth_mode)
     # then we can start scoring cells #
+
+    if return_data == 1:
+        return(data_list)
 
     # building up the argument list for the parallel call of _score_all_cells_all_sets
     arglist = []
