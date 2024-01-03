@@ -89,7 +89,7 @@ def run_gssnng(
     # score each cell with the list of gene sets
     all_scores = _proc_data(mat, gs_obj, groupby, smooth_mode, recompute_neighbors,
                                   score_method, method_params, samp_neighbors,
-                                  noise_trials, ranked, cores)
+                                  noise_trials, ranked, cores, 0)
 
     # warning: the all_scores rows might have a diferent order!
     # make sure to resort them according to the mat.obs.index
@@ -162,7 +162,7 @@ def with_gene_sets(
     # score each cell with the list of gene sets
     all_scores = _proc_data(adata, gs_obj, groupby, smooth_mode, recompute_neighbors,
                                   score_method, method_params, samp_neighbors,
-                                  noise_trials, ranked, cores)
+                                  noise_trials, ranked, cores, 0)
     ## join in new results
     adata.obs = adata.obs.join(all_scores, how='left')
 
