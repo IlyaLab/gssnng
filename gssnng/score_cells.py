@@ -81,7 +81,7 @@ def run_gssnng(
 
     samp_neighbors = None
     error_checking(mat, samp_neighbors, recompute_neighbors,
-                   gs_obj, score_method, ranked, method_params)
+                   gs_obj, score_method, ranked, method_params, 0)
 
     if method_params == None:
         method_params = dict()
@@ -154,7 +154,7 @@ def with_gene_sets(
 
     samp_neighbors = None
     error_checking(adata, samp_neighbors, recompute_neighbors,
-                   gs_obj, score_method, ranked, method_params)
+                   gs_obj, score_method, ranked, method_params, 0)
 
     if method_params == None:
         method_params = dict()
