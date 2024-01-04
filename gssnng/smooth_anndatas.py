@@ -13,12 +13,7 @@ def smooth_anndata(
     ) -> anndata.AnnData:
 
     """
-    gene set scoring (all gene sets in file) with nearest neighbor smoothing of the expression matrix
-
-    Improved single cell scoring by:
-    - smoothing the data matrix
-        - adding noise to the nearest neighbor smoothing via `samp_neighbors`
-    - adding noise to the expression data itself (via noise_trials)
+    nearest neighbor smoothing of the expression matrix
 
     :param adata
         anndata.AnnData containing the cells to be scored
@@ -34,7 +29,7 @@ def smooth_anndata(
     :param cores
         number of parallel processes to work through groupby groups
 
-    :returns: adata with gene set scores in .obs
+    :returns: a list of adatas with smoothed data
     """
 
     return_data = 1
