@@ -14,7 +14,7 @@ This package works with Scanpy AnnData objects stored as h5ad files.
   * and finally, [Read the Docs!](https://gssnng.readthedocs.io/en/latest/)
 
 
-More info:
+
 The GSSNNG method is based on using the nearest neighbor graph of cells for data smoothing. This essentially creates 
 mini-pseudobulk expression profiles for each cell, which can be scored by using single sample gene set scoring 
 methods often associated with bulk RNA-seq. 
