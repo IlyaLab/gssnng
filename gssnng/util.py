@@ -14,7 +14,8 @@ def error_checking(
         gs_obj,
         score_method,
         ranked,
-        method_params
+        method_params,
+        just_smoothing
 ):
     """
     QC on the adata. Need to make sure there's enough neighbors available given the sampling size.
@@ -23,29 +24,32 @@ def error_checking(
     :param samp_neighbors: integer, number of neighbors to sample
     """
 
-    if type(method_params) != type(dict()):
-        raise Exception('ERROR: please use a dictionary to pass method params')
-
-    if any([xi in adata.obs.columns for xi in gs_obj.get_gs_names()]):
-        #raise Exception('ERROR: gene set names in columns of adata.obs, please drop.')
-        print("Warning! Dropping gene set names from obs!")
-        genesetlist = [x.name for x in gs_obj.set_list]
-        for gsi in genesetlist:
-            print('dropping: ' + gsi)
-            adata.obs.drop(columns=[gsi], inplace=True)
-
     if 'gssnng_groupby' in adata.obs.columns:
         adata.obs.drop(columns='gssnng_groupby', inplace=True)
         #raise Exception("Error: please drop 'gssnng_groupby' as a column name.")
         print('... and dropping gssnng_groupby column...')
 
-    if ranked == False and score_method == 'singscore':
-        raise Exception('ERROR: singscore requires ranked data, set ranked parameter to True')
-
     if (recompute_neighbors == None) or (recompute_neighbors == 0):
         n_neighbors = adata.uns['neighbors']['params']['n_neighbors'] #[0]# in older AnnData versions need this??
     else:
         n_neighbors = recompute_neighbors
+
+    if just_smoothing == 0:
+        # then do all other checks
+        if type(method_params) != type(dict()):
+            raise Exception('ERROR: please use a dictionary to pass method params')
+
+        if any([xi in adata.obs.columns for xi in gs_obj.get_gs_names()]):
+            #raise Exception('ERROR: gene set names in columns of adata.obs, please drop.')
+            print("Warning! Dropping gene set names from obs!")
+            genesetlist = [x.name for x in gs_obj.set_list]
+            for gsi in genesetlist:
+                print('dropping: ' + gsi)
+                adata.obs.drop(columns=[gsi], inplace=True)
+
+        if ranked == False and score_method == 'singscore':
+            raise Exception('ERROR: singscore requires ranked data, set ranked parameter to True')
+
 
     #if n_neighbors < samp_neighbors:
     #    print('*******')

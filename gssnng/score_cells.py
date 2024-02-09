@@ -81,7 +81,7 @@ def run_gssnng(
 
     samp_neighbors = None
     error_checking(mat, samp_neighbors, recompute_neighbors,
-                   gs_obj, score_method, ranked, method_params)
+                   gs_obj, score_method, ranked, method_params, 0)
 
     if method_params == None:
         method_params = dict()
@@ -89,7 +89,7 @@ def run_gssnng(
     # score each cell with the list of gene sets
     all_scores = _proc_data(mat, gs_obj, groupby, smooth_mode, recompute_neighbors,
                                   score_method, method_params, samp_neighbors,
-                                  noise_trials, ranked, cores)
+                                  noise_trials, ranked, cores, 0)
 
     # warning: the all_scores rows might have a diferent order!
     # make sure to resort them according to the mat.obs.index
@@ -154,7 +154,7 @@ def with_gene_sets(
 
     samp_neighbors = None
     error_checking(adata, samp_neighbors, recompute_neighbors,
-                   gs_obj, score_method, ranked, method_params)
+                   gs_obj, score_method, ranked, method_params, 0)
 
     if method_params == None:
         method_params = dict()
@@ -162,7 +162,7 @@ def with_gene_sets(
     # score each cell with the list of gene sets
     all_scores = _proc_data(adata, gs_obj, groupby, smooth_mode, recompute_neighbors,
                                   score_method, method_params, samp_neighbors,
-                                  noise_trials, ranked, cores)
+                                  noise_trials, ranked, cores, 0)
     ## join in new results
     adata.obs = adata.obs.join(all_scores, how='left')
 
@@ -229,7 +229,8 @@ def _proc_data(
         samp_neighbors: int,
         noise_trials: int,
         ranked: bool,
-        cores: int
+        cores: int,
+        return_data: int
                      ):
     """
     In many cases, the neighbors should be defined.  If you have mixed clinical endpoints,
@@ -247,6 +248,7 @@ def _proc_data(
     :param noise_trials: number of noisy samples to create, integer
     :param ranked: whether the gene expression counts should be rank ordered
     :param cores: number of parallel processes to work through groupby groups
+    :param return_data: should the smoothed data list be returned?
 
     :returns: scores in a dict for each cell in a list.
     """
@@ -283,6 +285,9 @@ def _proc_data(
 
     data_list = _build_data_list(adata, groupby, cats, recompute_neighbors, samp_neighbors, smooth_mode)
     # then we can start scoring cells #
+
+    if return_data == 1:
+        return(data_list)
 
     # building up the argument list for the parallel call of _score_all_cells_all_sets
     arglist = []
