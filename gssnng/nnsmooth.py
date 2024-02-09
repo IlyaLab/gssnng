@@ -3,12 +3,11 @@ from gssnng.score_cells import _proc_data
 from gssnng.util import error_checking
 from typing import Union
 
-def smooth_anndata(
+def smooth_adata(
         adata: anndata.AnnData,
         groupby: Union[str, list, dict],
         smooth_mode: str,
         recompute_neighbors: int,
-        method_params: dict,
         cores: int
     ) -> anndata.AnnData:
 
@@ -45,7 +44,7 @@ def smooth_anndata(
 
     # score each cell with the list of gene sets
     data_list = _proc_data(adata, None, groupby, smooth_mode, recompute_neighbors,
-                                  None, method_params, samp_neighbors,
+                                  None, None, samp_neighbors,
                                   noise_trials, None, cores, return_data)
 
     print("**done**")

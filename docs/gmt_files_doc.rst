@@ -27,6 +27,8 @@ Gene Set Scoring on the Nearest Neighbor Graph (gssnng) for Single Cell RNA-seq 
 
 `**Notebook using Decoupler/Omnipath style API** <https://colab.research.google.com/github/IlyaLab/gssnng/blob/main/notebooks/Scoring_PBMC_data_with_the_GSSNNG_decoupleR_API.ipynb>`_
 
+`**Notebook for creating smoothed count matrices**<https://www.google.com>`_
+
 `**See the paper** <https://academic.oup.com/bioinformaticsadvances/article/3/1/vbad150/7321111?login=false>`_
 
 
@@ -46,23 +48,58 @@ Installation
 
 Install the package using the following commands::
 
-   pip3 install gssnng
+    python3 -m pip install gssnng
+
+    # or to from github
+    python3 -m pip install git+https://github.com/IlyaLab/gssnng
 
 
 
-Installation from GitHub
-========================
+Example script
+==============
 
-   git clone https://github.com/IlyaLab/gssnng
+Copy the script out from the cloned repo and run, check the paths if you get an error.
 
-   pip install -e gssnng
+::
+
+ cp gssnng/gssnng/test/example_gmt_input.py  .
+
+ python3.10 example_gmt_input.py
 
 
+Usage
+======
+
+See gssnng/notebooks for examples on all methods.
+
+1. Read in an AnnData object using scanpy (an h5ad file).
+
+2. Get gene sets formatted as a .gmt file. (default is UP, also uses _UP,  _DN, and split gene sets _UP+_DN), see below for more details.
+
+3. Score cells, each gene set will show up as a column in adata.obs.
+
+::
+
+   from gssnng import score_cells
+
+    q = sc.datasets.pbmc3k_processed()
+
+    scores_cells.with_gene_sets(adata=q,                            # AnnData object
+                                gene_set_file='cibersort_lm22.gmt', # File path of gene sets
+                                groupby='louvain',                  # Will sample neighbors within this group, can take a list
+                                smooth_mode='connectivity',         # Smooths matrix using distance weights from NN graph.
+                                recompute_neighbors=32,              # Rebuild nearest neighbor graph with groups, 0 turns off function
+                                score_method='singscore',           # Method of scoring
+                                method_params={'normalization':'theoretical'},  # Special parameters for some methods
+                                ranked=True,                        # Use ranked data, True or False
+                                cores=8)                            # Groups are scored in parallel.
+
+    sc.pl.umap(q, color=['louvain','T.cells.CD8.up'], wspace=0.35)
 
 Scoring Functions
 =================
 
-The list of scoring functions::
+The list of scoring functions:
 
     geneset_overlap: For each geneset, number (or fraction) of genes expressed past a given threshold.
 
@@ -81,48 +118,6 @@ The list of scoring functions::
     median_score:   Median of counts or ranks
 
     summed_up:      Sum up the ranks or counts.
-
-
-
-
-Example script
-==============
-
-Copy the script out from the cloned repo and run, check the paths if you get an error.::
-
- cp gssnng/gssnng/test/example_script.py  .
-
- python3.10 example_script.py
-
-
-Usage
-======
-
-See gssnng/notebooks for examples on all methods.
-
-1. Read in an AnnData object using scanpy (an h5ad file).
-
-2. Get gene sets formatted as a .gmt file. (default is UP, also uses _UP,  _DN, and split gene sets _UP+_DN)
-
-3. Score cells, each gene set will show up as a column in adata.obs.
-
-.. code-block::
-
-   from gssnng import score_cells
-
-    q = sc.datasets.pbmc3k_processed()
-
-    scores_cells.with_gene_sets(adata=q,                            # AnnData object
-                                gene_set_file='cibersort_lm22.gmt', # File path of gene sets
-                                groupby='louvain',                  # Will sample neighbors within this group, can take a list
-                                smooth_mode='connectivity',         # Smooths matrix using distance weights from NN graph.
-                                recompute_neighbors=32,              # Rebuild nearest neighbor graph with groups, 0 turns off function
-                                score_method='singscore',           # Method of scoring
-                                method_params={'normalization':'theoretical'},  # Special parameters for some methods
-                                ranked=True,                        # Use ranked data, True or False
-                                cores=8)                            # Groups are scored in parallel.
-
-    sc.pl.umap(q, color=['louvain','T.cells.CD8.up'], wspace=0.35)
 
 
 Parameters

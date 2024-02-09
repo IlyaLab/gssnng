@@ -1,7 +1,7 @@
 if __name__ == '__main__':
 
     import scanpy as sc
-    from gssnng.smooth_anndatas import smooth_anndata
+    from gssnng.nnsmooth import smooth_anndata
     import time
 
     def test_return_smoothed(adata):

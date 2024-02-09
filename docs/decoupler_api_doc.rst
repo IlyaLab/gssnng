@@ -27,6 +27,8 @@ Gene Set Scoring on the Nearest Neighbor Graph (gssnng) for Single Cell RNA-seq 
 
 `**Notebook using Decoupler/Omnipath style API** <https://colab.research.google.com/github/IlyaLab/gssnng/blob/main/notebooks/Scoring_PBMC_data_with_the_GSSNNG_decoupleR_API.ipynb>`_
 
+`**Notebook for creating smoothed count matrices**<https://www.google.com>`_
+
 `**See the paper** <https://academic.oup.com/bioinformaticsadvances/article/3/1/vbad150/7321111?login=false>`_
 
 This package works with AnnData objects stored as h5ad files. Expression values are taken from adata.X.
@@ -45,16 +47,62 @@ Installation
 
 Install the package using the following commands::
 
-   pip3 install gssnng
+    python3 -m pip install gssnng
+
+    # or to from github
+    python3 -m pip install git+https://github.com/IlyaLab/gssnng
 
 
 
-Installation from GitHub
-========================
+Example script
+==============
 
-   git clone https://github.com/IlyaLab/gssnng
+Copy the script out from the cloned repo and run, check the paths if you get an error.
 
-   pip install -e gssnng
+::
+
+ cp gssnng/gssnng/test/example_decoupler_omnipath_api.py  .
+
+ python3.10 example_decoupler_omnipath_api.py
+
+Usage
+======
+
+See gssnng/notebooks for examples on all methods.
+
+1. Read in an AnnData object using scanpy (an h5ad file).
+
+2. Get the model from omnipath via the decoupler API.  You may want to filter out genes negatively associated with the pathway, see the example.
+
+3. Score cells, each gene set will show up as a column in adata.obsm['gssnng_estimate'].
+
+::
+
+   from gssnng import score_cells
+
+    q = sc.datasets.pbmc3k_processed()
+
+    # OmniPath Model #
+    model = dc.get_progeny().query('weight>0')
+
+    score_cells.run_gssnng(
+        adata, model,
+        source='source',target='target', weight='weight',
+        groupby="louvain",
+        smooth_mode='connectivity',
+        recompute_neighbors=32,
+        score_method="mean_z",
+        method_params={},
+        ranked=False,
+        cores=6
+    )
+
+    # Extracts activities as AnnData object.
+    acts_gss = dc.get_acts(adata, obsm_key='gssnng_estimate')
+
+    # Now we can plot the gene set scores
+    sc.pl.umap(acts_gss, color=sorted(acts_gss.var_names), cmap='coolwarm')
+
 
 
 
@@ -84,51 +132,6 @@ The list of scoring functions::
 
 
 
-Example script
-==============
-
-Copy the script out from the cloned repo and run, check the paths if you get an error.::
-
- cp gssnng/gssnng/test/example_decoupler_omnipath_api.py  .
-
- python3.10 example_decoupler_omnipath_api.py
-
-
-Usage
-======
-
-See gssnng/notebooks for examples on all methods.
-
-1. Read in an AnnData object using scanpy (an h5ad file).
-
-2. Get the model from omnipath via the decoupler API.
-
-3. Score cells, each gene set will show up as a column in adata.obs.
-
-.. code-block::
-
-   from gssnng import score_cells
-
-    q = sc.datasets.pbmc3k_processed()
-
-    model = dc.get_progeny().query('weight>0')
-
-    score_cells.run_gssnng(
-        adata, model,
-        source='source',target='target', weight='weight',
-        groupby="louvain", # None
-        smooth_mode='connectivity',
-        recompute_neighbors=32,
-        score_method="mean_z",
-        method_params={}, # 'normalization':'standard'
-        ranked=False,
-        cores=6
-    )
-
-    #Extracts activities as AnnData object.
-    acts_gss = dc.get_acts(adata, obsm_key='gssnng_estimate')
-
-    sc.pl.umap(acts_gss, color=sorted(acts_gss.var_names), cmap='coolwarm')
 
 
 Parameters
@@ -141,6 +144,11 @@ These parameters are used with the "scores_cells.with_gene_sets" function.::
 
     model: str
     The decoupler gene set model. See Omnipath Wrappers (https://saezlab.github.io/decoupleR/reference/index.html#omnipath-wrappers).
+
+    source: str
+    weight: str
+    target: str
+    Each pathway in OmniPath is a collection of *target* genes from a *source* (i.e. pathway), where each has an interaction *weight*.
 
     groupby: [str, list, dict]
     either a column label in adata.obs, and all categories taken, or a dict specifies one group.
