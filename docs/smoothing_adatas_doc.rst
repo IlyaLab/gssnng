@@ -52,7 +52,9 @@ See gssnng/notebooks for examples on all methods.
 
 2. Get gene sets formatted as a .gmt file. (default is UP, also uses _UP,  _DN, and split gene sets _UP+_DN), see below for more details.
 
-3. Score cells, each gene set will show up as a column in adata.obs.
+3. Smooth, each category defined by the groupby will be an AnnData.
+
+4. Returned list is a tuple of (AnnData, Groupby-Category)
 
 ::
 
@@ -66,7 +68,9 @@ See gssnng/notebooks for examples on all methods.
                                        recompute_neighbors=11,     # Rebuild nearest neighbor graph with groups, 0 turns off function
                                        cores=4)                    # Smoothed in parallel.
 
-
+    # q_list is a list of tuples
+    for qi in q_list:
+        print(qi[1])  # the groupby-category names
 
 Parameters
 ----------

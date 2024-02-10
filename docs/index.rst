@@ -14,7 +14,7 @@ Contents
 
 .. toctree::
    Using gene set gmt files <gmt_files_doc>
-   The decoupler/omnipath api <decoupler_api_doc>
+   Decoupler/OmniPath API <decoupler_api_doc>
    Smooth count matrices <smoothing_adatas_doc>
 
 The problem: The sparsity of scRNA-seq data creates a poor overlap with many gene sets, which in turn makes gene set scoring difficult.
