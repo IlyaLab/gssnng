@@ -11,7 +11,7 @@ Gene Set Scoring on the Nearest Neighbor Graph (gssnng) for Single Cell RNA-seq 
 ..
     .. toctree::
        :caption: Table of Contents
-       :maxdepth: 0
+       :maxdepth: 1
 
 
 `**Notebook using gmt files**  <https://colab.research.google.com/github/IlyaLab/gssnng/blob/main/notebooks/gssnng_quick_start.ipynb>`_
@@ -28,7 +28,7 @@ For creating groups, up to four categorical variables can be used, which are fou
 
 
 Installation
-============
+------------
 
 Install the package using the following commands::
 
@@ -40,7 +40,7 @@ Install the package using the following commands::
 
 
 Example script
-==============
+--------------
 
 Copy the script out from the cloned repo and run, check the paths if you get an error.
 
@@ -52,7 +52,7 @@ Copy the script out from the cloned repo and run, check the paths if you get an 
 
 
 Usage
-======
+-----
 
 See gssnng/notebooks for examples on all methods.
 
@@ -77,7 +77,7 @@ See gssnng/notebooks for examples on all methods.
 
 
 Parameters
-==========
+----------
 
 These parameters are used with the "scores_cells.with_gene_sets" function.::
 
@@ -100,7 +100,7 @@ These parameters are used with the "scores_cells.with_gene_sets" function.::
 
 
 Groupby
-=======
+-------
 
 The specific neighborhood for each cell can be controlled by using the groupby parameter. In the example
 above, by setting groupby='louvain', only cells within a louvain cluster will be considered as being part of the
@@ -114,7 +114,7 @@ neighborhood leads to more controlled smoothing of the count matrix and is more 
 
 
 References
-==========
+----------
 
 rank biased overlap:  https://arxiv.org/pdf/1408.3587.pdf
 

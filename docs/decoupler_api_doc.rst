@@ -4,14 +4,14 @@ You can adapt this file completely to your liking, but it should at least
 contain the root `toctree` directive.
 
 gssnng using the decoupler-omnipath api
-==================================
+=======================================
 
 Gene Set Scoring on the Nearest Neighbor Graph (gssnng) for Single Cell RNA-seq (scRNA-seq).
 
 ..
     .. toctree::
        :caption: Table of Contents
-       :maxdepth: 0
+       :maxdepth: 1
 
 
 `**Notebook using gmt files**  <https://colab.research.google.com/github/IlyaLab/gssnng/blob/main/notebooks/gssnng_quick_start.ipynb>`_
@@ -34,7 +34,7 @@ Some methods have additional parameters, see below!
 
 
 Installation
-============
+------------
 
 Install the package using the following commands::
 
@@ -46,7 +46,7 @@ Install the package using the following commands::
 
 
 Example script
-==============
+--------------
 
 Copy the script out from the cloned repo and run, check the paths if you get an error.
 
@@ -57,7 +57,7 @@ Copy the script out from the cloned repo and run, check the paths if you get an 
  python3.10 example_decoupler_omnipath_api.py
 
 Usage
-======
+-----
 
 See gssnng/notebooks for examples on all methods.
 
@@ -98,7 +98,7 @@ See gssnng/notebooks for examples on all methods.
 
 
 Scoring Functions
-=================
+-----------------
 
 The list of scoring functions::
 
@@ -126,7 +126,7 @@ The list of scoring functions::
 
 
 Parameters
-==========
+----------
 
 These parameters are used with the "scores_cells.with_gene_sets" function.::
 
@@ -166,7 +166,7 @@ These parameters are used with the "scores_cells.with_gene_sets" function.::
 
 
 Groupby
-=======
+-------
 
 The specific neighborhood for each cell can be controlled by using the groupby parameter. In the example
 above, by setting groupby='louvain', only cells within a louvain cluster will be considered as being part of the
@@ -180,12 +180,13 @@ neighborhood leads to more controlled smoothing of the count matrix and is more 
 
 
 Gene sets
-=========
+---------
 
 We are following the Omnipath wrapper APIs supplied by Decoupler.
 See: https://saezlab.github.io/decoupleR/reference/index.html#omnipath-wrappers  for available gene sets.
 
-## Method options
+Method parameters
+-----------------
 
 Some methods have some additional options. They are passed as a dictionary, method_params={param_name, param_value}.::
 
@@ -210,7 +211,7 @@ The ssGSEA method uses this parameter as a exponent to the ranks. It has been st
     summed_up
 
 References
-==========
+----------
 
 rank biased overlap:  https://arxiv.org/pdf/1408.3587.pdf
 
