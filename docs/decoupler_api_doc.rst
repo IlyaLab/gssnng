@@ -13,14 +13,7 @@ Gene Set Scoring on the Nearest Neighbor Graph (gssnng) for Single Cell RNA-seq 
        :caption: Table of Contents
        :maxdepth: 2
 
-       Installation
-       Example script
-       Usage
-       Scoring Functions
-       Parameters
-       Groupby
-       Gene sets
-       References
+       ___Usage
 
 
 `**Notebook using gmt files**  <https://colab.research.google.com/github/IlyaLab/gssnng/blob/main/notebooks/gssnng_quick_start.ipynb>`_
