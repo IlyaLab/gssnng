@@ -13,9 +13,9 @@ Contents
 --------
 
 .. toctree::
-   gssnng with gene set gmt files <gmt_files_doc>
-   gssnng with a decoupler/omnipath style <decoupler_api_doc>
-   gssnng to smooth count matrices <smoothing_adatas_doc>
+   Using gene set gmt files <gmt_files_doc>
+   The decoupler/omnipath api <decoupler_api_doc>
+   Smooth count matrices <smoothing_adatas_doc>
 
 The problem: The sparsity of scRNA-seq data creates a poor overlap with many gene sets, which in turn makes gene set scoring difficult.
 The GSSNNG method is based on using the nearest neighbor graph of cells for data smoothing. This essentially creates mini-pseudobulk expression profiles for each cell, which can be scored by using single sample gene set scoring methods often associated with bulk RNA-seq.
@@ -23,9 +23,7 @@ Nearest neighbor graphs (NNG) are constructed based on user defined groups (see 
 
 This package works with AnnData objects stored as h5ad files. Expression values are taken from adata.X. For creating groups, up to four categorical variables can be used, which are found in the adata.obs table. Gene sets can be provided by using .gmt files or through the OmniPath API (see below).
 
-Scoring functions work with ranked or unranked data ("your mileage may vary")
-
 .. note::
 
-   This project is under active development. Please consider using a named release.
+   This project is under active development. Please consider using a named release if you're concerned about reproducibility.
 

@@ -3,8 +3,8 @@ sphinx-quickstart on Wed Apr 27 09:20:15 2022.
 You can adapt this file completely to your liking, but it should at least
 contain the root `toctree` directive.
 
-gssnng to make smoothed count matrices
-======================================
+Smoothing count matrices
+========================
 
 Gene Set Scoring on the Nearest Neighbor Graph (gssnng) for Single Cell RNA-seq (scRNA-seq).
 
@@ -13,15 +13,7 @@ Gene Set Scoring on the Nearest Neighbor Graph (gssnng) for Single Cell RNA-seq 
        :caption: Table of Contents
        :maxdepth: 1
 
-
-`**Notebook using gmt files**  <https://colab.research.google.com/github/IlyaLab/gssnng/blob/main/notebooks/gssnng_quick_start.ipynb>`_
-
-`**Notebook using Decoupler/Omnipath style API** <https://colab.research.google.com/github/IlyaLab/gssnng/blob/main/notebooks/Scoring_PBMC_data_with_the_GSSNNG_decoupleR_API.ipynb>`_
-
-`**Notebook for creating smoothed count matrices**<https://www.google.com>`_
-
 `**See the paper** <https://academic.oup.com/bioinformaticsadvances/article/3/1/vbad150/7321111?login=false>`_
-
 
 This package works with AnnData objects stored as h5ad files. Expression values are taken from adata.X.
 For creating groups, up to four categorical variables can be used, which are found in the adata.obs table.

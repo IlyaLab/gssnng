@@ -3,7 +3,7 @@ sphinx-quickstart on Wed Apr 27 09:20:15 2022.
 You can adapt this file completely to your liking, but it should at least
 contain the root `toctree` directive.
 
-gssnng using gmt files
+Genesets as .gmt files
 ======================
 
 Gene Set Scoring on the Nearest Neighbor Graph (gssnng) for Single Cell RNA-seq (scRNA-seq).
@@ -15,10 +15,6 @@ Gene Set Scoring on the Nearest Neighbor Graph (gssnng) for Single Cell RNA-seq 
 
 
 `**Notebook using gmt files**  <https://colab.research.google.com/github/IlyaLab/gssnng/blob/main/notebooks/gssnng_quick_start.ipynb>`_
-
-`**Notebook using Decoupler/Omnipath style API** <https://colab.research.google.com/github/IlyaLab/gssnng/blob/main/notebooks/Scoring_PBMC_data_with_the_GSSNNG_decoupleR_API.ipynb>`_
-
-`**Notebook for creating smoothed count matrices**<https://www.google.com>`_
 
 `**See the paper** <https://academic.oup.com/bioinformaticsadvances/article/3/1/vbad150/7321111?login=false>`_
 
@@ -57,7 +53,6 @@ Copy the script out from the cloned repo and run, check the paths if you get an 
 
  python3.10 example_gmt_input.py
 
-
 Usage
 -----
 
@@ -90,25 +85,25 @@ See gssnng/notebooks for examples on all methods.
 Scoring Functions
 -----------------
 
-The list of scoring functions:
+The list of scoring functions::
 
-    geneset_overlap: For each geneset, number (or fraction) of genes expressed past a given threshold.
+    **geneset_overlap**: For each geneset, number (or fraction) of genes expressed past a given threshold.
 
-    singscore:      Normalised mean (median centered) ranks (requires ranked data)
+    **singscore**:      Normalised mean (median centered) ranks (requires ranked data)
 
-    ssGSEA:         Single sample GSEA based on ranked data.
+    **ssGSEA**:         Single sample GSEA based on ranked data.
 
-    rank_biased_overlap:  RBO, Weighted average of agreement between sorted ranks and gene set.
+    **rank_biased_overlap**:  RBO, Weighted average of agreement between sorted ranks and gene set.
 
-    robust_std:     Med(x-med / mad), median of robust standardized values (recommend unranked).
+    **robust_std**:     Med(x-med / mad), median of robust standardized values (recommend unranked).
 
-    mean_z:         Mean( (x - mean)/stddv ), average z score. (recommend unranked).
+    **mean_z**:         Mean( (x - mean)/stddv ), average z score. (recommend unranked).
 
-    average_score:  Mean ranks or counts
+    **average_score**:  Mean ranks or counts
 
-    median_score:   Median of counts or ranks
+    **median_score**:   Median of counts or ranks
 
-    summed_up:      Sum up the ranks or counts.
+    **summed_up**:      Sum up the ranks or counts.
 
 
 Parameters
@@ -176,7 +171,7 @@ Some methods have some additional options. They are passed as a dictionary, meth
 
     singscore:  {'normalization', 'theoretical'}, {'normalization', 'standard'}
 
-The singscore manuscript describes the theoretical method of standarization which involves determining the theoretical max and minimum ranks for the given gene set.::
+The singscore manuscript describes the theoretical method of standardization which involves determining the theoretical max and minimum ranks for the given gene set.::
 
     rank_biased_overlap:  {'rbo_depth', n}  (n: int)
 

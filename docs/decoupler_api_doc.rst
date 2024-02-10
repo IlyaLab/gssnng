@@ -3,8 +3,8 @@ sphinx-quickstart on Wed Apr 27 09:20:15 2022.
 You can adapt this file completely to your liking, but it should at least
 contain the root `toctree` directive.
 
-gssnng using the decoupler-omnipath api
-=======================================
+The decoupler-omnipath api
+==========================
 
 Gene Set Scoring on the Nearest Neighbor Graph (gssnng) for Single Cell RNA-seq (scRNA-seq).
 
@@ -13,12 +13,7 @@ Gene Set Scoring on the Nearest Neighbor Graph (gssnng) for Single Cell RNA-seq 
        :caption: Table of Contents
        :maxdepth: 1
 
-
-`**Notebook using gmt files**  <https://colab.research.google.com/github/IlyaLab/gssnng/blob/main/notebooks/gssnng_quick_start.ipynb>`_
-
 `**Notebook using Decoupler/Omnipath style API** <https://colab.research.google.com/github/IlyaLab/gssnng/blob/main/notebooks/Scoring_PBMC_data_with_the_GSSNNG_decoupleR_API.ipynb>`_
-
-`**Notebook for creating smoothed count matrices**<https://www.google.com>`_
 
 `**See the paper** <https://academic.oup.com/bioinformaticsadvances/article/3/1/vbad150/7321111?login=false>`_
 
@@ -102,23 +97,23 @@ Scoring Functions
 
 The list of scoring functions::
 
-    geneset_overlap: For each geneset, number (or fraction) of genes expressed past a given threshold.
+    **geneset_overlap**: For each geneset, number (or fraction) of genes expressed past a given threshold.
 
-    singscore:      Normalised mean (median centered) ranks (requires ranked data)
+    **singscore**:      Normalised mean (median centered) ranks (requires ranked data)
 
-    ssGSEA:         Single sample GSEA based on ranked data.
+    **ssGSEA**:         Single sample GSEA based on ranked data.
 
-    rank_biased_overlap:  RBO, Weighted average of agreement between sorted ranks and gene set.
+    **rank_biased_overlap**:  RBO, Weighted average of agreement between sorted ranks and gene set.
 
-    robust_std:     Med(x-med / mad), median of robust standardized values (recommend unranked).
+    **robust_std**:     Med(x-med / mad), median of robust standardized values (recommend unranked).
 
-    mean_z:         Mean( (x - mean)/stddv ), average z score. (recommend unranked).
+    **mean_z**:         Mean( (x - mean)/stddv ), average z score. (recommend unranked).
 
-    average_score:  Mean ranks or counts
+    **average_score**:  Mean ranks or counts
 
-    median_score:   Median of counts or ranks
+    **median_score**:   Median of counts or ranks
 
-    summed_up:      Sum up the ranks or counts.
+    **summed_up**:      Sum up the ranks or counts.
 
 
 
