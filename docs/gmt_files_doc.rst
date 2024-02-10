@@ -11,11 +11,7 @@ Gene Set Scoring on the Nearest Neighbor Graph (gssnng) for Single Cell RNA-seq 
 ..
     .. toctree::
        :caption: Table of Contents
-       :maxdepth: 2
-
-       ___Usage
-       ___Scoring Functions
-       ___Parameters
+       :maxdepth: 0
 
 
 `**Notebook using gmt files**  <https://colab.research.google.com/github/IlyaLab/gssnng/blob/main/notebooks/gssnng_quick_start.ipynb>`_
