@@ -11,6 +11,11 @@ from gssnng.gene_sets import genesets_from_gmt, Genesets, genesets_from_decouple
 from typing import Union
 from multiprocessing import Pool
 
+from numba.core.errors import NumbaDeprecationWarning, NumbaPendingDeprecationWarning
+import warnings
+
+warnings.simplefilter('ignore', category=NumbaDeprecationWarning)
+warnings.simplefilter('ignore', category=NumbaPendingDeprecationWarning)
 
 def run_gssnng(
     mat, net, source, target, weight, 

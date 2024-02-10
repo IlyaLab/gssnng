@@ -1,6 +1,11 @@
+#from gssnng.score_cells import _proc_data
+import gssnng
+from gssnng.util import error_checking
+from typing import Union
 import numpy as np
 from scipy import sparse
 import logging
+import anndata
 
 
 NN_DISTANCE_KEY = 'distances'  # scanpy names in .obsp
@@ -8,6 +13,58 @@ NN_CONN_KEY = 'connectivities'
 
 # TODO test: should always sum to 1
 # multiplying should leave a "one-vector" still sum to one
+
+
+# returns a list of adatas, each with a nearest neighbor smoothed expression matrix
+def smooth_adata(
+        adata: anndata.AnnData,
+        groupby: Union[str, list, dict],
+        smooth_mode: str,
+        recompute_neighbors: int,
+        cores: int
+    ) -> anndata.AnnData:
+
+    """
+    returns a list of adatas, each with a nearest neighbor smoothed expression matrix
+
+    :param adata
+        anndata.AnnData containing the cells to be scored
+    :param groupby
+        either a column label in adata.obs, and all categories taken, or a dict specifies one group.
+    :param smooth_mode
+        `adjacency` or `connectivity`, which representation of the neighborhood graph to use.
+        `adjacency` weights all neighbors equally, `connectivity` weights close neighbors more
+    :param recompute_neighbors
+        should neighbors be recomputed within each group, 0 for no, >0 for yes and specifies N
+    :param method_params
+        specific params for each method.
+    :param cores
+        number of parallel processes to work through groupby groups
+
+    :returns: a list of adatas with smoothed data
+    """
+
+    return_data = 1
+    noise_trials = 0  ### not used currently
+    samp_neighbors = None ### also not used
+    just_smoothing=1
+
+    # no params for now
+    method_params = dict()
+
+    error_checking(adata, samp_neighbors, recompute_neighbors,
+                   None, None, None, method_params, just_smoothing)
+
+
+    # score each cell with the list of gene sets
+    data_list = gssnng.score_cells._proc_data(adata, None, groupby, smooth_mode, recompute_neighbors,
+                                  None, method_params, samp_neighbors,
+                                  noise_trials, None, cores, return_data)
+
+    print("**done**")
+    return(data_list)
+
+
 
 
 def get_smoothing_matrix(adata, mode, add_diag):
