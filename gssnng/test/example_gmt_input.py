@@ -1,8 +1,8 @@
-if __name__ == '__main__':
+from gssnng import score_cells
+import scanpy as sc
+import time
 
-        from gssnng import score_cells
-        import scanpy as sc
-        import time
+def run_gmt_input():
 
         print("reading data")
         q = sc.datasets.pbmc3k_processed()
@@ -31,3 +31,6 @@ if __name__ == '__main__':
         print('end time: ' + str(t1))
         print('TOTAL TIME: ' + str(t1-t0))
         print("done")
+
+#if __name__ == '__main__':
+run_gmt_input()

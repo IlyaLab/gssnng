@@ -1,12 +1,13 @@
-if __name__ == '__main__':
 
-    import time
-    from gssnng import score_cells, gene_sets
-    import decoupler as dc
-    import omnipath
-    import scanpy as sc
-    #from scipy import sparse
+import time
+from gssnng import score_cells, gene_sets
+import decoupler as dc
+import omnipath
+import scanpy as sc
+#from scipy import sparse
 
+
+def decoupler_test():
 
     # load the data
     adata = sc.datasets.pbmc3k_processed()
@@ -17,7 +18,7 @@ if __name__ == '__main__':
     #Note: These genesets contain genes negatively associated with the signature
     # (i.e. low expression of a gene indicates the presence of a signature).
     # We filter those out here as gssnng doesn't take into account the (negative) weight.
-    print("getting model")
+    print("getting omnipath model")
     model = dc.get_progeny().query('weight>0')
 
     print(model.head())
@@ -47,4 +48,7 @@ if __name__ == '__main__':
     t1 = time.time()
     print('end time: ' + str(t1))
     print('TOTAL TIME: ' + str(t1 - t0))
-    print("done")
+    print("done with decoupler api")
+
+#if __name__ == '__main__':
+decoupler_test()

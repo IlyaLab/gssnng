@@ -5,7 +5,7 @@ def readme():
         return f.read()
 
 setup(name='gssnng',
-      version='0.4.2',
+      version='0.5.0',
       description='Gene Set Scoring on the Nearest Neighbor Graph (gssnng)',
       url='http://github.com/gibbsdavidl/gssnng',
       author='David Gibbs,Michael Strasser',

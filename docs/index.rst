@@ -3,7 +3,6 @@ gssnng
 
 Gene Set Scoring on the Nearest Neighbor Graph (gssnng) for Single Cell RNA-seq (scRNA-seq).
 
-
 Notebook using gmt gene set files ===>>> `Open In Colab <https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/IlyaLab/gssnng/blob/main/notebooks/gssnng_quick_start.ipynb>`_
 
 Notebook using the Decoupler/Omnipath style API ===>>> `Open In Colab <https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/IlyaLab/gssnng/blob/main/notebooks/Scoring_PBMC_data_with_the_GSSNNG_decoupleR_API.ipynb>`_
@@ -14,9 +13,9 @@ Contents
 --------
 
 .. toctree::
-   with gmt gene set files <gmt_files_doc>
-   with a decoupler/omnipath style <decoupler_api>
-
+   gssnng with gene set gmt files <gmt_files_doc>
+   gssnng with a decoupler/omnipath style <decoupler_api>
+   gssnng to smooth count matrices <smoothing_adatas>
 
 The problem: The sparsity of scRNA-seq data creates a poor overlap with many gene sets, which in turn makes gene set scoring difficult.
 The GSSNNG method is based on using the nearest neighbor graph of cells for data smoothing. This essentially creates mini-pseudobulk expression profiles for each cell, which can be scored by using single sample gene set scoring methods often associated with bulk RNA-seq.

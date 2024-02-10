@@ -2,7 +2,7 @@ from gssnng import smoothing
 import scanpy as sc
 import time
 
-if __name__ == '__main__':
+def run_smoothing_example():
 
         print("reading data")
         q = sc.datasets.pbmc3k_processed()
@@ -29,3 +29,6 @@ if __name__ == '__main__':
         print('end time: ' + str(t1))
         print('TOTAL TIME: ' + str(t1-t0))
         print("done")
+
+#if __name__ == '__main__':
+run_smoothing_example()
