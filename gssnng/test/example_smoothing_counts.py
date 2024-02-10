@@ -1,28 +1,30 @@
-if __name__ == '__main__':
+from gssnng import smoothing
+import scanpy as sc
+import time
 
-        from gssnng import nnsmooth
-        import scanpy as sc
-        import time
+if __name__ == '__main__':
 
         print("reading data")
         q = sc.datasets.pbmc3k_processed()
 
         t0 = time.time()
-        print('start time: ' + str(t0))
+        print('starting the smOOthing')
 
-        print("scoring cells")
-        q_list = smooth_anndatas.smooth_anndata(
+        q_list = smoothing.smooth_adata(
                 adata=q,
                 groupby='louvain',
                 smooth_mode='connectivity',
-                recompute_neighbors=0,
+                recompute_neighbors=11,
                 cores=8
             )
 
         t1 = time.time()
 
         print("Adata List with SMooTHed counts.")
+        print("Each is a tuple with groupby category and adata as elements.")
         print(len(q_list))
+        for qi in q_list:
+                print(qi[1] + "  X size: " + str(qi[0].X.shape))
 
         print('end time: ' + str(t1))
         print('TOTAL TIME: ' + str(t1-t0))

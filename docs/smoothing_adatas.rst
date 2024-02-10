@@ -14,7 +14,6 @@ Gene Set Scoring on the Nearest Neighbor Graph (gssnng) for Single Cell RNA-seq 
        :maxdepth: 2
 
        Installation
-       Scoring Functions
        Example script
        Usage
        Parameters
@@ -73,13 +72,68 @@ See gssnng/notebooks for examples on all methods.
 
 ::
 
-   from gssnng import nnsmooth
+   from gssnng import smoothing
 
     q = sc.datasets.pbmc3k_processed()
 
-    q_list = nnsmooth.smooth_adata(adata=q,                    # AnnData object
+    q_list = smoothing.smooth_adata(adata=q,                    # AnnData object
                                        groupby='louvain',          # Will sample neighbors within this group, can take a list
                                        smooth_mode='connectivity', # Smooths matrix using distance weights from NN graph.
-                                       recompute_neighbors=32,     # Rebuild nearest neighbor graph with groups, 0 turns off function
+                                       recompute_neighbors=11,     # Rebuild nearest neighbor graph with groups, 0 turns off function
                                        cores=4)                    # Smoothed in parallel.
 
+
+
+Parameters
+==========
+
+These parameters are used with the "scores_cells.with_gene_sets" function.::
+
+    adata:  AnnData object from scanpy.read_*
+    AnnData containing the cells to be scored
+
+    groupby: [str, list, dict]
+    either a column label in adata.obs, and all categories taken, or a dict specifies one group.
+    SEE DESCRIPTION BELOW
+
+    smooth_mode: "adjacency", "connectivity", or "off"
+    Dictates how to use the neighborhood graph.
+    `adjacency` weights all neighbors equally, `connectivity` weights close neighbors more
+
+    recompute_neighbors: int
+    should neighbors be recomputed within each group, 0 for no, >0 for yes and specifies N
+
+    cores: int
+    number of parallel processes to work through groupby groups
+
+
+Groupby
+=======
+
+The specific neighborhood for each cell can be controlled by using the groupby parameter. In the example
+above, by setting groupby='louvain', only cells within a louvain cluster will be considered as being part of the
+neighborhood and will available for sampling.
+
+Groupby specifies a column name that's found in the AnnData.obs table, and it can also take a list of column names.
+In that case, cells will be grouped as the intersection of categories. For example, using groupby=['louvain','phenotype']
+will take cells that are first in a given louvain cluster and then also in a given phenotype group. By also setting
+the recompute_neighbors, the nearest neighbor graph is recomputed within this subset of cells. Controlling the
+neighborhood leads to more controlled smoothing of the count matrix and is more suitable for downstream comparisons.
+
+
+References
+==========
+
+rank biased overlap:  https://arxiv.org/pdf/1408.3587.pdf
+
+singscore:  https://pubmed.ncbi.nlm.nih.gov/30400809/
+
+anndata: https://anndata.readthedocs.io/en/latest/
+
+MSigDB: https://www.gsea-msigdb.org/gsea/msigdb/
+
+ssGSEA: https://gsea-msigdb.github.io/ssGSEA-gpmodule/v10/index.html
+
+decoupler: https://academic.oup.com/bioinformaticsadvances/article/2/1/vbac016/6544613
+
+omnipath: https://omnipathdb.org/

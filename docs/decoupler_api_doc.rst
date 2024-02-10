@@ -14,9 +14,9 @@ Gene Set Scoring on the Nearest Neighbor Graph (gssnng) for Single Cell RNA-seq 
        :maxdepth: 2
 
        Installation
-       Scoring Functions
        Example script
        Usage
+       Scoring Functions
        Parameters
        Groupby
        Gene sets
