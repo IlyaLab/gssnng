@@ -2,7 +2,7 @@
 Gene Set Scoring on the Nearest Neighbor Graph (gssnng) for Single Cell RNA-seq (scRNA-seq).
 
 
-This package works with Scanpy AnnData objects stored as h5ad files.
+This package is part of the [scverse ecosystem](https://scverse.org/packages/#ecosystem) and works with Scanpy AnnData objects stored as h5ad files.
 
   *  **[Read the Docs!](https://gssnng.readthedocs.io/en/latest/)**
 
