@@ -6,17 +6,18 @@ contain the root `toctree` directive.
 Smoothing count matrices
 ========================
 
-Gene Set Scoring on the Nearest Neighbor Graph (gssnng) for Single Cell RNA-seq (scRNA-seq).
+Create an AnnData objects with smoothed counts.
 
 ..
     .. toctree::
        :caption: Table of Contents
        :maxdepth: 1
 
+`**Notebook for creating AnnData objects with smoothed counts. Added Sept. 25, 2024 **  <https://colab.research.google.com/github/IlyaLab/gssnng/blob/main/notebooks/gssnng_data_smoothing.ipynb>`_
+
 `**See the paper** <https://academic.oup.com/bioinformaticsadvances/article/3/1/vbad150/7321111?login=false>`_
 
-This package works with AnnData objects stored as h5ad files. Expression values are taken from adata.X.
-For creating groups, up to four categorical variables can be used, which are found in the adata.obs table.
+By operating on the nearest neighbor graph, we create a mini-pseudobulk expression profile of neighbors for each cell, thus smoothing the count data. Important parameters therefore include the number of neighbors for each cell and the "smooth_mode" which takes "adjacency" or "connectivity". This dictates how the neighborhood graph is used. "Adjacency" weights all neighbors equally, while "connectivity" puts more weight on close neighbors.
 
 
 Installation
@@ -68,9 +69,13 @@ See gssnng/notebooks for examples on all methods.
                                        recompute_neighbors=11,     # Rebuild nearest neighbor graph with groups, 0 turns off function
                                        cores=4)                    # Smoothed in parallel.
 
-    # q_list is a list of tuples
+    # q_list is a list of tuples  (anndata, label)
     for qi in q_list:
         print(qi[1])  # the groupby-category names
+        qi[0].X = qi[0].obsm['X_smooth'].copy()
+
+    # the new AnnData object with smoothed counts in X
+    q_new = anndata.concat([qi[0] for qi in q_list])
 
 Parameters
 ----------
