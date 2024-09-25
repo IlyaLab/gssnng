@@ -6,13 +6,13 @@ This package is part of the [scverse ecosystem](https://scverse.org/packages/#ec
 
   *  **[Read the Docs!](https://gssnng.readthedocs.io/en/latest/)**
 
-  * **Notebook using gmt files  ===>>>**  [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/IlyaLab/gssnng/blob/main/notebooks/gssnng_quick_start.ipynb)
+  * **Notebook for creating AnnData objects with smoothed counts. Added Sept. 25, 2024 ===>>>**  [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/IlyaLab/gssnng/blob/main/notebooks/gssnng_data_smoothing.ipynb)
 
-  * **Notebook using Decoupler/Omnipath style API ===>>>** [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/IlyaLab/gssnng/blob/main/notebooks/Scoring_PBMC_data_with_the_GSSNNG_decoupleR_API.ipynb)
+  * **Notebook for using .gmt gene set files to score cells ===>>>**  [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/IlyaLab/gssnng/blob/main/notebooks/gssnng_quick_start.ipynb)
 
-  * **Notebook for smoothing counts. COMING SOON! For now, see the example script in test.
+  * **Notebook using the Decoupler/Omnipath style API ===>>>** [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/IlyaLab/gssnng/blob/main/notebooks/Scoring_PBMC_data_with_the_GSSNNG_decoupleR_API.ipynb)
 
-  * **See the paper ===>>>** [gssnng](https://academic.oup.com/bioinformaticsadvances/article/3/1/vbad150/7321111?login=false)
+  * **Read the paper ===>>>** [gssnng](https://academic.oup.com/bioinformaticsadvances/article/3/1/vbad150/7321111?login=false)
 
 The GSSNNG method is based on using the nearest neighbor graph of cells for data smoothing. This essentially creates 
 mini-pseudobulk expression profiles for each cell, which can be scored by using single sample gene set scoring 
