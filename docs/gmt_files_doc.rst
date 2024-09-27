@@ -65,19 +65,19 @@ See gssnng/notebooks for examples on all methods.
 
    from gssnng import score_cells
 
-    q = sc.datasets.pbmc3k_processed()
+   q = sc.datasets.pbmc3k_processed()
 
-    scores_cells.with_gene_sets(adata=q,                            # AnnData object
-                                gene_set_file='cibersort_lm22.gmt', # File path of gene sets
-                                groupby='louvain',                  # Will sample neighbors within this group, can take a list
-                                smooth_mode='connectivity',         # Smooths matrix using distance weights from NN graph.
-                                recompute_neighbors=32,              # Rebuild nearest neighbor graph with groups, 0 turns off function
-                                score_method='singscore',           # Method of scoring
-                                method_params={'normalization':'theoretical'},  # Special parameters for some methods
-                                ranked=True,                        # Use ranked data, True or False
-                                cores=8)                            # Groups are scored in parallel.
+   score_cells.with_gene_sets(adata=q,                            # AnnData object
+                              gene_set_file='cibersort_lm22.gmt', # File path of gene sets
+                              groupby='louvain',                  # Will sample neighbors within this group, can take a list
+                              smooth_mode='connectivity',         # Smooths matrix using distance weights from NN graph.
+                              recompute_neighbors=32,              # Rebuild nearest neighbor graph with groups, 0 turns off function
+                              score_method='singscore',           # Method of scoring
+                              method_params={'normalization':'theoretical'},  # Special parameters for some methods
+                              ranked=True,                        # Use ranked data, True or False
+                              cores=8)                            # Groups are scored in parallel.
 
-    sc.pl.umap(q, color=['louvain','T.cells.CD8.up'], wspace=0.35)
+   sc.pl.umap(q, color=['louvain','T.cells.CD8.up'], wspace=0.35)
 
 Scoring Functions
 -----------------
